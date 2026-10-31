@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMART DUKAAN</title>
+<style>
+:root{--blue:#174ea6;--bg:#f3f6fb;--green:#16834a;--red:#d93025}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#202938}
+header{background:var(--blue);color:white;padding:20px}
+header h1{margin:0;font-size:25px;display:flex;align-items:center;gap:10px}.brandmark{display:inline-grid;place-items:center;width:42px;height:42px;padding:5px;background:#ffffff20;border:1px solid #ffffff55;border-radius:12px}.brandmark svg{width:100%;height:100%}
+header p{margin:6px 0 0;font-size:13px}
+nav{display:flex;gap:6px;overflow:auto;background:white;padding:10px}
+nav button{border:0;padding:11px 14px;border-radius:8px;background:#e8eef9;white-space:nowrap;cursor:pointer}
+nav button.active{background:var(--blue);color:white}
+main{max-width:1050px;margin:auto;padding:16px}
+.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card,.panel{background:white;padding:17px;border-radius:12px;box-shadow:0 2px 8px #0000000b;margin-bottom:14px}
+.card small{color:#687386}.card h2{margin:8px 0 0;font-size:23px}
+h2.section{font-size:19px}
+input,select{width:100%;padding:11px;border:1px solid #ccd3df;border-radius:7px;margin:5px 0 12px;font-size:15px}
+label{font-size:13px;font-weight:bold}
+button.primary{background:var(--blue);color:white;border:0;border-radius:7px;padding:11px 16px;cursor:pointer}
+button.danger{background:#fde8e7;color:#b3261e;border:0;border-radius:7px;padding:8px;cursor:pointer}
+button.secondary{background:#e8eef9;color:#174ea6;border:0;border-radius:7px;padding:9px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:11px 7px;border-bottom:1px solid #e7eaf0}
+th{background:#f5f7fb}
+.tablewrap{overflow-x:auto}
+.notice{padding:12px;background:#fff4d6;border-radius:8px;margin:10px 0;font-size:13px}
+.good{color:var(--green)}.bad{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.muted{color:#697386;font-size:13px}
+@media(max-width:500px){main{padding:10px}.card{padding:13px}header{padding:16px}}
+.card,.panel{transition:transform .2s,box-shadow .2s}.card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 8px 24px #174ea61a}
+header{background:linear-gradient(120deg,#102a43,#174ea6 65%,#168b82)}
+nav button{transition:background .2s,transform .2s}input:focus,select:focus{outline:2px solid #b9d4fa;border-color:#174ea6}
+@media print{header,nav,.no-print{display:none!important}body{background:white}.page{display:none!important}#invoicePrint{display:block!important}}
+</style>
+</head>
+<body>
+
+<header>
+<h1><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 20h34v22H7z" fill="#fff"/><path d="M5 19 10 6h28l5 13" fill="#20b8ad" stroke="#fff" stroke-width="2"/><path d="M5 19c0 4 7 5 9 0 1 5 8 5 10 0 2 5 9 5 10 0 2 5 9 4 9 0" fill="none" stroke="#fff" stroke-width="3"/><path d="M18 29h12v13H18z" fill="#1769aa"/><path d="M11 25h5v6h-5zM32 25h5v6h-5z" fill="#1769aa"/></svg></span> SMART DUKAAN</h1>
+<p>Smart Stock, Sales and Restocking Assistant for Small Shops</p>
+</header>
+
+<nav class="no-print">
+<button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+<button onclick="showPage('firm',this)">Firm Profile</button>
+<button onclick="showPage('products',this)">Products</button>
+<button onclick="showPage('sales',this)">New Sale</button>
+<button onclick="showPage('daily',this)">Daily Sales</button>
+<button onclick="showPage('expenses',this)">Expenses</button>
+<button onclick="showPage('history',this)">Sales History</button>
+<button onclick="showPage('reports',this)">Reports</button>
+<button onclick="showPage('backup',this)">Backup</button>
+</nav>
+
+<main>
+
+<section id="dashboard" class="page active">
+<h2 class="section">Business Dashboard</h2>
+<div class="cards">
+<div class="card"><small>Total Products</small><h2 id="totalProducts">0</h2></div>
+<div class="card"><small>Stock Units</small><h2 id="stockUnits">0</h2></div>
+<div class="card"><small>Today's Sales</small><h2 id="todaySales">₹0</h2></div>
+<div class="card"><small>Today's Expenses</small><h2 id="todayExpenses">₹0</h2></div>
+<div class="card"><small>Total Expenses</small><h2 id="dashboardAllExpenses">₹0</h2></div>
+<div class="card"><small>Estimated Profit</small><h2 id="todayProfit">₹0</h2></div>
+</div>
+<div class="panel">
+<h2 class="section">⚠️ Low Stock Alerts</h2>
+<div id="alerts">No alerts.</div>
+</div>
+<div class="panel">
+<h2 class="section">Recent Expenses</h2>
+<div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead><tbody id="dashboardExpenses"></tbody></table></div>
+</div>
+<div class="panel">
+<h2 class="section">Recent Sales</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
+<tbody id="recentSales"></tbody>
+</table></div>
+</div>
+</section>
+
+<section id="firm" class="page">
+<div class="panel">
+<h2 class="section">Firm Profile</h2>
+<form id="firmForm"><div class="grid">
+<div><label>Business Name</label><input id="firmName" required placeholder="Your shop name"></div>
+<div><label>Owner Name</label><input id="firmOwner" placeholder="Owner name"></div>
+<div><label>Phone Number</label><input id="firmPhone" placeholder="Contact number"></div>
+<div><label>Email</label><input id="firmEmail" type="email" placeholder="Email address"></div>
+<div><label>GSTIN</label><input id="firmGST" placeholder="Optional"></div>
+<div><label>Address</label><input id="firmAddress" placeholder="Shop address"></div>
+</div><button class="primary">Save Firm Profile</button></form>
+</div></section>
+
+<section id="daily" class="page">
+<div class="panel"><h2 class="section">Daily Sales Register</h2>
+<label>Select Date</label><input id="dailyDate" type="date">
+<div class="cards"><div class="card"><small>Daily Sales</small><h2 id="dailyTotal">₹0</h2></div><div class="card"><small>Bills</small><h2 id="dailyBills">0</h2></div></div>
+<h3>Payment Mode Collection</h3><div class="tablewrap"><table><thead><tr><th>Payment Mode</th><th>Bills</th><th>Amount</th></tr></thead><tbody id="paymentRows"></tbody></table></div>
+</div></section>
+
+<section id="expenses" class="page">
+<div class="panel"><h2 class="section">Add Business Expense</h2>
+<form id="expenseForm"><div class="grid"><div><label>Description</label><input id="expenseName" required placeholder="Shop rent, electricity, etc."></div><div><label>Amount (₹)</label><input id="expenseAmount" type="number" min=".01" step=".01" required></div><div><label>Date</label><input id="expenseDate" type="date" required></div></div><button class="primary">Add Expense</button></form></div>
+<div class="panel"><h2 class="section">Expense History</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div>
+</section>
+
+<section id="products" class="page">
+<div class="panel">
+<h2 class="section" id="productFormHeading">Add New Product</h2>
+<form id="productForm"><input type="hidden" id="editProductId">
+<div class="grid">
+<div><label>Product Name</label><input id="pname" required placeholder="e.g. Rice 1 kg"></div>
+<div><label>Product Code</label><input id="pcode" placeholder="Optional"></div>
+<div><label>Purchase Price (₹)</label><input id="pcost" type="number" min="0" step=".01" required></div>
+<div><label>Selling Price (₹)</label><input id="pprice" type="number" min="0" step=".01" required></div>
+<div><label>Opening Stock</label><input id="pstock" type="number" min="0" required></div>
+<div><label>Low Stock Limit</label><input id="plimit" type="number" min="0" value="5"></div>
+<div><label>GST Rate (%)</label>
+<select id="pgst"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></div>
+</div>
+<button class="primary">+ Add Product</button>
+</form>
+</div>
+<div class="panel">
+<h2 class="section">Inventory</h2>
+<input id="productSearch" placeholder="Search products by name or code...">
+<div class="tablewrap"><table>
+<thead><tr><th>Product</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Action</th></tr></thead>
+<tbody id="productRows"></tbody>
+</table></div>
+</div>
+</section>
+
+<section id="sales" class="page">
+<div class="panel">
+<h2 class="section">Create New Bill</h2>
+<div class="grid">
+<div><label>Customer Name (optional)</label><input id="customer" placeholder="Customer name"></div>
+<div><label>Payment Mode</label><select id="paymentMode"><option>Cash</option><option>UPI - Google Pay</option><option>UPI - PhonePe</option><option>UPI - Paytm</option><option>Card</option><option>Bank Transfer</option><option>Credit / Udhaar</option></select></div>
+<div><label>Tax Type</label><select id="taxType"><option value="local">CGST + SGST (Local)</option><option value="inter">IGST (Interstate)</option></select></div>
+</div>
+<hr style="border:0;border-top:1px solid #eee;margin:12px 0">
+<h3>Add goods to this bill</h3>
+<p class="muted">Add two or more different products below. All selected goods will be included in one bill.</p>
+<div id="productEntryRows"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0">
+<button class="secondary" id="addProductRow" type="button">＋ Add Another Product</button>
+<button class="primary" id="addAllToCart" type="button">Add All Products to This Bill</button>
+</div>
+<div class="tablewrap"><table><thead><tr><th>Product</th><th>Rate</th><th>Qty</th><th>GST</th><th>Amount</th><th>Action</th></tr></thead><tbody id="cartRows"></tbody></table></div>
+<div class="notice" id="cartTotal">Subtotal: ₹0.00 | GST: ₹0.00 | Total: ₹0.00</div>
+<button class="primary" id="completeSale" type="button">Complete Sale & Generate Bill</button>
+</div>
+<div id="invoicePrint" class="panel" style="display:none"></div>
+</section>
+
+<section id="history" class="page">
+<div class="panel">
+<h2 class="section">Sales History</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
+<tbody id="historyRows"></tbody>
+</table></div>
+</div>
+</section>
+
+<section id="reports" class="page">
+<h2 class="section">Business Reports</h2>
+<div class="cards">
+<div class="card"><small>Total Sales</small><h2 id="allSales">₹0</h2></div>
+<div class="card"><small>Estimated Profit</small><h2 id="allProfit">₹0</h2></div>
+<div class="card"><small>GST Collected</small><h2 id="allGST">₹0</h2></div>
+<div class="card"><small>Units Sold</small><h2 id="allUnits">0</h2></div>
+</div>
+<div class="panel">
+<h2 class="section">Product-wise Stock</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Product</th><th>Remaining Stock</th><th>Stock Value (Cost)</th></tr></thead>
+<tbody id="stockReport"></tbody>
+</table></div>
+</div>
+</section>
+
+<section id="backup" class="page">
+<div class="panel">
+<h2 class="section">Data Backup & Restore</h2>
+<p class="muted">Download a backup of your products and sales. You can restore it later on this device or another device.</p>
+<button class="primary" onclick="exportData()">Download Backup</button>
+<hr style="border:0;border-top:1px solid #eee;margin:20px 0">
+<label>Restore from backup file</label>
+<input type="file" id="restoreFile" accept=".json">
+<button class="primary" onclick="importData()">Restore Backup</button>
+<div class="notice">Your records are saved in this browser on this device. Clearing browser data may erase them. Keep regular backups.</div>
+<button class="danger" onclick="resetData()">Delete All App Data</button>
+</div>
+</section>
+
+</main>
+
+<script>
+"use strict";
+const KEY="smartDukaan_v2";
+const oldKey="smartDukaan_v1";
+const blank={firm:{name:"",owner:"",phone:"",email:"",gst:"",address:""},products:[],sales:[],expenses:[]};
+function loadData(){
+ try{
+  let d=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(!d)d=JSON.parse(localStorage.getItem(oldKey)||"null");
+  if(d)return {...blank,...d,firm:{...blank.firm,...(d.firm||{})},expenses:d.expenses||[]};
+ }catch(e){}
+ return JSON.parse(JSON.stringify(blank));
+}
+let data=loadData(),cart=[],entryRows=[{productId:"",qty:1}];
+const $=id=>document.getElementById(id);
+const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+const today=()=>new Date().toLocaleDateString("en-IN");
+const isoToday=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function save(){localStorage.setItem(KEY,JSON.stringify(data));$("headerFirm").textContent=data.firm.name||"Your business, organised.";render();}
+function emptyRow(n){return `<tr><td colspan="${n}" style="text-align:center;color:#78869a;padding:18px">No records yet.</td></tr>`}
+function showPage(id,btn){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ $(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");else document.querySelector(`nav button[onclick*="'${id}'"]`)?.classList.add("active");
+ render();
+}
+function render(){
+ const p=data.products,s=data.sales,ex=data.expenses||[],ts=s.filter(x=>x.date===today()),te=ex.filter(x=>x.date===today());
+ $("totalProducts").textContent=p.length;$("stockUnits").textContent=p.reduce((a,x)=>a+(+x.stock||0),0);
+ $("todaySales").textContent=money(ts.reduce((a,x)=>a+(+x.total||0),0));
+ $("todayExpenses").textContent=money(te.reduce((a,x)=>a+(+x.amount||0),0));
+ $("dashboardAllExpenses").textContent=money(ex.reduce((a,x)=>a+(+x.amount||0),0));
+ $("todayProfit").textContent=money(ts.reduce((a,x)=>a+(+x.profit||0),0)-te.reduce((a,x)=>a+(+x.amount||0),0));
+ $("dashboardExpenses").innerHTML=ex.slice().reverse().slice(0,5).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${money(x.amount)}</td></tr>`).join("")||emptyRow(3);
+ $("alerts").innerHTML=p.filter(x=>x.stock<=x.limit).map(x=>`<p class="bad">⚠️ ${esc(x.name)} — Only ${x.stock} left (limit: ${x.limit})</p>`).join("")||"<p class='good'>All products have sufficient stock.</p>";
+ $("productRows").innerHTML=p.filter(x=>(x.name+" "+(x.code||"")).toLowerCase().includes(($("productSearch")?.value||"").toLowerCase())).map(x=>`<tr><td>${esc(x.name)}<br><small>${esc(x.code||"")}</small></td><td>${money(x.cost)}</td><td>${money(x.price)}</td><td>${x.stock}</td><td>${x.gst}%</td><td><button class="secondary" onclick="editProduct(${x.id})">Edit</button> <button class="danger" onclick="deleteProduct(${x.id})">Delete</button></td></tr>`).join("")||emptyRow(6);
+ renderProductEntryRows();
+ $("recentSales").innerHTML=s.slice(-5).reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc((x.items||[]).map(i=>i.name).join(", ")||x.product||"")}</td><td>${(x.items||[]).reduce((a,i)=>a+i.qty,0)||x.qty||0}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(4);
+ $("historyRows").innerHTML=s.slice().reverse().map(x=>`<tr><td>${esc(x.invoice)}</td><td>${esc(x.date)}</td><td>${esc(x.customer||"-")}</td><td>${esc((x.items||[]).map(i=>i.name+" × "+i.qty).join(", ")||x.product||"")}</td><td>${esc(x.payment||"Cash")}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(6);
+ $("allSales").textContent=money(s.reduce((a,x)=>a+(+x.total||0),0));
+ $("allProfit").textContent=money(s.reduce((a,x)=>a+(+x.profit||0),0)-ex.reduce((a,x)=>a+(+x.amount||0),0));
+ $("allGST").textContent=money(s.reduce((a,x)=>a+(+x.tax||0),0));
+ $("allUnits").textContent=s.reduce((a,x)=>a+(x.items||[]).reduce((b,i)=>b+i.qty,0)+(x.qty||0),0);
+ $("stockReport").innerHTML=p.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.stock}</td><td>${money(x.stock*x.cost)}</td></tr>`).join("")||emptyRow(3);
+ $("expenseRows").innerHTML=ex.slice().reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${money(x.amount)}</td><td><button class="danger" onclick="deleteExpense(${x.id})">Delete</button></td></tr>`).join("")||emptyRow(4);
+ renderExtra();renderCart();
+}
+function renderExtra(){
+ let f=data.firm||{};["name","owner","phone","email","gst","address"].forEach(k=>{let el=$("firm"+k[0].toUpperCase()+k.slice(1));if(el&&document.activeElement!==el)el.value=f[k]||""});
+ const d=$("dailyDate");if(d&&!d.value)d.value=isoToday();
+ let v=d?d.value:isoToday(),a=v.split("-"),key=a[2]+"/"+a[1]+"/"+a[0],s=data.sales.filter(x=>x.date===key);
+ $("dailyTotal").textContent=money(s.reduce((t,x)=>t+(+x.total||0),0));$("dailyBills").textContent=s.length;
+ $("paymentRows").innerHTML=Object.entries(s.reduce((o,x)=>{let k=x.payment||"Cash";o[k]??={count:0,total:0};o[k].count++;o[k].total+=+x.total||0;return o},{})).map(([k,x])=>`<tr><td>${esc(k)}</td><td>${x.count}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(3);
+}
+$("firmForm").addEventListener("submit",e=>{e.preventDefault();data.firm={name:$("firmName").value.trim(),owner:$("firmOwner").value.trim(),phone:$("firmPhone").value.trim(),email:$("firmEmail").value.trim(),gst:$("firmGST").value.trim(),address:$("firmAddress").value.trim()};save();alert("Firm profile saved.")});
+$("productForm").addEventListener("submit",e=>{
+ e.preventDefault();let id=+$("editProductId").value,x={id:id||Date.now(),name:$("pname").value.trim(),code:$("pcode").value.trim(),cost:+$("pcost").value,price:+$("pprice").value,stock:+$("pstock").value,limit:+$("plimit").value,gst:+$("pgst").value};
+ if(!x.name||[x.cost,x.price,x.stock,x.limit].some(n=>!Number.isFinite(n)||n<0))return alert("Enter valid product details.");
+ if(id){let i=data.products.findIndex(p=>p.id===id);if(i>=0)data.products[i]=x}else data.products.push(x);
+ e.target.reset();$("editProductId").value="";$("productFormHeading").textContent="Add New Product";save();alert(id?"Product updated.":"Product added.");
+});
+function editProduct(id){let p=data.products.find(x=>x.id===id);if(!p)return;$("editProductId").value=p.id;$("pname").value=p.name;$("pcode").value=p.code||"";$("pcost").value=p.cost;$("pprice").value=p.price;$("pstock").value=p.stock;$("plimit").value=p.limit;$("pgst").value=p.gst;$("productFormHeading").textContent="Edit Product";$("productForm").scrollIntoView({behavior:"smooth"})}
+function deleteProduct(id){if(confirm("Delete this product?")){data.products=data.products.filter(x=>x.id!==id);save()}}
+$("productSearch").addEventListener("input",render);
+
+function renderProductEntryRows(){
+ const host=$("productEntryRows");if(!host)return;
+ host.innerHTML=entryRows.map((r,i)=>`<div class="grid" style="align-items:end;border:1px solid #dce5f0;border-radius:12px;padding:12px;margin:9px 0">
+ <div><label>Product ${i+1}</label><select data-entry-product="${i}"><option value="">Choose a product</option>${data.products.map(p=>`<option value="${p.id}" ${String(r.productId)===String(p.id)?"selected":""}>${esc(p.name)} — Stock: ${p.stock} — ${money(p.price)}</option>`).join("")}</select></div>
+ <div><label>Quantity</label><input data-entry-qty="${i}" type="number" min="1" step="1" value="${r.qty||1}"></div>
+ <div><button class="danger" type="button" data-remove-entry="${i}" ${entryRows.length===1?"disabled":""}>Remove row</button></div>
+ </div>`).join("")||"<p>No product rows. Click Add Another Product.</p>";
+ host.querySelectorAll("[data-entry-product]").forEach(el=>el.addEventListener("change",()=>{entryRows[+el.dataset.entryProduct].productId=el.value}));
+ host.querySelectorAll("[data-entry-qty]").forEach(el=>el.addEventListener("input",()=>{entryRows[+el.dataset.entryQty].qty=el.value}));
+ host.querySelectorAll("[data-remove-entry]").forEach(el=>el.addEventListener("click",()=>{entryRows.splice(+el.dataset.removeEntry,1);if(!entryRows.length)entryRows.push({productId:"",qty:1});renderProductEntryRows()}));
+}
+$("addProductRow").onclick=()=>{entryRows.push({productId:"",qty:1});renderProductEntryRows()};
+$("addAllToCart").onclick=()=>{
+ const chosen=entryRows.map(r=>({p:data.products.find(p=>String(p.id)===String(r.productId)),q:Number(r.qty)}));
+ if(chosen.some(x=>!x.p))return alert("Please choose a product in every row, or remove the empty row.");
+ if(chosen.some(x=>!Number.isInteger(x.q)||x.q<1))return alert("Enter a valid quantity for every product.");
+ const totals={};chosen.forEach(({p,q})=>totals[p.id]=(totals[p.id]||0)+q);
+ for(const {p} of chosen){const already=cart.filter(x=>x.id===p.id).reduce((a,x)=>a+x.qty,0);if(already+totals[p.id]>p.stock)return alert("Not enough stock for "+p.name+". Available stock: "+p.stock);}
+ chosen.forEach(({p,q})=>{let item=cart.find(x=>x.id===p.id);if(item)item.qty+=q;else cart.push({id:p.id,name:p.name,price:p.price,cost:p.cost,qty:q,gst:p.gst})});
+ entryRows=[{productId:"",qty:1}];renderProductEntryRows();renderCart();alert("All selected products have been added to one bill.");
+};
+function renderCart(){
+ let base=0,tax=0;
+ $("cartRows").innerHTML=cart.map((x,i)=>{
+ let b=x.price*x.qty,t=b*x.gst/100;base+=b;tax+=t;
+ return `<tr><td>${esc(x.name)}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.gst}%</td><td>${money(b+t)}</td><td><button class="danger" type="button" onclick="removeCart(${i})">Remove</button></td></tr>`;
+ }).join("")||emptyRow(6);
+ $("cartTotal").innerHTML=`Subtotal: ${money(base)}<br>GST: ${money(tax)}<br><b>Total: ${money(base+tax)}</b>`;
+}
+function removeCart(i){cart.splice(i,1);renderCart()}
+
+$("completeSale").onclick=()=>{
+ if(!cart.length)return alert("Add at least one product to the bill.");
+ for(let i of cart){let p=data.products.find(x=>x.id===i.id);if(!p||p.stock<i.qty)return alert("Insufficient stock for "+i.name);}
+ let base=cart.reduce((a,x)=>a+x.price*x.qty,0);
+ let tax=cart.reduce((a,x)=>a+x.price*x.qty*x.gst/100,0);
+ let sale={invoice:"SD"+Date.now().toString().slice(-8),date:today(),customer:$("customer").value.trim(),payment:$("paymentMode").value,items:cart.map(x=>({...x})),base,tax,total:base+tax,profit:cart.reduce((a,x)=>a+(x.price-x.cost)*x.qty,0)};
+ cart.forEach(i=>data.products.find(p=>p.id===i.id).stock-=i.qty);
+ data.sales.push(sale);cart=[];save();showInvoice(sale);$("customer").value="";alert("Bill completed. Daily sales updated.");
+};
+function showInvoice(x){
+ let f=data.firm||{};
+ $("invoicePrint").style.display="block";
+ $("invoicePrint").innerHTML=`<h2>${esc(f.name||"SMART DUKAAN")}</h2><p>${esc(f.address||"")}<br>${f.phone?"Phone: "+esc(f.phone):""}</p><h3>SALES INVOICE</h3><p>Invoice: ${esc(x.invoice)}<br>Date: ${esc(x.date)}<br>Customer: ${esc(x.customer||"Walk-in customer")}<br>Payment: ${esc(x.payment)}</p><div class="tablewrap"><table><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th></tr></thead><tbody>${x.items.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.qty}</td><td>${money(i.price)}</td><td>${i.gst}%</td><td>${money(i.price*i.qty*(1+i.gst/100))}</td></tr>`).join("")}</tbody></table></div><p>Subtotal: ${money(x.base)}<br>GST: ${money(x.tax)}</p><h2>Total: ${money(x.total)}</h2><button class="primary no-print" onclick="window.print()">Print Bill</button>`;
+ $("invoicePrint").scrollIntoView({behavior:"smooth"});
+}
+
+$("dailyDate").value=isoToday();$("dailyDate").addEventListener("change",renderExtra);
+$("expenseDate").value=isoToday();
+$("expenseForm").addEventListener("submit",e=>{
+ e.preventDefault();let amount=+$("expenseAmount").value;
+ if(amount<=0)return alert("Enter a valid amount.");
+ data.expenses.push({id:Date.now(),name:$("expenseName").value.trim(),amount,date:new Date($("expenseDate").value+"T12:00:00").toLocaleDateString("en-IN")});
+ e.target.reset();$("expenseDate").value=isoToday();save();alert("Expense saved.");
+});
+function deleteExpense(id){if(confirm("Delete this expense?")){data.expenses=data.expenses.filter(x=>x.id!==id);save()}}
+
+$("exportBtn").onclick=()=>{
+ let b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a"),u=URL.createObjectURL(b);
+ a.href=u;a.download="smart-dukaan-backup.json";a.click();URL.revokeObjectURL(u);
+};
+$("restoreBtn").onclick=()=>{
+ let f=$("restoreFile").files[0];if(!f)return alert("Choose a backup file.");
+ let r=new FileReader();
+ r.onload=()=>{
+  try{
+   let d=JSON.parse(r.result);
+   if(!Array.isArray(d.products)||!Array.isArray(d.sales))throw Error();
+   if(!confirm("Replace current data?"))return;
+   data={...blank,...d,firm:{...blank.firm,...(d.firm||{})},expenses:d.expenses||[]};
+   save();alert("Backup restored.");
+  }catch(e){alert("Invalid backup file.")}
+ };
+ r.readAsText(f);
+};
+$("resetBtn").onclick=()=>{
+ if(confirm("Delete all app data? Download a backup first if needed.")){
+  data=JSON.parse(JSON.stringify(blank));cart=[];save();
+ }
+};
+render();
+</script>
+</body>
+</html>
