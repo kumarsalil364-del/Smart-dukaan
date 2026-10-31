@@ -1,34 +1,470 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMART DUKAAN Development Prompt</title>
+<title>SMART DUKAAN - Complete Website Prompt</title>
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    padding:25px;
+    background:#f1f5f9;
+    font-family:Arial,sans-serif;
+    color:#1e293b;
+}
+.container{
+    max-width:1100px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:14px;
+    box-shadow:0 5px 25px #0002;
+}
+h1{color:#174ea6;text-align:center}
+h2{color:#174ea6;border-bottom:2px solid #dbeafe;padding-bottom:8px}
+textarea{
+    width:100%;
+    height:700px;
+    padding:18px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    font-size:14px;
+    line-height:1.6;
+}
+button{
+    background:#174ea6;
+    color:white;
+    border:0;
+    border-radius:8px;
+    padding:13px 22px;
+    cursor:pointer;
+    font-size:15px;
+}
+button:hover{background:#0f3678}
+.note{
+    background:#eff6ff;
+    border-left:4px solid #174ea6;
+    padding:15px;
+    line-height:1.6;
+}
+</style>
 </head>
 <body>
-<h1>SMART DUKAAN – Complete Development Prompt</h1>
-<p>Fix and upgrade my existing SMART DUKAAN website.</p>
-<h2>Required Features</h2>
-<ul>
-<li>Dashboard</li>
-<li>Firm Profile</li>
-<li>Product Management</li>
-<li>Sales and GST Billing</li>
-<li>Daily Sales</li>
-<li>Expense Management</li>
-<li>Sales History and Deletion</li>
-<li>Business Reports</li>
-<li>Backup and Restore</li>
-<li>Delete All Data</li>
-</ul>
-<h2>Important Instructions</h2>
-<ul>
-<li>Fix all saving and deleting errors.</li>
-<li>Preserve the existing design and logo.</li>
-<li>Make every button functional.</li>
-<li>Use LocalStorage for offline storage.</li>
-<li>Return one complete HTML file.</li>
-<li>Test all features before delivery.</li>
-</ul>
+
+<div class="container">
+
+<h1>SMART DUKAAN</h1>
+<p style="text-align:center">
+<strong>Complete Website Development Master Prompt</strong>
+</p>
+
+<div class="note">
+This prompt instructs an AI to create the complete working SMART DUKAAN website. It must generate the actual HTML, CSS and JavaScript code.
+</div>
+
+<h2>COMPLETE WEBSITE PROMPT</h2>
+
+<button onclick="copyPrompt()">COPY FULL PROMPT</button>
+
+<textarea id="prompt" readonly>
+You are an expert full-stack web developer and UI/UX designer.
+
+PROJECT NAME: SMART DUKAAN
+
+MY REQUIREMENT:
+
+Create a COMPLETE, PROFESSIONAL, MODERN, FULLY FUNCTIONAL SHOP MANAGEMENT WEBSITE named SMART DUKAAN.
+
+IMPORTANT:
+I need the ACTUAL WEBSITE CODE, not only a prompt, explanation, design, prototype or sample.
+
+You must generate the complete HTML file containing HTML, CSS and JavaScript.
+
+Do not skip any section or feature.
+
+--------------------------------------------------
+1. ORIGINAL DESIGN AND BRANDING
+--------------------------------------------------
+
+- Keep the original SMART DUKAAN name.
+- Use my original logo if provided.
+- Maintain the original blue and white theme.
+- Use a modern professional dashboard.
+- Keep the interface simple and easy to understand.
+- Responsive design for desktop, tablet and mobile.
+- Use attractive cards, tables, icons and navigation.
+- Do not unnecessarily change my original website design.
+
+--------------------------------------------------
+2. DASHBOARD
+--------------------------------------------------
+
+Create a dashboard displaying:
+
+- Total Sales
+- Today's Sales
+- Monthly Sales
+- Total Products
+- Total Stock
+- Stock Value
+- Total Expenses
+- Net Balance
+- Recent Sales
+- Low Stock Products
+
+All dashboard values must update automatically when data changes.
+
+--------------------------------------------------
+3. FIRM PROFILE
+--------------------------------------------------
+
+Create a complete firm profile section.
+
+Fields:
+
+- Firm Name
+- Owner Name
+- Shop Address
+- Mobile Number
+- Email Address
+- GST Number
+- Business Logo
+
+Features:
+
+- Save Profile
+- Edit Profile
+- Update Profile
+- Display firm details on invoices
+- Save details permanently in LocalStorage.
+
+--------------------------------------------------
+4. PRODUCT MANAGEMENT
+--------------------------------------------------
+
+Create a product management system.
+
+Fields:
+
+- Product Name
+- Product ID
+- Category
+- Purchase Price
+- Selling Price
+- GST Percentage
+- Opening Stock
+- Available Stock
+- Minimum Stock Alert
+
+Features:
+
+- Add Product
+- Edit Product
+- Delete Product
+- Search Product
+- Filter Products
+- Update Stock
+- Low Stock Warning
+- Calculate Total Stock Value
+
+--------------------------------------------------
+5. NEW SALE AND BILLING
+--------------------------------------------------
+
+Create a complete billing system.
+
+Features:
+
+- Select Products
+- Add Multiple Products
+- Enter Quantity
+- Automatic Price Calculation
+- Apply Discount
+- Calculate GST
+- Calculate Subtotal
+- Calculate Grand Total
+- Customer Name
+- Customer Mobile Number
+- Invoice Number
+- Date and Time
+- Payment Mode
+
+Payment Modes:
+
+- Cash
+- UPI
+- Card
+- Credit
+
+After saving a sale:
+
+- Generate invoice.
+- Update product stock.
+- Save sale history.
+- Update dashboard.
+- Update reports.
+- Allow invoice printing.
+
+Never allow a sale if the available stock is insufficient.
+
+--------------------------------------------------
+6. DAILY SALES REGISTER
+--------------------------------------------------
+
+Create a daily sales register.
+
+Display:
+
+- Invoice Number
+- Customer Name
+- Date
+- Total Amount
+- Payment Mode
+
+Calculate:
+
+- Total Cash Sales
+- Total UPI Sales
+- Total Card Sales
+- Total Credit Sales
+- Total Daily Collection
+
+Allow date-wise filtering.
+
+--------------------------------------------------
+7. EXPENSE MANAGEMENT
+--------------------------------------------------
+
+Create an expense management section.
+
+Fields:
+
+- Expense Name
+- Category
+- Description
+- Amount
+- Date
+- Payment Mode
+
+Features:
+
+- Add Expense
+- Edit Expense
+- Delete Expense
+- Search Expense
+- Filter by Date
+- Calculate Total Expenses
+
+--------------------------------------------------
+8. SALES HISTORY
+--------------------------------------------------
+
+Create a complete sales history section.
+
+Display:
+
+- Invoice Number
+- Customer Name
+- Date
+- Number of Items
+- Total Amount
+- Payment Mode
+
+Features:
+
+- Search Sales
+- Filter by Date
+- View Invoice
+- Print Invoice
+- Delete Individual Sale
+- Confirm Before Deleting
+
+IMPORTANT:
+When a sale is deleted, automatically restore the sold product quantities to stock.
+
+Update dashboard, daily sales and reports after deletion.
+
+Prevent accidental deletion.
+
+--------------------------------------------------
+9. REPORTS
+--------------------------------------------------
+
+Create a professional reports section.
+
+Reports:
+
+- Daily Sales Report
+- Weekly Sales Report
+- Monthly Sales Report
+- Yearly Sales Report
+- Product-wise Sales
+- Stock Report
+- Expense Report
+- Profit Summary
+- Payment Mode Summary
+
+Allow date filtering and printing.
+
+--------------------------------------------------
+10. BACKUP AND RESTORE
+--------------------------------------------------
+
+Create a reliable backup system.
+
+Features:
+
+- Export All Data as JSON
+- Import JSON Backup
+- Restore Previous Data
+- Validate Imported Data
+- Confirm Before Replacing Data
+- Reset All Data
+
+Never delete existing data without confirmation.
+
+--------------------------------------------------
+11. DATA STORAGE AND SECURITY
+--------------------------------------------------
+
+Use JavaScript LocalStorage for data persistence.
+
+Requirements:
+
+- Save all records correctly.
+- Data must remain after page refresh.
+- Use consistent storage keys.
+- Validate all form inputs.
+- Prevent duplicate records where appropriate.
+- Handle missing or corrupted data safely.
+- Display success and error messages.
+- Prevent accidental data loss.
+- Ensure delete operations update related records correctly.
+
+For future online multi-device use, keep the data-storage layer organised so a backend can be added later. Do not pretend LocalStorage synchronises between devices.
+
+--------------------------------------------------
+12. NAVIGATION
+--------------------------------------------------
+
+Create a sidebar with these sections:
+
+1. Dashboard
+2. Firm Profile
+3. Products
+4. New Sale
+5. Daily Sales
+6. Expenses
+7. Sales History
+8. Reports
+9. Backup and Restore
+10. Settings
+
+Every navigation item must work.
+
+--------------------------------------------------
+13. TECHNICAL REQUIREMENTS
+--------------------------------------------------
+
+Use:
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- LocalStorage
+- Responsive layouts
+
+Do not require paid APIs.
+
+Keep all code in ONE HTML file unless there is a strong technical reason otherwise.
+
+Use clear and organised JavaScript functions.
+
+Do not use undefined variables or missing HTML element IDs.
+
+Do not create buttons without working functionality.
+
+--------------------------------------------------
+14. TESTING REQUIREMENTS
+--------------------------------------------------
+
+Before completing the website, check:
+
+- Profile saving and editing.
+- Product adding, editing and deleting.
+- Sales calculations.
+- GST calculations.
+- Stock updates after sales.
+- Stock restoration after deleting sales.
+- Expense saving and deletion.
+- Sales history search.
+- Report calculations.
+- Backup export.
+- Backup import.
+- Data persistence after refresh.
+- Mobile responsiveness.
+
+Fix all JavaScript errors.
+
+--------------------------------------------------
+15. FINAL OUTPUT - VERY IMPORTANT
+--------------------------------------------------
+
+I NEED THE COMPLETE WEBSITE CODE.
+
+Your final answer MUST contain:
+
+1. Complete HTML code from <!DOCTYPE html> to </html>.
+2. All CSS code.
+3. All JavaScript code.
+4. All working website sections.
+5. No missing functions.
+6. No incomplete code.
+7. No placeholder buttons.
+8. No "continue yourself" instructions.
+9. No shortened code.
+10. No explanation instead of code.
+
+If the response is too long, continue the code in clearly numbered consecutive parts without skipping or repeating lines.
+
+The final website must be ready to save as:
+
+smart-dukaan.html
+
+It must open in Chrome and work without needing a server.
+
+MOST IMPORTANT:
+BUILD THE ACTUAL SMART DUKAAN WEBSITE. DO NOT JUST DESCRIBE HOW TO BUILD IT.
+</textarea>
+
+<br><br>
+<button onclick="copyPrompt()">COPY FULL PROMPT</button>
+
+<h2>How to use</h2>
+<ol>
+<li>Click COPY FULL PROMPT.</li>
+<li>Paste it into your AI coding assistant.</li>
+<li>Attach your original SMART DUKAAN HTML code and logo.</li>
+<li>Ask it to generate the complete working website code.</li>
+</ol>
+
+</div>
+
+<script>
+function copyPrompt(){
+    const box=document.getElementById("prompt");
+    box.select();
+    box.setSelectionRange(0,box.value.length);
+    navigator.clipboard.writeText(box.value)
+    .then(()=>alert("Complete website prompt copied!"))
+    .catch(()=>{
+        document.execCommand("copy");
+        alert("Prompt copied!");
+    });
+}
+</script>
+
 </body>
 </html>
