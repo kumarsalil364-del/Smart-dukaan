@@ -1,309 +1,677 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMART DUKAAN</title>
+<title>SMART DUKAAN - Master Website Development Prompt</title>
 <style>
-:root{--blue:#174ea6;--bg:#f3f6fb;--green:#16834a;--red:#d93025}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#202938}
-header{background:var(--blue);color:white;padding:20px}
-header h1{margin:0;font-size:25px}
-header p{margin:6px 0 0;font-size:13px}
-nav{display:flex;gap:6px;overflow:auto;background:white;padding:10px}
-nav button{border:0;padding:11px 14px;border-radius:8px;background:#e8eef9;white-space:nowrap;cursor:pointer}
-nav button.active{background:var(--blue);color:white}
-main{max-width:1050px;margin:auto;padding:16px}
-.page{display:none}.page.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
-.card,.panel{background:white;padding:17px;border-radius:12px;box-shadow:0 2px 8px #0000000b;margin-bottom:14px}
-.card small{color:#687386}.card h2{margin:8px 0 0;font-size:23px}
-h2.section{font-size:19px}
-input,select{width:100%;padding:11px;border:1px solid #ccd3df;border-radius:7px;margin:5px 0 12px;font-size:15px}
-label{font-size:13px;font-weight:bold}
-button.primary{background:var(--blue);color:white;border:0;border-radius:7px;padding:11px 16px;cursor:pointer}
-button.danger{background:#fde8e7;color:#b3261e;border:0;border-radius:7px;padding:8px;cursor:pointer}
-button.secondary{background:#e8eef9;color:#174ea6;border:0;border-radius:7px;padding:9px;cursor:pointer}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:11px 7px;border-bottom:1px solid #e7eaf0}
-th{background:#f5f7fb}
-.tablewrap{overflow-x:auto}
-.notice{padding:12px;background:#fff4d6;border-radius:8px;margin:10px 0;font-size:13px}
-.good{color:var(--green)}.bad{color:var(--red)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
-.muted{color:#697386;font-size:13px}
-@media(max-width:500px){main{padding:10px}.card{padding:13px}header{padding:16px}}
-@media print{header,nav,.no-print{display:none!important}body{background:white}.page{display:none!important}#invoicePrint{display:block!important}}
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f6fb;
+    color: #222;
+    line-height: 1.7;
+    margin: 0;
+}
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 35px;
+    background: white;
+    border-radius: 12px;
+}
+h1 {
+    color: #174ea6;
+    font-size: 38px;
+}
+h2 {
+    color: #174ea6;
+    border-bottom: 2px solid #e3eaf5;
+    padding-bottom: 8px;
+    margin-top: 35px;
+}
+h3 {
+    color: #087e8b;
+}
+li {
+    margin-bottom: 5px;
+}
+.highlight {
+    background: #eaf2ff;
+    padding: 15px;
+    border-left: 5px solid #174ea6;
+    border-radius: 5px;
+}
 </style>
 </head>
+
 <body>
+<div class="container">
 
-<header>
-<h1>🏪 SMART DUKAAN</h1>
-<p>Smart Stock, Sales and Restocking Assistant for Small Shops</p>
-</header>
+<h1>SMART DUKAAN</h1>
+<h2>MASTER WEBSITE DEVELOPMENT PROMPT</h2>
 
-<nav class="no-print">
-<button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
-<button onclick="showPage('products',this)">Products</button>
-<button onclick="showPage('sales',this)">New Sale</button>
-<button onclick="showPage('history',this)">Sales History</button>
-<button onclick="showPage('reports',this)">Reports</button>
-<button onclick="showPage('backup',this)">Backup</button>
-</nav>
+<p><strong>Project:</strong> Complete Shop Management System</p>
+<p><strong>Application type:</strong> Retail Business Management Software</p>
+<p><strong>Technology:</strong> HTML5, CSS3 and JavaScript</p>
+<p><strong>Deployment:</strong> GitHub Pages</p>
 
-<main>
+<div class="highlight">
+<strong>MAIN INSTRUCTION:</strong>
+Act as a senior software developer, full-stack engineer,
+database designer and professional UI/UX designer.
 
-<section id="dashboard" class="page active">
-<h2 class="section">Business Dashboard</h2>
-<div class="cards">
-<div class="card"><small>Total Products</small><h2 id="totalProducts">0</h2></div>
-<div class="card"><small>Stock Units</small><h2 id="stockUnits">0</h2></div>
-<div class="card"><small>Today's Sales</small><h2 id="todaySales">₹0</h2></div>
-<div class="card"><small>Estimated Profit</small><h2 id="todayProfit">₹0</h2></div>
+Build a complete, modern, professional and fully functional
+shop management application named SMART DUKAAN.
+
+Do not create just a landing page, static design, sample dashboard
+or demonstration. Build the actual working application with
+functional features, calculations, data storage and navigation.
 </div>
-<div class="panel">
-<h2 class="section">⚠️ Low Stock Alerts</h2>
-<div id="alerts">No alerts.</div>
+
+<h2>1. TECHNOLOGY AND DEVELOPMENT REQUIREMENTS</h2>
+
+<ul>
+<li>Use HTML5, CSS3 and Vanilla JavaScript.</li>
+<li>Create the entire application inside one index.html file.</li>
+<li>Use browser LocalStorage for persistent data.</li>
+<li>Make it compatible with GitHub Pages.</li>
+<li>Do not require a backend or paid API.</li>
+<li>Do not use React, Angular, Vue or a build process.</li>
+<li>Use reusable JavaScript functions.</li>
+<li>Use clean, readable and properly organised code.</li>
+<li>Validate all user inputs.</li>
+<li>Handle errors without crashing the application.</li>
+<li>Do not include non-functional buttons or placeholder sections.</li>
+<li>Preserve existing data when updating the application.</li>
+<li>Use safe data migration when storage structures change.</li>
+<li>Include sample data only as optional demo data, never as real sales.</li>
+</ul>
+
+<h2>2. BRANDING AND PROFESSIONAL DESIGN</h2>
+
+<ul>
+<li>Application name: SMART DUKAAN.</li>
+<li>Tagline: Smart Management for Every Shop.</li>
+<li>Create an original professional logo using inline SVG or CSS.</li>
+<li>Use premium royal blue, navy blue and teal colours.</li>
+<li>Use a clean white and light-grey background.</li>
+<li>Create professional dashboard cards.</li>
+<li>Use modern icons and readable typography.</li>
+<li>Add subtle shadows, rounded corners and smooth transitions.</li>
+<li>Create a collapsible sidebar.</li>
+<li>Create a professional top navigation bar.</li>
+<li>Highlight the selected navigation item.</li>
+<li>Make the design responsive for desktop, tablet and mobile.</li>
+<li>Include attractive empty states and notifications.</li>
+</ul>
+
+<h2>3. APPLICATION NAVIGATION</h2>
+
+<p>Create the following functional sidebar navigation:</p>
+
+<ol>
+<li>Dashboard</li>
+<li>Firm Profile</li>
+<li>Products and Inventory</li>
+<li>New Billing</li>
+<li>Sales History</li>
+<li>Customers</li>
+<li>Suppliers</li>
+<li>Purchase Management</li>
+<li>Expenses</li>
+<li>Payments</li>
+<li>Reports and Analytics</li>
+<li>Backup and Restore</li>
+<li>Settings</li>
+</ol>
+
+<p>
+Every navigation item must open its correct application section
+without reloading the complete website.
+</p>
+
+<h2>4. DASHBOARD</h2>
+
+<h3>Dashboard summary cards</h3>
+<ul>
+<li>Today's sales.</li>
+<li>Total sales.</li>
+<li>Today's expenses.</li>
+<li>Total expenses.</li>
+<li>Estimated gross profit.</li>
+<li>Estimated net profit.</li>
+<li>Total products.</li>
+<li>Total stock value.</li>
+<li>Low-stock products.</li>
+<li>Total customers.</li>
+<li>Pending credit amount.</li>
+</ul>
+
+<h3>Dashboard charts</h3>
+<ul>
+<li>Daily sales chart.</li>
+<li>Weekly sales chart.</li>
+<li>Monthly sales chart.</li>
+<li>Expense chart.</li>
+<li>Payment method chart.</li>
+<li>Best-selling products chart.</li>
+</ul>
+
+<h3>Recent activities</h3>
+<ul>
+<li>Recent sales.</li>
+<li>Recent expenses.</li>
+<li>Recent purchases.</li>
+<li>Recent inventory changes.</li>
+<li>Low-stock notifications.</li>
+</ul>
+
+<p>
+All figures and charts must be calculated using actual saved
+application records. Never display invented business figures.
+</p>
+
+<h2>5. FIRM PROFILE</h2>
+
+<p>Create a complete Firm Profile management section.</p>
+
+<ul>
+<li>Business name.</li>
+<li>Owner name.</li>
+<li>Shop logo.</li>
+<li>Shop address.</li>
+<li>City and state.</li>
+<li>PIN code.</li>
+<li>Phone number.</li>
+<li>Email address.</li>
+<li>GSTIN number.</li>
+<li>Business type.</li>
+<li>Financial year.</li>
+</ul>
+
+<p>Features:</p>
+<ul>
+<li>Add and edit business information.</li>
+<li>Upload or select a business logo.</li>
+<li>Save firm information.</li>
+<li>Preview firm profile.</li>
+<li>Automatically display firm details on invoices.</li>
+</ul>
+
+<h2>6. PRODUCT MANAGEMENT</h2>
+
+<p>Build a complete product inventory management system.</p>
+
+<h3>Product information</h3>
+<ul>
+<li>Product ID.</li>
+<li>SKU or barcode.</li>
+<li>Product name.</li>
+<li>Product category.</li>
+<li>Brand.</li>
+<li>Purchase price.</li>
+<li>Selling price.</li>
+<li>Available stock quantity.</li>
+<li>Minimum stock level.</li>
+<li>GST percentage.</li>
+<li>Product description.</li>
+<li>Product creation date.</li>
+</ul>
+
+<h3>Product functions</h3>
+<ul>
+<li>Add new products.</li>
+<li>Edit existing products.</li>
+<li>Delete products with confirmation.</li>
+<li>Search products by name or ID.</li>
+<li>Filter products by category.</li>
+<li>Sort products by price and stock.</li>
+<li>Display available stock.</li>
+<li>Display low-stock products.</li>
+<li>Automatically update stock after sales.</li>
+<li>Prevent selling more products than available.</li>
+<li>Maintain an inventory movement history.</li>
+</ul>
+
+<h2>7. MULTIPLE PRODUCT BILLING SYSTEM</h2>
+
+<div class="highlight">
+<strong>IMPORTANT:</strong>
+The billing system must allow customers to purchase multiple
+different products in one single invoice.
 </div>
-<div class="panel">
-<h2 class="section">Recent Sales</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
-<tbody id="recentSales"></tbody>
-</table></div>
+
+<h3>Billing features</h3>
+<ul>
+<li>Generate a unique invoice number automatically.</li>
+<li>Enter customer name.</li>
+<li>Enter customer phone number.</li>
+<li>Select existing customers or add a new customer.</li>
+<li>Add multiple products to one bill.</li>
+<li>Select products from inventory.</li>
+<li>Enter separate quantities for every product.</li>
+<li>Automatically display selling price.</li>
+<li>Calculate individual product subtotals.</li>
+<li>Allow users to remove products from a bill.</li>
+<li>Calculate subtotal.</li>
+<li>Calculate applicable GST.</li>
+<li>Allow eligible discounts.</li>
+<li>Calculate final payable amount.</li>
+<li>Select payment method.</li>
+<li>Save completed invoices.</li>
+<li>Automatically update product stock.</li>
+<li>Print professional invoices.</li>
+</ul>
+
+<h3>Payment methods</h3>
+<ul>
+<li>Cash.</li>
+<li>Google Pay.</li>
+<li>PhonePe.</li>
+<li>Paytm.</li>
+<li>Debit card.</li>
+<li>Credit card.</li>
+<li>Bank transfer.</li>
+<li>Credit / Udhaar.</li>
+</ul>
+
+<h3>Billing calculation rules</h3>
+<ul>
+<li>Calculate the amount for each product using quantity multiplied by unit price.</li>
+<li>Calculate GST according to the selected tax settings.</li>
+<li>Support inclusive and exclusive GST pricing.</li>
+<li>Display tax amounts clearly.</li>
+<li>Prevent invalid quantities.</li>
+<li>Prevent insufficient-stock sales.</li>
+<li>Update stock only after a successful completed sale.</li>
+<li>Do not create duplicate invoices when a button is clicked twice.</li>
+</ul>
+
+<h2>8. SALES HISTORY</h2>
+
+<p>Create a complete sales history page.</p>
+
+<ul>
+<li>Display all completed sales.</li>
+<li>Show invoice number.</li>
+<li>Show sale date and time.</li>
+<li>Show customer name.</li>
+<li>Show products purchased.</li>
+<li>Show total quantity.</li>
+<li>Show subtotal and GST.</li>
+<li>Show discount.</li>
+<li>Show final invoice amount.</li>
+<li>Show payment method.</li>
+<li>Search sales by invoice number.</li>
+<li>Filter sales by date.</li>
+<li>View invoice details.</li>
+<li>Print previous invoices.</li>
+<li>Show daily, monthly and yearly sales.</li>
+</ul>
+
+<h2>9. CUSTOMER MANAGEMENT</h2>
+
+<p>Create a customer management section.</p>
+
+<ul>
+<li>Customer ID.</li>
+<li>Customer name.</li>
+<li>Phone number.</li>
+<li>Email address.</li>
+<li>Address.</li>
+<li>Total purchases.</li>
+<li>Total paid amount.</li>
+<li>Outstanding credit balance.</li>
+<li>Customer purchase history.</li>
+</ul>
+
+<p>Functions:</p>
+<ul>
+<li>Add customers.</li>
+<li>Edit customers.</li>
+<li>Delete customers with confirmation.</li>
+<li>Search customers.</li>
+<li>View customer purchase history.</li>
+<li>Record customer credit payments.</li>
+<li>Display outstanding Udhaar balances.</li>
+</ul>
+
+<h2>10. SUPPLIER MANAGEMENT</h2>
+
+<p>Create a supplier management section.</p>
+
+<ul>
+<li>Supplier name.</li>
+<li>Supplier ID.</li>
+<li>Phone number.</li>
+<li>Email address.</li>
+<li>Address.</li>
+<li>GSTIN.</li>
+<li>Products supplied.</li>
+<li>Total purchases.</li>
+<li>Outstanding supplier payments.</li>
+</ul>
+
+<p>Allow users to add, edit, search and manage suppliers.</p>
+
+<h2>11. PURCHASE MANAGEMENT</h2>
+
+<p>Create a complete purchase entry system.</p>
+
+<ul>
+<li>Record purchases from suppliers.</li>
+<li>Generate purchase reference numbers.</li>
+<li>Select supplier.</li>
+<li>Add multiple products to a purchase.</li>
+<li>Enter purchase quantities.</li>
+<li>Enter purchase prices.</li>
+<li>Calculate purchase subtotal.</li>
+<li>Calculate GST.</li>
+<li>Record purchase date.</li>
+<li>Record payment method.</li>
+<li>Track paid and unpaid purchase amounts.</li>
+<li>Increase inventory after a completed purchase.</li>
+<li>Maintain purchase history.</li>
+</ul>
+
+<h2>12. EXPENSE MANAGEMENT</h2>
+
+<p>Create a complete business expense management system.</p>
+
+<h3>Expense categories</h3>
+<ul>
+<li>Shop rent.</li>
+<li>Electricity bill.</li>
+<li>Water bill.</li>
+<li>Employee salary.</li>
+<li>Transportation.</li>
+<li>Packaging.</li>
+<li>Maintenance.</li>
+<li>Internet and telephone.</li>
+<li>Marketing.</li>
+<li>Other expenses.</li>
+</ul>
+
+<h3>Expense records</h3>
+<ul>
+<li>Expense ID.</li>
+<li>Expense title.</li>
+<li>Expense category.</li>
+<li>Amount.</li>
+<li>Date.</li>
+<li>Payment method.</li>
+<li>Description.</li>
+</ul>
+
+<h3>Expense functions</h3>
+<ul>
+<li>Add expense.</li>
+<li>Edit expense.</li>
+<li>Delete expense with confirmation.</li>
+<li>Search expenses.</li>
+<li>Filter by category.</li>
+<li>Filter by date.</li>
+<li>Show daily expenses.</li>
+<li>Show monthly expenses.</li>
+<li>Show total expenses.</li>
+<li>Display recent expense records.</li>
+</ul>
+
+<h2>13. PAYMENT MANAGEMENT</h2>
+
+<p>Create a payment management section.</p>
+
+<ul>
+<li>Cash collections.</li>
+<li>Google Pay collections.</li>
+<li>PhonePe collections.</li>
+<li>Paytm collections.</li>
+<li>Card collections.</li>
+<li>Bank transfers.</li>
+<li>Credit sales.</li>
+<li>Customer credit collections.</li>
+<li>Supplier payments.</li>
+</ul>
+
+<p>
+Show the total amount received through each payment method.
+Clearly separate collected money from outstanding credit.
+Do not count unpaid credit invoices as collected payments.
+</p>
+
+<h2>14. REPORTS AND ANALYTICS</h2>
+
+<p>Create a professional reports section.</p>
+
+<h3>Sales reports</h3>
+<ul>
+<li>Daily sales report.</li>
+<li>Weekly sales report.</li>
+<li>Monthly sales report.</li>
+<li>Yearly sales report.</li>
+</ul>
+
+<h3>Expense reports</h3>
+<ul>
+<li>Daily expense report.</li>
+<li>Weekly expense report.</li>
+<li>Monthly expense report.</li>
+<li>Category-wise expense report.</li>
+</ul>
+
+<h3>Inventory reports</h3>
+<ul>
+<li>Available stock report.</li>
+<li>Low-stock report.</li>
+<li>Out-of-stock report.</li>
+<li>Inventory valuation report.</li>
+<li>Best-selling products report.</li>
+</ul>
+
+<h3>Financial reports</h3>
+<ul>
+<li>Sales summary.</li>
+<li>Purchase summary.</li>
+<li>Estimated gross profit.</li>
+<li>Estimated net profit.</li>
+<li>Payment collection report.</li>
+<li>Outstanding credit report.</li>
+</ul>
+
+<p>
+Use clear charts, tables, date filters and printable reports.
+Profit calculations must distinguish product cost, sales,
+discounts, returns and operating expenses.
+</p>
+
+<h2>15. PROFESSIONAL INVOICE DESIGN</h2>
+
+<p>Generate printable professional invoices containing:</p>
+
+<ul>
+<li>SMART DUKAAN logo.</li>
+<li>Firm name.</li>
+<li>Shop address.</li>
+<li>Phone number.</li>
+<li>GSTIN, if available.</li>
+<li>Invoice number.</li>
+<li>Invoice date and time.</li>
+<li>Customer information.</li>
+<li>Product names.</li>
+<li>Product quantities.</li>
+<li>Unit prices.</li>
+<li>Product-wise amounts.</li>
+<li>Subtotal.</li>
+<li>Discount.</li>
+<li>GST details.</li>
+<li>Final payable amount.</li>
+<li>Payment method and payment status.</li>
+<li>Thank-you message.</li>
+</ul>
+
+<p>
+Create clean A4 printing support and a compact thermal receipt
+layout where practical. Hide application navigation and controls
+when printing an invoice.
+</p>
+
+<h2>16. RETURNS AND REFUNDS</h2>
+
+<ul>
+<li>Allow the user to locate a previous invoice.</li>
+<li>Select products and quantities being returned.</li>
+<li>Validate the return against the original sale.</li>
+<li>Calculate the refund amount correctly.</li>
+<li>Record the return reason.</li>
+<li>Update stock according to the return condition.</li>
+<li>Maintain a return history.</li>
+<li>Prevent returning more items than were sold.</li>
+</ul>
+
+<h2>17. BACKUP AND RESTORE</h2>
+
+<ul>
+<li>Export all business data to JSON.</li>
+<li>Import an existing JSON backup.</li>
+<li>Validate imported information.</li>
+<li>Ask confirmation before replacing data.</li>
+<li>Allow backup before restoring.</li>
+<li>Include products, customers, suppliers, invoices, purchases, expenses and firm profile.</li>
+<li>Display backup success and failure messages.</li>
+</ul>
+
+<p>
+Explain that LocalStorage data belongs to the browser and device.
+It does not automatically synchronise between different devices.
+</p>
+
+<h2>18. SETTINGS</h2>
+
+<ul>
+<li>Currency: Indian Rupee (₹) by default.</li>
+<li>GST configuration.</li>
+<li>Shop information.</li>
+<li>Invoice number settings.</li>
+<li>Low-stock warning level.</li>
+<li>Default payment method.</li>
+<li>Invoice printing settings.</li>
+<li>Business preferences.</li>
+<li>Data backup options.</li>
+</ul>
+
+<h2>19. SECURITY AND DATA VALIDATION</h2>
+
+<ul>
+<li>Validate every input.</li>
+<li>Prevent invalid negative quantities and prices.</li>
+<li>Prevent duplicate product IDs and invoice numbers.</li>
+<li>Use safe DOM rendering for user-entered content.</li>
+<li>Confirm destructive operations.</li>
+<li>Handle missing LocalStorage data safely.</li>
+<li>Handle corrupted imported backups.</li>
+<li>Do not expose private information unnecessarily.</li>
+<li>Do not claim LocalStorage is a secure multi-user database.</li>
+</ul>
+
+<h2>20. BUSINESS CALCULATION RULES</h2>
+
+<ul>
+<li>Sales total must be based on completed invoices.</li>
+<li>Cancelled invoices must not count as completed sales.</li>
+<li>Returns must be accounted for in sales reporting.</li>
+<li>Stock must change correctly for purchases and sales.</li>
+<li>Expenses must be included in profit estimates.</li>
+<li>Product purchase cost must be used to estimate cost of goods sold.</li>
+<li>Outstanding customer credit must remain separate from cash collected.</li>
+<li>Supplier outstanding amounts must remain separate from expenses paid.</li>
+<li>GST must be calculated according to configured tax treatment.</li>
+<li>Round currency amounts consistently to two decimal places.</li>
+</ul>
+
+<h2>21. USER EXPERIENCE</h2>
+
+<ul>
+<li>Keep the application easy for first-time users.</li>
+<li>Use clear labels on every form.</li>
+<li>Show helpful validation messages.</li>
+<li>Use confirmation dialogs before deletion.</li>
+<li>Show success notifications after saving.</li>
+<li>Provide search and filters in large tables.</li>
+<li>Include empty-state messages.</li>
+<li>Make important actions easy to find.</li>
+<li>Ensure the website remains usable on smaller screens.</li>
+</ul>
+
+<h2>22. FINAL TESTING REQUIREMENTS</h2>
+
+<p>Before delivering the application, verify the following:</p>
+
+<ol>
+<li>The application opens without JavaScript errors.</li>
+<li>All sidebar sections work.</li>
+<li>Firm Profile can be saved and edited.</li>
+<li>Products can be added, edited and deleted.</li>
+<li>Product searches and filters work.</li>
+<li>Multiple products can be added to one invoice.</li>
+<li>Quantities and prices calculate correctly.</li>
+<li>GST calculations work correctly.</li>
+<li>Insufficient stock sales are prevented.</li>
+<li>Stock updates after completed sales.</li>
+<li>Sales history is saved.</li>
+<li>Customers can be managed.</li>
+<li>Suppliers can be managed.</li>
+<li>Purchases update inventory.</li>
+<li>Expenses can be managed.</li>
+<li>Payment totals are correct.</li>
+<li>Reports use actual saved records.</li>
+<li>Invoices print correctly.</li>
+<li>Returns are recorded correctly.</li>
+<li>Backup and restore work.</li>
+<li>Data remains after refreshing the browser.</li>
+<li>Mobile and desktop layouts work.</li>
+</ol>
+
+<h2>23. FINAL DELIVERY INSTRUCTIONS</h2>
+
+<div class="highlight">
+<strong>DO NOT GIVE ME ONLY A PROMPT DESCRIPTION OR A DESIGN.</strong>
+
+Build the actual SMART DUKAAN application.
+
+Return the complete HTML source code in one file named
+<strong>index.html</strong>.
+
+The code must include all HTML, CSS and JavaScript required
+for the application.
+
+Do not shorten the code using statements such as:
+"Add the remaining features yourself",
+"Continue similarly",
+"Code omitted for brevity" or
+"Insert your JavaScript here".
+
+Do not leave any required feature unfinished.
+
+The result must be ready to upload to the root of my
+GitHub repository and publish using GitHub Pages.
+
+If the complete source code is too long for one response,
+divide it into clearly labelled consecutive parts and ensure
+that the final combined code forms one valid index.html file.
 </div>
-</section>
 
-<section id="products" class="page">
-<div class="panel">
-<h2 class="section">Add New Product</h2>
-<form id="productForm">
-<div class="grid">
-<div><label>Product Name</label><input id="pname" required placeholder="e.g. Rice 1 kg"></div>
-<div><label>Product Code</label><input id="pcode" placeholder="Optional"></div>
-<div><label>Purchase Price (₹)</label><input id="pcost" type="number" min="0" step=".01" required></div>
-<div><label>Selling Price (₹)</label><input id="pprice" type="number" min="0" step=".01" required></div>
-<div><label>Opening Stock</label><input id="pstock" type="number" min="0" required></div>
-<div><label>Low Stock Limit</label><input id="plimit" type="number" min="0" value="5"></div>
-<div><label>GST Rate (%)</label>
-<select id="pgst"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></div>
+<h2>PROJECT SUCCESS GOAL</h2>
+
+<p>
+SMART DUKAAN should feel like a professional retail business
+management software product, with an attractive interface,
+accurate business calculations, reliable local data storage,
+complete billing, inventory, expense management and reporting.
+</p>
+
+<p><strong>Build the complete application now.</strong></p>
+
 </div>
-<button class="primary">+ Add Product</button>
-</form>
-</div>
-<div class="panel">
-<h2 class="section">Inventory</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Product</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Action</th></tr></thead>
-<tbody id="productRows"></tbody>
-</table></div>
-</div>
-</section>
-
-<section id="sales" class="page">
-<div class="panel">
-<h2 class="section">Create New Bill</h2>
-<form id="saleForm">
-<label>Select Product</label><select id="saleProduct" required></select>
-<div class="grid">
-<div><label>Quantity</label><input id="saleQty" type="number" min="1" value="1" required></div>
-<div><label>Customer Name (optional)</label><input id="customer" placeholder="Customer name"></div>
-<div><label>Tax Type</label>
-<select id="taxType"><option value="local">CGST + SGST (Local)</option><option value="inter">IGST (Interstate)</option></select></div>
-</div>
-<div id="salePreview" class="notice">Select a product to see the bill estimate.</div>
-<button class="primary">Complete Sale & Generate Bill</button>
-</form>
-</div>
-<div id="invoicePrint" class="panel" style="display:none"></div>
-</section>
-
-<section id="history" class="page">
-<div class="panel">
-<h2 class="section">Sales History</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
-<tbody id="historyRows"></tbody>
-</table></div>
-</div>
-</section>
-
-<section id="reports" class="page">
-<h2 class="section">Business Reports</h2>
-<div class="cards">
-<div class="card"><small>Total Sales</small><h2 id="allSales">₹0</h2></div>
-<div class="card"><small>Estimated Profit</small><h2 id="allProfit">₹0</h2></div>
-<div class="card"><small>GST Collected</small><h2 id="allGST">₹0</h2></div>
-<div class="card"><small>Units Sold</small><h2 id="allUnits">0</h2></div>
-</div>
-<div class="panel">
-<h2 class="section">Product-wise Stock</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Product</th><th>Remaining Stock</th><th>Stock Value (Cost)</th></tr></thead>
-<tbody id="stockReport"></tbody>
-</table></div>
-</div>
-</section>
-
-<section id="backup" class="page">
-<div class="panel">
-<h2 class="section">Data Backup & Restore</h2>
-<p class="muted">Download a backup of your products and sales. You can restore it later on this device or another device.</p>
-<button class="primary" onclick="exportData()">Download Backup</button>
-<hr style="border:0;border-top:1px solid #eee;margin:20px 0">
-<label>Restore from backup file</label>
-<input type="file" id="restoreFile" accept=".json">
-<button class="primary" onclick="importData()">Restore Backup</button>
-<div class="notice">Your records are saved in this browser on this device. Clearing browser data may erase them. Keep regular backups.</div>
-<button class="danger" onclick="resetData()">Delete All App Data</button>
-</div>
-</section>
-
-</main>
-
-<script>
-const KEY="smartDukaan_v1";
-let data=JSON.parse(localStorage.getItem(KEY)||"null")||{
- products:[
- {id:1,name:"Rice 1 kg",code:"P001",cost:45,price:60,stock:30,limit:5,gst:5},
- {id:2,name:"Cooking Oil 1 L",code:"P002",cost:110,price:140,stock:20,limit:5,gst:5},
- {id:3,name:"Soap",code:"P003",cost:25,price:35,stock:3,limit:5,gst:18}
- ],sales:[]
-};
-let lastInvoice=null;
-
-function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
-function money(n){return "₹"+Number(n||0).toFixed(2)}
-function today(){return new Date().toLocaleDateString("en-IN")}
-function showPage(id,btn){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- document.getElementById(id).classList.add("active");
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- btn.classList.add("active");render();
-}
-function render(){
- const p=data.products,s=data.sales;
- document.getElementById("totalProducts").textContent=p.length;
- document.getElementById("stockUnits").textContent=p.reduce((a,x)=>a+x.stock,0);
- const todays=s.filter(x=>x.date===today());
- document.getElementById("todaySales").textContent=money(todays.reduce((a,x)=>a+x.total,0));
- document.getElementById("todayProfit").textContent=money(todays.reduce((a,x)=>a+x.profit,0));
-
- document.getElementById("alerts").innerHTML=p.filter(x=>x.stock<=x.limit).map(x=>
- `<p class="bad">⚠️ ${esc(x.name)} — Only ${x.stock} left (limit: ${x.limit})</p>`
- ).join("")||"<p class='good'>All products have sufficient stock.</p>";
-
- document.getElementById("productRows").innerHTML=p.map(x=>`
- <tr><td>${esc(x.name)}<br><small>${esc(x.code||"")}</small></td>
- <td>${money(x.cost)}</td><td>${money(x.price)}</td>
- <td>${x.stock}</td><td>${x.gst}%</td>
- <td><button class="danger" onclick="deleteProduct(${x.id})">Delete</button></td></tr>`).join("");
-
- document.getElementById("saleProduct").innerHTML=p.map(x=>
- `<option value="${x.id}">${esc(x.name)} — Stock: ${x.stock}</option>`).join("");
-
- document.getElementById("recentSales").innerHTML=s.slice(-5).reverse().map(x=>
- `<tr><td>${x.date}</td><td>${esc(x.product)}</td><td>${x.qty}</td><td>${money(x.total)}</td></tr>`).join("");
-
- document.getElementById("historyRows").innerHTML=s.slice().reverse().map(x=>
- `<tr><td>${x.invoice}</td><td>${x.date}</td><td>${esc(x.customer||"-")}</td><td>${esc(x.product)}</td><td>${x.qty}</td><td>${money(x.total)}</td></tr>`).join("");
-
- document.getElementById("allSales").textContent=money(s.reduce((a,x)=>a+x.total,0));
- document.getElementById("allProfit").textContent=money(s.reduce((a,x)=>a+x.profit,0));
- document.getElementById("allGST").textContent=money(s.reduce((a,x)=>a+x.tax,0));
- document.getElementById("allUnits").textContent=s.reduce((a,x)=>a+x.qty,0);
- document.getElementById("stockReport").innerHTML=p.map(x=>
- `<tr><td>${esc(x.name)}</td><td>${x.stock}</td><td>${money(x.stock*x.cost)}</td></tr>`).join("");
- preview();
-}
-function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-
-document.getElementById("productForm").addEventListener("submit",e=>{
- e.preventDefault();
- const name=document.getElementById("pname").value.trim();
- const cost=+document.getElementById("pcost").value;
- const price=+document.getElementById("pprice").value;
- const stock=+document.getElementById("pstock").value;
- if(!name||cost<0||price<0||stock<0)return alert("Please enter valid product details.");
- data.products.push({id:Date.now(),name,code:document.getElementById("pcode").value.trim(),
- cost,price,stock,limit:+document.getElementById("plimit").value,gst:+document.getElementById("pgst").value});
- e.target.reset();save();alert("Product added successfully!");
-});
-function deleteProduct(id){
- if(!confirm("Delete this product?"))return;
- data.products=data.products.filter(x=>x.id!==id);save();
-}
-function preview(){
- const p=data.products.find(x=>x.id==document.getElementById("saleProduct").value);
- const qty=+document.getElementById("saleQty").value||1;
- const box=document.getElementById("salePreview");
- if(!p){box.textContent="Add a product first.";return}
- const base=p.price*qty,tax=base*p.gst/100;
- box.innerHTML=`Subtotal: ${money(base)}<br>GST (${p.gst}%): ${money(tax)}<br><b>Total: ${money(base+tax)}</b>`;
-}
-document.getElementById("saleProduct").addEventListener("change",preview);
-document.getElementById("saleQty").addEventListener("input",preview);
-
-document.getElementById("saleForm").addEventListener("submit",e=>{
- e.preventDefault();
- const p=data.products.find(x=>x.id==document.getElementById("saleProduct").value);
- const qty=+document.getElementById("saleQty").value;
- if(!p||qty<1||!Number.isInteger(qty))return alert("Enter a valid quantity.");
- if(qty>p.stock)return alert("Not enough stock available.");
- const base=p.price*qty,tax=base*p.gst/100,total=base+tax;
- const interstate=document.getElementById("taxType").value==="inter";
- const sale={
- invoice:"SD"+Date.now().toString().slice(-8),date:today(),
- customer:document.getElementById("customer").value.trim(),
- product:p.name,qty,base,tax,total,
- profit:(p.price-p.cost)*qty,
- gst:p.gst,taxType:interstate?"IGST":"CGST + SGST",
- cgst:interstate?0:tax/2,sgst:interstate?0:tax/2,igst:interstate?tax:0
- };
- p.stock-=qty;data.sales.push(sale);lastInvoice=sale;save();showInvoice(sale);
- document.getElementById("customer").value="";
- alert("Sale completed and stock updated!");
-});
-function showInvoice(x){
- const box=document.getElementById("invoicePrint");
- box.style.display="block";
- box.innerHTML=`<h2>SMART DUKAAN</h2><p>SALES INVOICE</p>
- <hr><p>Invoice: ${x.invoice}<br>Date: ${x.date}<br>Customer: ${esc(x.customer||"Walk-in customer")}</p>
- <table><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr>
- <tr><td>${esc(x.product)}</td><td>${x.qty}</td><td>${money(x.base/x.qty)}</td><td>${money(x.base)}</td></tr></table>
- <p>Subtotal: ${money(x.base)}<br>GST (${x.gst}%): ${money(x.tax)}<br>
- ${x.igst?"IGST: "+money(x.igst):"CGST: "+money(x.cgst)+"<br>SGST: "+money(x.sgst)}</p>
- <h3>Total: ${money(x.total)}</h3>
- <p>Thank you for shopping with us!</p>
- <button class="primary no-print" onclick="window.print()">🖨️ Print Invoice</button>`;
- box.scrollIntoView({behavior:"smooth"});
-}
-function exportData(){
- const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);
- a.download="smart-dukaan-backup.json";a.click();URL.revokeObjectURL(a.href);
-}
-function importData(){
- const f=document.getElementById("restoreFile").files[0];
- if(!f)return alert("Choose a backup file first.");
- const reader=new FileReader();
- reader.onload=()=>{
- try{
- const d=JSON.parse(reader.result);
- if(!Array.isArray(d.products)||!Array.isArray(d.sales))throw Error();
- if(!confirm("Replace current data with this backup?"))return;
- data=d;save();alert("Backup restored.");
- }catch(e){alert("Invalid backup file.");}
- };
- reader.readAsText(f);
-}
-function resetData(){
- if(!confirm("This will permanently delete all products and sales in this browser. Continue?"))return;
- data={products:[],sales:[]};save();
-}
-render();
-</script>
 </body>
 </html>
