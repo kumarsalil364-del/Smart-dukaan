@@ -3,83 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMART DUKAAN - Master Prompt</title>
+<title>SMART DUKAAN - Website Development Prompt</title>
 
 <style>
-:root {
-    --green: #004d3b;
-    --orange: #ff6500;
-    --cream: #fffaf0;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    padding: 25px;
-    background: #f2f5f3;
     font-family: Arial, sans-serif;
-    color: #26352f;
+    background: #f3f7f1;
+    color: #26352b;
     line-height: 1.7;
+    padding: 25px;
 }
 
 .container {
     max-width: 950px;
     margin: auto;
     background: white;
-    padding: 30px;
+    padding: 35px;
     border-radius: 15px;
-    box-shadow: 0 4px 20px #0001;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
 }
 
 header {
     text-align: center;
-    background: var(--cream);
-    padding: 25px;
-    border-radius: 12px;
-    border-bottom: 5px solid var(--green);
+    border-bottom: 3px solid #e99b35;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
 }
 
-header img {
-    width: 210px;
-    max-width: 80%;
-    height: auto;
+.logo {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    margin-bottom: 10px;
 }
 
 h1 {
-    color: var(--green);
+    color: #176b3a;
+    font-size: 32px;
+}
+
+.tagline {
+    color: #777;
 }
 
 h2 {
-    color: var(--orange);
-    border-bottom: 2px solid #eee;
-    padding-bottom: 7px;
+    color: #176b3a;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-size: 21px;
 }
 
-.highlight {
-    color: var(--green);
-    font-weight: bold;
+p, li {
+    font-size: 15px;
+}
+
+ul {
+    padding-left: 25px;
 }
 
 .section {
-    margin-top: 28px;
+    border-left: 4px solid #e99b35;
+    padding: 10px 18px;
+    margin: 20px 0;
+    background: #fbfdf9;
 }
 
-li {
-    margin-bottom: 7px;
-}
-
-pre {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    background: #f5f7f6;
-    padding: 18px;
+button {
+    background: #176b3a;
+    color: white;
+    border: none;
+    padding: 13px 25px;
     border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 15px 0;
+}
+
+button:hover {
+    background: #104d29;
+}
+
+.prompt {
+    white-space: pre-wrap;
+    background: #f7f9f5;
+    border: 1px solid #dce5d9;
+    border-radius: 10px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
 }
 
 footer {
     text-align: center;
-    margin-top: 35px;
-    color: var(--green);
-    font-weight: bold;
+    color: #777;
+    margin-top: 30px;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
 }
 </style>
 </head>
@@ -89,233 +113,482 @@ footer {
 <div class="container">
 
 <header>
-    <!-- Save your uploaded logo as logo.png in this folder -->
-    <img src="logo.png" alt="SMART DUKAAN Official Logo">
+    <!-- Save your official logo as logo.png in this folder -->
+    <img src="logo.png" alt="SMART DUKAAN Official Logo" class="logo">
 
     <h1>SMART DUKAAN</h1>
-    <p>Smart Stock, Sales and Restocking Assistant for Small Shops.</p>
-    <h3>MASTER WEBSITE DEVELOPMENT PROMPT</h3>
+    <p class="tagline">
+        Smart Stock, Sales and Restocking Assistant for Small Shops.
+    </p>
+    <h2>Complete Website Development Prompt</h2>
 </header>
 
-<div class="section">
-<h2>1. Project Instructions</h2>
+<button onclick="copyPrompt()">COPY COMPLETE PROMPT</button>
 
-<p>
-Act as an expert website developer, UI/UX designer and JavaScript programmer.
-Build a complete shop management website named
-<strong>SMART DUKAAN</strong> from the beginning.
-</p>
+<div class="prompt" id="prompt">
 
-<p>
-Use my uploaded SMART DUKAAN logo as the official logo.
-Do not recreate, replace, crop or distort the logo.
-Use its dark green, orange and cream colour theme.
-</p>
+PROJECT: SMART DUKAAN
 
-<ul>
-<li>Build the complete website in one index.html file.</li>
-<li>Use HTML5, CSS3 and Vanilla JavaScript.</li>
-<li>Use LocalStorage to save data.</li>
-<li>Make it compatible with GitHub Pages.</li>
-<li>Make it responsive on computers, tablets and mobile phones.</li>
-<li>Do not use paid APIs or require a backend server.</li>
-</ul>
+Act as a professional full-stack web developer, UI/UX designer and JavaScript expert.
+
+Build a complete, modern, professional and fully functional shop management website named SMART DUKAAN FROM SCRATCH.
+
+IMPORTANT: I am a beginner and do not know coding. Therefore, provide the complete working website in ONE SINGLE index.html file. Do not provide incomplete code, partial examples or instructions that require me to write additional code.
+
+==================================================
+1. OFFICIAL BRANDING AND LOGO
+==================================================
+
+Website Name: SMART DUKAAN
+
+Tagline:
+Smart Stock, Sales and Restocking Assistant for Small Shops.
+
+Use my attached official SMART DUKAAN logo.
+
+LOGO RULES:
+- Use the exact uploaded logo.
+- Do not redesign or recreate it.
+- Do not distort or crop it.
+- Preserve its original colours and proportions.
+- Display it on the welcome screen, sidebar, dashboard and invoices.
+- Make sure the logo is visible and properly sized.
+- If possible, embed the logo in the HTML using Base64 so the website remains a single file.
+
+==================================================
+2. TECHNOLOGY
+==================================================
+
+Use:
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- LocalStorage
+
+Requirements:
+- One index.html file.
+- No backend required.
+- No paid APIs.
+- No database server.
+- No complicated installation.
+- Compatible with GitHub Pages.
+- Works in Chrome and other modern browsers.
+
+==================================================
+3. DESIGN AND COLOUR THEME
+==================================================
+
+Create a beautiful professional business dashboard.
+
+Use:
+- Dark green
+- Fresh green
+- Orange
+- White
+- Light cream
+
+Design:
+- Modern sidebar.
+- Attractive dashboard cards.
+- Rounded corners.
+- Clean tables.
+- Professional icons.
+- Smooth navigation.
+- Easy-to-read fonts.
+- Responsive mobile layout.
+- No horizontal scrolling on mobile.
+
+==================================================
+4. WELCOME AND LOGIN PAGE
+==================================================
+
+Create a professional welcome screen with:
+
+- Official SMART DUKAAN logo.
+- Website name.
+- Tagline.
+- Enter Dashboard button.
+- Simple demo login screen.
+
+Do not create fake security or claim that a local demo login provides real account authentication.
+
+==================================================
+5. DASHBOARD
+==================================================
+
+Display:
+
+- Total Sales.
+- Today's Sales.
+- Total Expenses.
+- Estimated Profit.
+- Total Products.
+- Low Stock Products.
+- Recent Transactions.
+- Sales Chart.
+- Quick Action Buttons.
+- Business Summary.
+
+All figures must update automatically when the user adds sales, expenses or products.
+
+==================================================
+6. FIRM PROFILE
+==================================================
+
+Create a complete firm profile section.
+
+Fields:
+
+- Shop Name.
+- Owner Name.
+- Mobile Number.
+- Email.
+- Shop Address.
+- GST Number.
+- State.
+- Business Type.
+- Shop Logo.
+
+Features:
+
+- Add profile.
+- Edit profile.
+- Save profile.
+- Display saved profile information.
+- Use firm details automatically on invoices.
+
+==================================================
+7. PRODUCT MANAGEMENT
+==================================================
+
+Allow the user to:
+
+- Add products.
+- Edit products.
+- Delete products.
+- Search products.
+- Filter products by category.
+- View product details.
+
+Product fields:
+
+- Product Name.
+- Product Code.
+- Category.
+- Purchase Price.
+- Selling Price.
+- Available Stock.
+- Low Stock Limit.
+- GST Percentage.
+
+Show:
+
+- Total Products.
+- Total Stock Quantity.
+- Stock Value.
+- Low Stock Alerts.
+
+==================================================
+8. SALES AND BILLING
+==================================================
+
+Build a complete billing system.
+
+Features:
+
+- Search products.
+- Select products.
+- Add multiple products to cart.
+- Change quantity.
+- Remove products.
+- Calculate subtotal.
+- Calculate GST.
+- Apply discount.
+- Calculate final amount.
+- Enter customer name.
+- Enter customer mobile number.
+- Generate unique invoice number.
+- Select payment method.
+
+Payment methods:
+
+- Cash.
+- UPI.
+- Google Pay.
+- PhonePe.
+- Paytm.
+- Card.
+- Bank Transfer.
+- Credit.
+
+After completing a sale:
+
+- Save the transaction.
+- Deduct sold quantities from stock.
+- Update dashboard sales.
+- Generate an invoice.
+- Update sales history.
+- Prevent sales when stock is insufficient.
+
+Do not deduct stock when a sale is cancelled.
+
+==================================================
+9. PROFESSIONAL INVOICE
+==================================================
+
+Generate a professional printable invoice.
+
+Include:
+
+- Official shop logo.
+- Shop name.
+- Shop address.
+- Owner contact details.
+- GST number, if available.
+- Invoice number.
+- Invoice date.
+- Customer details.
+- Product names.
+- Quantities.
+- Unit prices.
+- GST.
+- Discount.
+- Grand Total.
+- Payment Method.
+
+Add:
+
+- Print Invoice button.
+- Save as PDF using browser print functionality.
+
+==================================================
+10. EXPENSE MANAGEMENT
+==================================================
+
+Allow users to:
+
+- Add expenses.
+- Edit expenses.
+- Delete expenses.
+- Search expenses.
+- Filter expenses by date.
+- Filter expenses by category.
+
+Expense fields:
+
+- Expense Title.
+- Category.
+- Amount.
+- Date.
+- Description.
+
+Categories:
+
+- Rent.
+- Electricity.
+- Salary.
+- Transport.
+- Purchase.
+- Maintenance.
+- Other.
+
+Update total expenses and estimated profit automatically.
+
+==================================================
+11. SALES HISTORY
+==================================================
+
+Display:
+
+- Invoice Number.
+- Customer Name.
+- Date.
+- Products.
+- Quantity.
+- Total Amount.
+- Payment Method.
+
+Allow users to:
+
+- Search sales.
+- Filter sales by date.
+- View previous invoices.
+- Print previous invoices.
+
+==================================================
+12. REPORTS AND ANALYTICS
+==================================================
+
+Create reports for:
+
+- Daily Sales.
+- Weekly Sales.
+- Monthly Sales.
+- Total Expenses.
+- Estimated Profit.
+- Best-Selling Products.
+- Low-Stock Products.
+- Inventory Value.
+
+Use understandable charts and tables.
+
+==================================================
+13. BACKUP AND RESTORE
+==================================================
+
+Include:
+
+- Export Backup as JSON.
+- Import Backup from JSON.
+- Reset All Data with confirmation.
+
+Important:
+- Validate imported JSON.
+- Do not erase existing data without confirmation.
+- Show success and error messages.
+- Preserve data when possible.
+
+==================================================
+14. NAVIGATION MENU
+==================================================
+
+Create a working sidebar with:
+
+1. Dashboard
+2. Firm Profile
+3. Products
+4. Sales & Billing
+5. Sales History
+6. Expenses
+7. Reports
+8. Backup & Restore
+9. Settings
+10. Logout
+
+Every menu item must open its correct section.
+
+==================================================
+15. DATA STORAGE
+==================================================
+
+Use LocalStorage to save:
+
+- Firm Profile.
+- Products.
+- Sales.
+- Expenses.
+- Settings.
+
+Requirements:
+
+- Data must remain after refreshing the page.
+- Do not overwrite existing user data.
+- Handle missing or corrupted data safely.
+- Use stable storage keys.
+- Validate all forms.
+- Prevent duplicate invoice numbers.
+- Handle insufficient stock.
+- Display clear error messages.
+- Ask for confirmation before deleting important data.
+
+Remember: LocalStorage data belongs to the current browser and device. It does not automatically synchronise between devices.
+
+==================================================
+16. MOBILE RESPONSIVENESS
+==================================================
+
+The website must work properly on:
+
+- Desktop.
+- Laptop.
+- Tablet.
+- Android phones.
+- iPhones.
+
+Make the sidebar mobile-friendly.
+
+Buttons, tables, cards and forms must fit small screens.
+
+Prevent horizontal scrolling.
+
+==================================================
+17. FINAL TESTING AND QUALITY CHECK
+==================================================
+
+Before delivering the website, check:
+
+- All navigation buttons work.
+- All forms work.
+- Add, edit and delete functions work.
+- Products are saved correctly.
+- Sales calculations are accurate.
+- Stock reduces only after completed sales.
+- Expenses update correctly.
+- Dashboard figures update.
+- Invoices print correctly.
+- Backup export works.
+- Backup import works.
+- Reset requires confirmation.
+- Data remains after refresh.
+- No missing HTML elements.
+- No JavaScript errors.
+- No broken buttons.
+- No undefined functions.
+- No duplicate IDs.
+- No mobile layout problems.
+
+Do not claim that something is tested unless it has actually been tested.
+
+==================================================
+18. FINAL DELIVERY INSTRUCTIONS
+==================================================
+
+Deliver the complete website as one file:
+
+index.html
+
+Do not give me just a design, screenshot, explanation, prototype or incomplete code.
+
+I need the REAL WORKING WEBSITE.
+
+The final answer must contain:
+
+1. Complete index.html code.
+2. Simple instructions for saving the file.
+3. Instructions for uploading it to my GitHub repository.
+4. Instructions for enabling GitHub Pages.
+5. A note explaining how to keep my data safe.
+
+MOST IMPORTANT:
+
+Build SMART DUKAAN from the beginning with all the above features.
+
+Use my official attached logo.
+
+Make it professional, attractive, beginner-friendly, mobile-responsive and fully functional.
+
+Do not skip any section.
+
 </div>
 
-<div class="section">
-<h2>2. Dashboard</h2>
-<p>Create a professional dashboard displaying:</p>
-<ul>
-<li>Total sales</li>
-<li>Today's sales</li>
-<li>Total expenses</li>
-<li>Estimated profit</li>
-<li>Total products</li>
-<li>Low-stock products</li>
-<li>Recent transactions</li>
-<li>Sales overview chart</li>
-<li>Quick action buttons</li>
-</ul>
-All figures must update automatically when transactions are recorded.
-</div>
-
-<div class="section">
-<h2>3. Firm Profile</h2>
-<p>Create a firm profile section with:</p>
-<ul>
-<li>Shop name</li>
-<li>Owner name</li>
-<li>Mobile number</li>
-<li>Email address</li>
-<li>Shop address</li>
-<li>GST number</li>
-<li>State</li>
-<li>Business type</li>
-<li>Shop logo</li>
-</ul>
-Allow users to edit and save their firm details.
-Display the saved details on invoices.
-</div>
-
-<div class="section">
-<h2>4. Product Management</h2>
-<ul>
-<li>Add, edit and delete products.</li>
-<li>Product name and product code.</li>
-<li>Product category.</li>
-<li>Purchase price and selling price.</li>
-<li>Available stock and stock quantity.</li>
-<li>GST percentage.</li>
-<li>Low-stock alerts.</li>
-<li>Product search and filters.</li>
-<li>Calculate total stock value.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>5. Sales and Billing</h2>
-<ul>
-<li>Search and select products.</li>
-<li>Add multiple products to one bill.</li>
-<li>Change product quantities.</li>
-<li>Remove products from the cart.</li>
-<li>Calculate subtotal, GST and discount.</li>
-<li>Calculate the final bill amount.</li>
-<li>Generate automatic invoice numbers.</li>
-<li>Save completed sales.</li>
-<li>Reduce stock only after a successful sale.</li>
-<li>Print invoices or save them as PDF.</li>
-</ul>
-
-<p><strong>Payment options:</strong> Cash, UPI, GPay, PhonePe,
-Paytm, Card, Bank Transfer and Credit.</p>
-</div>
-
-<div class="section">
-<h2>6. Expense Management</h2>
-<ul>
-<li>Add, edit and delete expenses.</li>
-<li>Expense category.</li>
-<li>Expense amount and date.</li>
-<li>Description and notes.</li>
-<li>Daily and monthly expense totals.</li>
-<li>Search and filter expenses.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>7. Sales History</h2>
-<ul>
-<li>Invoice number</li>
-<li>Customer name</li>
-<li>Transaction date</li>
-<li>Products and quantities</li>
-<li>Total amount</li>
-<li>Payment mode</li>
-<li>Search and filter sales.</li>
-<li>View and print previous invoices.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>8. Reports and Analytics</h2>
-<ul>
-<li>Daily sales report.</li>
-<li>Weekly sales report.</li>
-<li>Monthly sales report.</li>
-<li>Total expense report.</li>
-<li>Estimated profit report.</li>
-<li>Best-selling products.</li>
-<li>Low-stock report.</li>
-<li>Stock valuation report.</li>
-<li>Simple and readable charts.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>9. Backup and Restore</h2>
-<ul>
-<li>Export all application data as JSON.</li>
-<li>Import a previous JSON backup.</li>
-<li>Reset data only after confirmation.</li>
-<li>Validate imported data before replacing existing data.</li>
-<li>Never delete data accidentally.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>10. Design Requirements</h2>
-<ul>
-<li>Professional green and orange theme.</li>
-<li>Modern dashboard cards.</li>
-<li>Clean navigation sidebar.</li>
-<li>Mobile-friendly navigation.</li>
-<li>Readable fonts and icons.</li>
-<li>Easy-to-use forms and tables.</li>
-<li>Responsive layout.</li>
-<li>No overlapping elements.</li>
-<li>No unnecessary horizontal scrolling.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>11. Data Saving and Error Prevention</h2>
-<p class="highlight">This section is extremely important.</p>
-<ul>
-<li>Save every change in LocalStorage.</li>
-<li>Data must remain after refreshing the page.</li>
-<li>Use one consistent LocalStorage key.</li>
-<li>Validate all forms before saving.</li>
-<li>Handle missing or corrupted data safely.</li>
-<li>Connect every button to a working JavaScript function.</li>
-<li>Do not reference undefined functions or missing HTML IDs.</li>
-<li>Update the interface after successful saves.</li>
-<li>Show clear error messages if saving fails.</li>
-<li>Preserve existing user data during updates.</li>
-</ul>
-</div>
-
-<div class="section">
-<h2>12. Final Testing</h2>
-<p>Test every feature before providing the final code:</p>
-<ol>
-<li>Firm profile saving and editing.</li>
-<li>Product adding, editing and deleting.</li>
-<li>Expense recording.</li>
-<li>Sales recording.</li>
-<li>Correct stock deduction.</li>
-<li>Invoice generation and printing.</li>
-<li>Correct report calculations.</li>
-<li>Backup and restore.</li>
-<li>Data persistence after refresh.</li>
-<li>Desktop and mobile compatibility.</li>
-<li>No JavaScript console errors.</li>
-<li>All navigation buttons working.</li>
-</ol>
-</div>
-
-<div class="section">
-<h2>13. Final Output</h2>
-<p>
-Provide the complete, corrected and functional
-<strong>index.html</strong> code from the first line to the last line.
-</p>
-
-<p>
-Do not provide only a prompt, explanation, screenshot,
-incomplete code or design description.
-</p>
-
-<p class="highlight">
-The final result must be a fully working SMART DUKAAN
-shop management website using my official uploaded logo.
-</p>
-</div>
+<button onclick="copyPrompt()">COPY COMPLETE PROMPT</button>
 
 <footer>
-SMART DUKAAN | Smart Business Management
+    <strong>SMART DUKAAN</strong>
+    <p>Smart Stock, Sales and Restocking Assistant for Small Shops.</p>
 </footer>
 
 </div>
+
+<script>
+function copyPrompt() {
+    const text = document.getElementById("prompt").innerText;
+
+    navigator.clipboard.writeText(text)
+        .then(() => alert("Complete SMART DUKAAN prompt copied!"))
+        .catch(() => alert("Please select and copy the prompt manually."));
+}
+</script>
+
 </body>
 </html>
