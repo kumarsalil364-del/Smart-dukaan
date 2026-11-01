@@ -8,19 +8,23 @@
 :root{--blue:#174ea6;--bg:#f3f6fb;--green:#16834a;--red:#d93025}
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#202938}
-header{background:var(--blue);color:white;padding:20px}
-header h1{margin:0;font-size:25px;display:flex;align-items:center;gap:10px}.brandmark{display:inline-grid;place-items:center;width:42px;height:42px;padding:5px;background:#ffffff20;border:1px solid #ffffff55;border-radius:12px}.brandmark svg{width:100%;height:100%}
+header{background:linear-gradient(120deg,#102a43,#174ea6 65%,#168b82);color:white;padding:20px}
+header h1{margin:0;font-size:25px;display:flex;align-items:center;gap:10px}
+.brandmark{display:inline-grid;place-items:center;width:42px;height:42px;padding:5px;background:#ffffff20;border:1px solid #ffffff55;border-radius:12px}
+.brandmark svg{width:100%;height:100%}
 header p{margin:6px 0 0;font-size:13px}
 nav{display:flex;gap:6px;overflow:auto;background:white;padding:10px}
-nav button{border:0;padding:11px 14px;border-radius:8px;background:#e8eef9;white-space:nowrap;cursor:pointer}
+nav button{border:0;padding:11px 14px;border-radius:8px;background:#e8eef9;white-space:nowrap;cursor:pointer;transition:background .2s,transform .2s}
 nav button.active{background:var(--blue);color:white}
 main{max-width:1050px;margin:auto;padding:16px}
 .page{display:none}.page.active{display:block}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
-.card,.panel{background:white;padding:17px;border-radius:12px;box-shadow:0 2px 8px #0000000b;margin-bottom:14px}
+.card,.panel{background:white;padding:17px;border-radius:12px;box-shadow:0 2px 8px #0000000b;margin-bottom:14px;transition:transform .2s,box-shadow .2s}
+.card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 8px 24px #174ea61a}
 .card small{color:#687386}.card h2{margin:8px 0 0;font-size:23px}
 h2.section{font-size:19px}
 input,select{width:100%;padding:11px;border:1px solid #ccd3df;border-radius:7px;margin:5px 0 12px;font-size:15px}
+input:focus,select:focus{outline:2px solid #b9d4fa;border-color:#174ea6}
 label{font-size:13px;font-weight:bold}
 button.primary{background:var(--blue);color:white;border:0;border-radius:7px;padding:11px 16px;cursor:pointer}
 button.danger{background:#fde8e7;color:#b3261e;border:0;border-radius:7px;padding:8px;cursor:pointer}
@@ -34,9 +38,6 @@ th{background:#f5f7fb}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
 .muted{color:#697386;font-size:13px}
 @media(max-width:500px){main{padding:10px}.card{padding:13px}header{padding:16px}}
-.card,.panel{transition:transform .2s,box-shadow .2s}.card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 8px 24px #174ea61a}
-header{background:linear-gradient(120deg,#102a43,#174ea6 65%,#168b82)}
-nav button{transition:background .2s,transform .2s}input:focus,select:focus{outline:2px solid #b9d4fa;border-color:#174ea6}
 @media print{header,nav,.no-print{display:none!important}body{background:white}.page{display:none!important}#invoicePrint{display:block!important}}
 </style>
 </head>
@@ -44,7 +45,7 @@ nav button{transition:background .2s,transform .2s}input:focus,select:focus{outl
 
 <header>
 <h1><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 20h34v22H7z" fill="#fff"/><path d="M5 19 10 6h28l5 13" fill="#20b8ad" stroke="#fff" stroke-width="2"/><path d="M5 19c0 4 7 5 9 0 1 5 8 5 10 0 2 5 9 5 10 0 2 5 9 4 9 0" fill="none" stroke="#fff" stroke-width="3"/><path d="M18 29h12v13H18z" fill="#1769aa"/><path d="M11 25h5v6h-5zM32 25h5v6h-5z" fill="#1769aa"/></svg></span> SMART DUKAAN</h1>
-<p>Smart Stock, Sales and Restocking Assistant for Small Shops</p>
+<p id="headerFirm">Smart Stock, Sales and Restocking Assistant for Small Shops</p>
 </header>
 
 <nav class="no-print">
@@ -168,7 +169,7 @@ nav button{transition:background .2s,transform .2s}input:focus,select:focus{outl
 <div class="panel">
 <h2 class="section">Sales History</h2>
 <div class="tablewrap"><table>
-<thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
+<thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product</th><th>Payment</th><th>Total</th></tr></thead>
 <tbody id="historyRows"></tbody>
 </table></div>
 </div>
@@ -212,6 +213,7 @@ nav button{transition:background .2s,transform .2s}input:focus,select:focus{outl
 const KEY="smartDukaan_v2";
 const oldKey="smartDukaan_v1";
 const blank={firm:{name:"",owner:"",phone:"",email:"",gst:"",address:""},products:[],sales:[],expenses:[]};
+
 function loadData(){
  try{
   let d=JSON.parse(localStorage.getItem(KEY)||"null");
@@ -220,14 +222,23 @@ function loadData(){
  }catch(e){}
  return JSON.parse(JSON.stringify(blank));
 }
+
 let data=loadData(),cart=[],entryRows=[{productId:"",qty:1}];
 const $=id=>document.getElementById(id);
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
 const today=()=>new Date().toLocaleDateString("en-IN");
 const isoToday=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function save(){localStorage.setItem(KEY,JSON.stringify(data));$("headerFirm").textContent=data.firm.name||"Your business, organised.";render();}
+
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(data));
+ const headerEl=$("headerFirm");
+ if(headerEl) headerEl.textContent=data.firm.name||"Smart Stock, Sales and Restocking Assistant for Small Shops";
+ render();
+}
+
 function emptyRow(n){return `<tr><td colspan="${n}" style="text-align:center;color:#78869a;padding:18px">No records yet.</td></tr>`}
+
 function showPage(id,btn){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  $(id).classList.add("active");
@@ -235,6 +246,7 @@ function showPage(id,btn){
  if(btn)btn.classList.add("active");else document.querySelector(`nav button[onclick*="'${id}'"]`)?.classList.add("active");
  render();
 }
+
 function render(){
  const p=data.products,s=data.sales,ex=data.expenses||[],ts=s.filter(x=>x.date===today()),te=ex.filter(x=>x.date===today());
  $("totalProducts").textContent=p.length;$("stockUnits").textContent=p.reduce((a,x)=>a+(+x.stock||0),0);
@@ -256,6 +268,7 @@ function render(){
  $("expenseRows").innerHTML=ex.slice().reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${money(x.amount)}</td><td><button class="danger" onclick="deleteExpense(${x.id})">Delete</button></td></tr>`).join("")||emptyRow(4);
  renderExtra();renderCart();
 }
+
 function renderExtra(){
  let f=data.firm||{};["name","owner","phone","email","gst","address"].forEach(k=>{let el=$("firm"+k[0].toUpperCase()+k.slice(1));if(el&&document.activeElement!==el)el.value=f[k]||""});
  const d=$("dailyDate");if(d&&!d.value)d.value=isoToday();
@@ -263,13 +276,16 @@ function renderExtra(){
  $("dailyTotal").textContent=money(s.reduce((t,x)=>t+(+x.total||0),0));$("dailyBills").textContent=s.length;
  $("paymentRows").innerHTML=Object.entries(s.reduce((o,x)=>{let k=x.payment||"Cash";o[k]??={count:0,total:0};o[k].count++;o[k].total+=+x.total||0;return o},{})).map(([k,x])=>`<tr><td>${esc(k)}</td><td>${x.count}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(3);
 }
+
 $("firmForm").addEventListener("submit",e=>{e.preventDefault();data.firm={name:$("firmName").value.trim(),owner:$("firmOwner").value.trim(),phone:$("firmPhone").value.trim(),email:$("firmEmail").value.trim(),gst:$("firmGST").value.trim(),address:$("firmAddress").value.trim()};save();alert("Firm profile saved.")});
+
 $("productForm").addEventListener("submit",e=>{
  e.preventDefault();let id=+$("editProductId").value,x={id:id||Date.now(),name:$("pname").value.trim(),code:$("pcode").value.trim(),cost:+$("pcost").value,price:+$("pprice").value,stock:+$("pstock").value,limit:+$("plimit").value,gst:+$("pgst").value};
  if(!x.name||[x.cost,x.price,x.stock,x.limit].some(n=>!Number.isFinite(n)||n<0))return alert("Enter valid product details.");
  if(id){let i=data.products.findIndex(p=>p.id===id);if(i>=0)data.products[i]=x}else data.products.push(x);
  e.target.reset();$("editProductId").value="";$("productFormHeading").textContent="Add New Product";save();alert(id?"Product updated.":"Product added.");
 });
+
 function editProduct(id){let p=data.products.find(x=>x.id===id);if(!p)return;$("editProductId").value=p.id;$("pname").value=p.name;$("pcode").value=p.code||"";$("pcost").value=p.cost;$("pprice").value=p.price;$("pstock").value=p.stock;$("plimit").value=p.limit;$("pgst").value=p.gst;$("productFormHeading").textContent="Edit Product";$("productForm").scrollIntoView({behavior:"smooth"})}
 function deleteProduct(id){if(confirm("Delete this product?")){data.products=data.products.filter(x=>x.id!==id);save()}}
 $("productSearch").addEventListener("input",render);
@@ -285,6 +301,7 @@ function renderProductEntryRows(){
  host.querySelectorAll("[data-entry-qty]").forEach(el=>el.addEventListener("input",()=>{entryRows[+el.dataset.entryQty].qty=el.value}));
  host.querySelectorAll("[data-remove-entry]").forEach(el=>el.addEventListener("click",()=>{entryRows.splice(+el.dataset.removeEntry,1);if(!entryRows.length)entryRows.push({productId:"",qty:1});renderProductEntryRows()}));
 }
+
 $("addProductRow").onclick=()=>{entryRows.push({productId:"",qty:1});renderProductEntryRows()};
 $("addAllToCart").onclick=()=>{
  const chosen=entryRows.map(r=>({p:data.products.find(p=>String(p.id)===String(r.productId)),q:Number(r.qty)}));
@@ -295,6 +312,7 @@ $("addAllToCart").onclick=()=>{
  chosen.forEach(({p,q})=>{let item=cart.find(x=>x.id===p.id);if(item)item.qty+=q;else cart.push({id:p.id,name:p.name,price:p.price,cost:p.cost,qty:q,gst:p.gst})});
  entryRows=[{productId:"",qty:1}];renderProductEntryRows();renderCart();alert("All selected products have been added to one bill.");
 };
+
 function renderCart(){
  let base=0,tax=0;
  $("cartRows").innerHTML=cart.map((x,i)=>{
@@ -303,6 +321,7 @@ function renderCart(){
  }).join("")||emptyRow(6);
  $("cartTotal").innerHTML=`Subtotal: ${money(base)}<br>GST: ${money(tax)}<br><b>Total: ${money(base+tax)}</b>`;
 }
+
 function removeCart(i){cart.splice(i,1);renderCart()}
 
 $("completeSale").onclick=()=>{
@@ -314,6 +333,7 @@ $("completeSale").onclick=()=>{
  cart.forEach(i=>data.products.find(p=>p.id===i.id).stock-=i.qty);
  data.sales.push(sale);cart=[];save();showInvoice(sale);$("customer").value="";alert("Bill completed. Daily sales updated.");
 };
+
 function showInvoice(x){
  let f=data.firm||{};
  $("invoicePrint").style.display="block";
@@ -329,13 +349,15 @@ $("expenseForm").addEventListener("submit",e=>{
  data.expenses.push({id:Date.now(),name:$("expenseName").value.trim(),amount,date:new Date($("expenseDate").value+"T12:00:00").toLocaleDateString("en-IN")});
  e.target.reset();$("expenseDate").value=isoToday();save();alert("Expense saved.");
 });
+
 function deleteExpense(id){if(confirm("Delete this expense?")){data.expenses=data.expenses.filter(x=>x.id!==id);save()}}
 
-$("exportBtn").onclick=()=>{
+function exportData(){
  let b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a"),u=URL.createObjectURL(b);
  a.href=u;a.download="smart-dukaan-backup.json";a.click();URL.revokeObjectURL(u);
-};
-$("restoreBtn").onclick=()=>{
+}
+
+function importData(){
  let f=$("restoreFile").files[0];if(!f)return alert("Choose a backup file.");
  let r=new FileReader();
  r.onload=()=>{
@@ -348,12 +370,14 @@ $("restoreBtn").onclick=()=>{
   }catch(e){alert("Invalid backup file.")}
  };
  r.readAsText(f);
-};
-$("resetBtn").onclick=()=>{
+}
+
+function resetData(){
  if(confirm("Delete all app data? Download a backup first if needed.")){
   data=JSON.parse(JSON.stringify(blank));cart=[];save();
  }
-};
+}
+
 render();
 </script>
 </body>
