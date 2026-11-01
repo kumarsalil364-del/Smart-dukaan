@@ -44,7 +44,11 @@ th{background:#f5f7fb}
 <body>
 
 <header>
-<h1><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 20h34v22H7z" fill="#fff"/><path d="M5 19 10 6h28l5 13" fill="#20b8ad" stroke="#fff" stroke-width="2"/><path d="M5 19c0 4 7 5 9 0 1 5 8 5 10 0 2 5 9 5 10 0 2 5 9 4 9 0" fill="none" stroke="#fff" stroke-width="3"/><path d="M18 29h12v13H18z" fill="#1769aa"/><path d="M11 25h5v6h-5zM32 25h5v6h-5z" fill="#1769aa"/></svg></span> SMART DUKAAN</h1>
+<h1>
+<img id="firmLogo" src="" alt="Logo" style="display:none; height:42px; width:auto; border-radius:8px; object-fit:contain; background:#fff; padding:2px;">
+<span id="defaultLogo" class="brandmark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 20h34v22H7z" fill="#fff"/><path d="M5 19 10 6h28l5 13" fill="#20b8ad" stroke="#fff" stroke-width="2"/><path d="M5 19c0 4 7 5 9 0 1 5 8 5 10 0 2 5 9 5 10 0 2 5 9 4 9 0" fill="none" stroke="#fff" stroke-width="3"/><path d="M18 29h12v13H18z" fill="#1769aa"/><path d="M11 25h5v6h-5zM32 25h5v6h-5z" fill="#1769aa"/></svg></span>
+<span id="headerTitle">SMART DUKAAN</span>
+</h1>
 <p id="headerFirm">Smart Stock, Sales and Restocking Assistant for Small Shops</p>
 </header>
 
@@ -99,6 +103,7 @@ th{background:#f5f7fb}
 <div><label>Email</label><input id="firmEmail" type="email" placeholder="Email address"></div>
 <div><label>GSTIN</label><input id="firmGST" placeholder="Optional"></div>
 <div><label>Address</label><input id="firmAddress" placeholder="Shop address"></div>
+<div style="grid-column: 1 / -1;"><label>Upload Shop Logo</label><input type="file" id="firmLogoInput" accept="image/*"></div>
 </div><button class="primary">Save Firm Profile</button></form>
 </div></section>
 
@@ -212,7 +217,7 @@ th{background:#f5f7fb}
 "use strict";
 const KEY="smartDukaan_v2";
 const oldKey="smartDukaan_v1";
-const blank={firm:{name:"",owner:"",phone:"",email:"",gst:"",address:""},products:[],sales:[],expenses:[]};
+const blank={firm:{name:"",owner:"",phone:"",email:"",gst:"",address:"",logo:""},products:[],sales:[],expenses:[]};
 
 function loadData(){
  try{
@@ -232,9 +237,23 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 
 function save(){
  localStorage.setItem(KEY,JSON.stringify(data));
+ renderLogo();
  const headerEl=$("headerFirm");
  if(headerEl) headerEl.textContent=data.firm.name||"Smart Stock, Sales and Restocking Assistant for Small Shops";
  render();
+}
+
+function renderLogo(){
+ const img=$("firmLogo");
+ const svg=$("defaultLogo");
+ if(data.firm&&data.firm.logo){
+  img.src=data.firm.logo;
+  img.style.display="inline-block";
+  svg.style.display="none";
+ }else{
+  img.style.display="none";
+  svg.style.display="inline-grid";
+ }
 }
 
 function emptyRow(n){return `<tr><td colspan="${n}" style="text-align:center;color:#78869a;padding:18px">No records yet.</td></tr>`}
@@ -248,6 +267,7 @@ function showPage(id,btn){
 }
 
 function render(){
+ renderLogo();
  const p=data.products,s=data.sales,ex=data.expenses||[],ts=s.filter(x=>x.date===today()),te=ex.filter(x=>x.date===today());
  $("totalProducts").textContent=p.length;$("stockUnits").textContent=p.reduce((a,x)=>a+(+x.stock||0),0);
  $("todaySales").textContent=money(ts.reduce((a,x)=>a+(+x.total||0),0));
@@ -277,7 +297,30 @@ function renderExtra(){
  $("paymentRows").innerHTML=Object.entries(s.reduce((o,x)=>{let k=x.payment||"Cash";o[k]??={count:0,total:0};o[k].count++;o[k].total+=+x.total||0;return o},{})).map(([k,x])=>`<tr><td>${esc(k)}</td><td>${x.count}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(3);
 }
 
-$("firmForm").addEventListener("submit",e=>{e.preventDefault();data.firm={name:$("firmName").value.trim(),owner:$("firmOwner").value.trim(),phone:$("firmPhone").value.trim(),email:$("firmEmail").value.trim(),gst:$("firmGST").value.trim(),address:$("firmAddress").value.trim()};save();alert("Firm profile saved.")});
+$("firmForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const file=$("firmLogoInput").files[0];
+ const saveFirmData=(logoData)=>{
+  data.firm={
+   name:$("firmName").value.trim(),
+   owner:$("firmOwner").value.trim(),
+   phone:$("firmPhone").value.trim(),
+   email:$("firmEmail").value.trim(),
+   gst:$("firmGST").value.trim(),
+   address:$("firmAddress").value.trim(),
+   logo:logoData!==undefined?logoData:(data.firm.logo||"")
+  };
+  save();
+  alert("Firm profile and logo saved.");
+ };
+ if(file){
+  const reader=new FileReader();
+  reader.onload=()=>saveFirmData(reader.result);
+  reader.readAsDataURL(file);
+ }else{
+  saveFirmData();
+ }
+});
 
 $("productForm").addEventListener("submit",e=>{
  e.preventDefault();let id=+$("editProductId").value,x={id:id||Date.now(),name:$("pname").value.trim(),code:$("pcode").value.trim(),cost:+$("pcost").value,price:+$("pprice").value,stock:+$("pstock").value,limit:+$("plimit").value,gst:+$("pgst").value};
@@ -309,7 +352,7 @@ $("addAllToCart").onclick=()=>{
  if(chosen.some(x=>!Number.isInteger(x.q)||x.q<1))return alert("Enter a valid quantity for every product.");
  const totals={};chosen.forEach(({p,q})=>totals[p.id]=(totals[p.id]||0)+q);
  for(const {p} of chosen){const already=cart.filter(x=>x.id===p.id).reduce((a,x)=>a+x.qty,0);if(already+totals[p.id]>p.stock)return alert("Not enough stock for "+p.name+". Available stock: "+p.stock);}
- chosen.forEach(({p,q})=>{let item=cart.find(x=>x.id===p.id);if(item)item.qty+=q;else cart.push({id:p.id,name:p.name,price:p.price,cost:p.cost,qty:q,gst:p.gst})});
+ chosen.forEach(({p,q})=>{let item=cart.find(x=>x.id==p.id);if(item)item.qty+=q;else cart.push({id:p.id,name:p.name,price:p.price,cost:p.cost,qty:q,gst:p.gst})});
  entryRows=[{productId:"",qty:1}];renderProductEntryRows();renderCart();alert("All selected products have been added to one bill.");
 };
 
