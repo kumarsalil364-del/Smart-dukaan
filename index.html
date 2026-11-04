@@ -232,7 +232,10 @@ function loadData(){
 let data=loadData(),cart=[],entryRows=[{productId:"",qty:1}];
 const $=id=>document.getElementById(id);
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-const today=()=>new Date().toLocaleDateString("en-IN");
+const today=()=>{
+ const d=new Date();
+ return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+};
 const isoToday=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -291,13 +294,53 @@ function render(){
 }
 
 function renderExtra(){
- let f=data.firm||{};["name","owner","phone","email","gst","address"].forEach(k=>{let el=$("firm"+k[0].toUpperCase()+k.slice(1));if(el&&document.activeElement!==el)el.value=f[k]||""});
- const d=$("dailyDate");if(d&&!d.value)d.value=isoToday();
- let v=d?d.value:isoToday(),a=v.split("-"),key=a[2]+"/"+a[1]+"/"+a[0],s=data.sales.filter(x=>x.date===key);
- $("dailyTotal").textContent=money(s.reduce((t,x)=>t+(+x.total||0),0));$("dailyBills").textContent=s.length;
- $("paymentRows").innerHTML=Object.entries(s.reduce((o,x)=>{let k=x.payment||"Cash";o[k]??={count:0,total:0};o[k].count++;o[k].total+=+x.total||0;return o},{})).map(([k,x])=>`<tr><td>${esc(k)}</td><td>${x.count}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(3);
-}
+ let f=data.firm||{};
 
+ ["name","owner","phone","email","gst","address"].forEach(k=>{
+  let el=$("firm"+k[0].toUpperCase()+k.slice(1));
+  if(el && document.activeElement!==el)
+   el.value=f[k]||"";
+ });
+
+ const d=$("dailyDate");
+
+ if(d&&!d.value)
+  d.value=isoToday();
+
+ let v=d?d.value:isoToday();
+
+ let [year,month,day]=v.split("-");
+
+ let selectedDate=`${Number(day)}/${Number(month)}/${year}`;
+
+ let s=data.sales.filter(x=>x.date===selectedDate);
+
+ $("dailyTotal").textContent=money(
+  s.reduce((t,x)=>t+(+x.total||0),0)
+ );
+
+ $("dailyBills").textContent=s.length;
+
+ $("paymentRows").innerHTML=
+  Object.entries(
+   s.reduce((o,x)=>{
+    let k=x.payment||"Cash";
+
+    o[k]??={count:0,total:0};
+
+    o[k].count++;
+    o[k].total+=Number(x.total)||0;
+
+    return o;
+   },{})
+  ).map(([k,x])=>`
+   <tr>
+    <td>${esc(k)}</td>
+    <td>${x.count}</td>
+    <td>${money(x.total)}</td>
+   </tr>
+  `).join("")||emptyRow(3);
+}
 $("firmForm").addEventListener("submit",e=>{
  e.preventDefault();
  const file=$("firmLogoInput").files[0];
