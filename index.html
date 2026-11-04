@@ -1,471 +1,840 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SMART DUKAAN</title>
-<link rel="icon" type="image/png" href="smart-dukaan-logo-1.png">
-<img id="firmLogo" src="smart-dukaan-logo-1.png" alt="Logo" style="height:42px; width:auto; border-radius:8px; object-fit:contain; background:#fff; padding:2px;">
 <style>
-:root{--blue:#174ea6;--bg:#f3f6fb;--green:#16834a;--red:#d93025}
+:root {
+  --blue:#174ea6;
+  --dark:#102a56;
+  --bg:#f3f6fb;
+  --green:#16834a;
+  --red:#d93025;
+  --white:#fff;
+  --text:#202b3c;
+  --muted:#68778d;
+  --border:#e1e7f0;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#202938}
-header{background:linear-gradient(120deg,#102a43,#174ea6 65%,#168b82);color:white;padding:20px}
-header h1{margin:0;font-size:25px;display:flex;align-items:center;gap:10px}
-.brandmark{display:inline-grid;place-items:center;width:42px;height:42px;padding:5px;background:#ffffff20;border:1px solid #ffffff55;border-radius:12px}
-.brandmark svg{width:100%;height:100%}
-header p{margin:6px 0 0;font-size:13px}
-nav{display:flex;gap:6px;overflow:auto;background:white;padding:10px}
-nav button{border:0;padding:11px 14px;border-radius:8px;background:#e8eef9;white-space:nowrap;cursor:pointer;transition:background .2s,transform .2s}
-nav button.active{background:var(--blue);color:white}
-main{max-width:1050px;margin:auto;padding:16px}
-.page{display:none}.page.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
-.card,.panel{background:white;padding:17px;border-radius:12px;box-shadow:0 2px 8px #0000000b;margin-bottom:14px;transition:transform .2s,box-shadow .2s}
-.card:hover,.panel:hover{transform:translateY(-2px);box-shadow:0 8px 24px #174ea61a}
-.card small{color:#687386}.card h2{margin:8px 0 0;font-size:23px}
-h2.section{font-size:19px}
-input,select{width:100%;padding:11px;border:1px solid #ccd3df;border-radius:7px;margin:5px 0 12px;font-size:15px}
-input:focus,select:focus{outline:2px solid #b9d4fa;border-color:#174ea6}
-label{font-size:13px;font-weight:bold}
-button.primary{background:var(--blue);color:white;border:0;border-radius:7px;padding:11px 16px;cursor:pointer}
-button.danger{background:#fde8e7;color:#b3261e;border:0;border-radius:7px;padding:8px;cursor:pointer}
-button.secondary{background:#e8eef9;color:#174ea6;border:0;border-radius:7px;padding:9px;cursor:pointer}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:11px 7px;border-bottom:1px solid #e7eaf0}
-th{background:#f5f7fb}
-.tablewrap{overflow-x:auto}
-.notice{padding:12px;background:#fff4d6;border-radius:8px;margin:10px 0;font-size:13px}
-.good{color:var(--green)}.bad{color:var(--red)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
-.muted{color:#697386;font-size:13px}
-@media(max-width:500px){main{padding:10px}.card{padding:13px}header{padding:16px}}
-@media print{header,nav,.no-print{display:none!important}body{background:white}.page{display:none!important}#invoicePrint{display:block!important}}
+body{margin:0;background:var(--bg);font-family:Arial,sans-serif;color:var(--text)}
+header{background:linear-gradient(120deg,var(--dark),var(--blue));color:white;padding:20px}
+.header-inner{max-width:1250px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:13px;background:white;color:var(--blue);display:grid;place-items:center;font-size:25px;font-weight:bold}
+header h1{margin:0;font-size:24px;letter-spacing:1px}
+header p{margin:5px 0 0;color:#dce8ff;font-size:13px}
+main{max-width:1250px;margin:20px auto;padding:0 15px}
+.firm-switch{background:white;padding:12px;border-radius:12px;margin-bottom:15px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;box-shadow:0 2px 9px #102a5610}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+nav button{border:0;background:white;padding:11px 15px;border-radius:9px;color:var(--text);font-weight:bold;cursor:pointer}
+nav button.active,nav button:hover{background:var(--blue);color:white}
+.page{display:none}
+.page.active{display:block}
+.card{background:white;border-radius:13px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #102a560d}
+h2{font-size:20px;margin:0 0 15px}
+h3{font-size:16px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.stat{padding:18px;border-radius:12px;background:white;box-shadow:0 3px 12px #102a560d}
+.stat small{color:var(--muted)}
+.stat strong{display:block;font-size:25px;margin-top:9px}
+.green{color:var(--green)}
+.red{color:var(--red)}
+form .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+label{font-size:13px;font-weight:bold;color:#42516a}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--border);border-radius:8px;font:inherit;background:white;min-width:0}
+textarea{resize:vertical;min-height:75px}
+button{font:inherit}
+.btn{border:0;border-radius:8px;padding:10px 14px;background:var(--blue);color:white;font-weight:bold;cursor:pointer}
+.btn:hover{filter:brightness(.92)}
+.btn.green-btn{background:var(--green)}
+.btn.red-btn{background:var(--red)}
+.btn.grey-btn{background:#68778d}
+.btn.light-btn{background:#eaf1ff;color:var(--blue)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{padding:11px 9px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}
+th{background:#f6f8fc;color:#53627a}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+.muted{color:var(--muted);font-size:13px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.total-line{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.total-line.final{font-size:20px;font-weight:bold;border:0}
+.cart-line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.badge{display:inline-block;background:#e8f5ed;color:var(--green);padding:4px 8px;border-radius:20px;font-size:11px;font-weight:bold}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+@media(max-width:520px){main{padding:0 10px}.grid{grid-template-columns:1fr 1fr}.stat{padding:13px}.stat strong{font-size:20px}form .fields{grid-template-columns:1fr}.field.full{grid-column:auto}header h1{font-size:20px}nav button{padding:10px;font-size:12px}}
+@media print{
+  body *{visibility:hidden!important}
+  #printArea,#printArea *{visibility:visible!important}
+  #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;background:white}
+  .no-print{display:none!important}
+}
 </style>
 </head>
 <body>
+
 <header>
-<h1>
-<img id="firmLogo" src="smart-dukaan-logo-1.png" alt="Logo" style="height:42px; width:auto; border-radius:8px; object-fit:contain; background:#fff; padding:2px;">
-<span id="defaultLogo" class="brandmark" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 20h34v22H7z" fill="#fff"/><path d="M5 19 10 6h28l5 13" fill="#20b8ad" stroke="#fff" stroke-width="2"/><path d="M5 19c0 4 7 5 9 0 1 5 8 5 10 0 2 5 9 5 10 0 2 5 9 4 9 0" fill="none" stroke="#fff" stroke-width="3"/><path d="M18 29h12v13H18z" fill="#1769aa"/><path d="M11 25h5v6h-5zM32 25h5v6h-5z" fill="#1769aa"/></svg></span>
-<span id="headerTitle">SMART DUKAAN</span>
-</h1>
-<p id="headerFirm">Smart Stock, Sales and Restocking Assistant for Small Shops</p>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <h1>SMART DUKAAN</h1>
+        <p id="headerFirm">Your Smart Business Manager</p>
+      </div>
+    </div>
+    <div><span class="badge">SHOP MANAGEMENT SYSTEM</span></div>
+  </div>
 </header>
 
-<nav class="no-print">
-<button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
-<button onclick="showPage('firm',this)">Firm Profile</button>
-<button onclick="showPage('products',this)">Products</button>
-<button onclick="showPage('sales',this)">New Sale</button>
-<button onclick="showPage('daily',this)">Daily Sales</button>
-<button onclick="showPage('expenses',this)">Expenses</button>
-<button onclick="showPage('history',this)">Sales History</button>
-<button onclick="showPage('reports',this)">Reports</button>
-<button onclick="showPage('backup',this)">Backup</button>
-</nav>
-
 <main>
+  <div class="firm-switch no-print">
+    <strong>Current Firm:</strong>
+    <select id="firmSelect" style="max-width:220px"></select>
+    <button class="btn light-btn" id="switchFirmBtn">Switch Firm</button>
+    <button class="btn green-btn" id="newFirmBtn">+ Create New Firm</button>
+    <span class="muted" id="saveStatus">Data saved in this browser</span>
+  </div>
 
-<section id="dashboard" class="page active">
-<h2 class="section">Business Dashboard</h2>
-<div class="cards">
-<div class="card"><small>Total Products</small><h2 id="totalProducts">0</h2></div>
-<div class="card"><small>Stock Units</small><h2 id="stockUnits">0</h2></div>
-<div class="card"><small>Today's Sales</small><h2 id="todaySales">₹0</h2></div>
-<div class="card"><small>Today's Expenses</small><h2 id="todayExpenses">₹0</h2></div>
-<div class="card"><small>Total Expenses</small><h2 id="dashboardAllExpenses">₹0</h2></div>
-<div class="card"><small>Estimated Profit</small><h2 id="todayProfit">₹0</h2></div>
-</div>
-<div class="panel">
-<h2 class="section">⚠️ Low Stock Alerts</h2>
-<div id="alerts">No alerts.</div>
-</div>
-<div class="panel">
-<h2 class="section">Recent Expenses</h2>
-<div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th></tr></thead><tbody id="dashboardExpenses"></tbody></table></div>
-</div>
-<div class="panel">
-<h2 class="section">Recent Sales</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Date</th><th>Product</th><th>Qty</th><th>Total</th></tr></thead>
-<tbody id="recentSales"></tbody>
-</table></div>
-</div>
-</section>
+  <nav class="no-print" id="navigation">
+    <button class="active" data-page="dashboard">Dashboard</button>
+    <button data-page="firm">Firm Profile</button>
+    <button data-page="products">Products</button>
+    <button data-page="sale">New Sale</button>
+    <button data-page="daily">Daily Sales</button>
+    <button data-page="expenses">Expenses</button>
+    <button data-page="history">Sales History</button>
+    <button data-page="reports">Reports</button>
+    <button data-page="backup">Backup</button>
+  </nav>
 
-<section id="firm" class="page">
-<div class="panel">
-<h2 class="section">Firm Profile</h2>
-<form id="firmForm"><div class="grid">
-<div><label>Business Name</label><input id="firmName" required placeholder="Your shop name"></div>
-<div><label>Owner Name</label><input id="firmOwner" placeholder="Owner name"></div>
-<div><label>Phone Number</label><input id="firmPhone" placeholder="Contact number"></div>
-<div><label>Email</label><input id="firmEmail" type="email" placeholder="Email address"></div>
-<div><label>GSTIN</label><input id="firmGST" placeholder="Optional"></div>
-<div><label>Address</label><input id="firmAddress" placeholder="Shop address"></div>
-<div style="grid-column: 1 / -1;"><label>Upload Shop Logo</label><input type="file" id="firmLogoInput" accept="image/*"></div>
-</div><button class="primary">Save Firm Profile</button></form>
-</div></section>
+  <!-- DASHBOARD -->
+  <section class="page active" id="dashboard">
+    <h2>Business Dashboard</h2>
+    <div class="grid">
+      <div class="stat"><small>Total Sales</small><strong id="statSales">₹0.00</strong></div>
+      <div class="stat"><small>Total Expenses</small><strong id="statExpenses">₹0.00</strong></div>
+      <div class="stat"><small>Estimated Profit</small><strong class="green" id="statProfit">₹0.00</strong></div>
+      <div class="stat"><small>Total Products</small><strong id="statProducts">0</strong></div>
+    </div>
+    <div class="two-col" style="margin-top:16px">
+      <div class="card">
+        <h3>Today's Business</h3>
+        <div class="total-line"><span>Today's Sales</span><strong id="todaySales">₹0.00</strong></div>
+        <div class="total-line"><span>Today's Bills</span><strong id="todayBills">0</strong></div>
+        <div class="total-line"><span>Today's Expenses</span><strong id="todayExpenses">₹0.00</strong></div>
+      </div>
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div class="actions">
+          <button class="btn" data-goto="sale">+ New Sale</button>
+          <button class="btn green-btn" data-goto="products">+ Add Product</button>
+          <button class="btn grey-btn" data-goto="expenses">+ Add Expense</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Recent Sales</h3>
+      <div class="table-wrap"><table><thead><tr><th>Bill No.</th><th>Customer</th><th>Date</th><th>Payment</th><th>Total</th></tr></thead><tbody id="recentSales"></tbody></table></div>
+    </div>
+  </section>
 
-<section id="daily" class="page">
-<div class="panel"><h2 class="section">Daily Sales Register</h2>
-<label>Select Date</label><input id="dailyDate" type="date">
-<div class="cards"><div class="card"><small>Daily Sales</small><h2 id="dailyTotal">₹0</h2></div><div class="card"><small>Bills</small><h2 id="dailyBills">0</h2></div></div>
-<h3>Payment Mode Collection</h3><div class="tablewrap"><table><thead><tr><th>Payment Mode</th><th>Bills</th><th>Amount</th></tr></thead><tbody id="paymentRows"></tbody></table></div>
-</div></section>
+  <!-- FIRM PROFILE -->
+  <section class="page" id="firm">
+    <div class="card">
+      <h2>Firm Profile</h2>
+      <form id="firmForm">
+        <div class="fields">
+          <div class="field"><label>Business / Firm Name *</label><input id="firmName" required></div>
+          <div class="field"><label>Owner Name</label><input id="firmOwner"></div>
+          <div class="field"><label>Phone Number</label><input id="firmPhone" type="tel"></div>
+          <div class="field"><label>Email</label><input id="firmEmail" type="email"></div>
+          <div class="field"><label>GST Number (optional)</label><input id="firmGst"></div>
+          <div class="field"><label>Logo Image URL (optional)</label><input id="firmLogo" placeholder="https://example.com/logo.png"></div>
+          <div class="field full"><label>Business Address</label><textarea id="firmAddress"></textarea></div>
+        </div>
+        <div class="actions"><button class="btn green-btn">Save Firm Details</button></div>
+      </form>
+    </div>
+  </section>
 
-<section id="expenses" class="page">
-<div class="panel"><h2 class="section">Add Business Expense</h2>
-<form id="expenseForm"><div class="grid"><div><label>Description</label><input id="expenseName" required placeholder="Shop rent, electricity, etc."></div><div><label>Amount (₹)</label><input id="expenseAmount" type="number" min=".01" step=".01" required></div><div><label>Date</label><input id="expenseDate" type="date" required></div></div><button class="primary">Add Expense</button></form></div>
-<div class="panel"><h2 class="section">Expense History</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="expenseRows"></tbody></table></div></div>
-</section>
+  <!-- PRODUCTS -->
+  <section class="page" id="products">
+    <div class="card">
+      <h2>Product Management</h2>
+      <form id="productForm">
+        <input type="hidden" id="editProductId">
+        <div class="fields">
+          <div class="field"><label>Product Name *</label><input id="productName" required></div>
+          <div class="field"><label>Product Code / SKU</label><input id="productCode"></div>
+          <div class="field"><label>Purchase Cost (₹) *</label><input id="productCost" type="number" min="0" step="0.01" required></div>
+          <div class="field"><label>Selling Price (₹) *</label><input id="productPrice" type="number" min="0" step="0.01" required></div>
+          <div class="field"><label>Opening Stock / Quantity</label><input id="productStock" type="number" min="0" step="1" value="0"></div>
+          <div class="field"><label>GST Rate (%)</label><select id="productGst"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></div>
+        </div>
+        <div class="actions">
+          <button class="btn green-btn" id="productSubmit">Save Product</button>
+          <button class="btn grey-btn" type="button" id="cancelProductEdit">Clear</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Product List</h3>
+      <input id="productSearch" placeholder="Search product name or code..." style="max-width:400px;margin-bottom:12px">
+      <div class="table-wrap"><table><thead><tr><th>Product</th><th>Code</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Actions</th></tr></thead><tbody id="productTable"></tbody></table></div>
+    </div>
+  </section>
 
-<section id="products" class="page">
-<div class="panel">
-<h2 class="section" id="productFormHeading">Add New Product</h2>
-<form id="productForm"><input type="hidden" id="editProductId">
-<div class="grid">
-<div><label>Product Name</label><input id="pname" required placeholder="e.g. Rice 1 kg"></div>
-<div><label>Product Code</label><input id="pcode" placeholder="Optional"></div>
-<div><label>Purchase Price (₹)</label><input id="pcost" type="number" min="0" step=".01" required></div>
-<div><label>Selling Price (₹)</label><input id="pprice" type="number" min="0" step=".01" required></div>
-<div><label>Opening Stock</label><input id="pstock" type="number" min="0" required></div>
-<div><label>Low Stock Limit</label><input id="plimit" type="number" min="0" value="5"></div>
-<div><label>GST Rate (%)</label>
-<select id="pgst"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option></select></div>
-</div>
-<button class="primary">+ Add Product</button>
-</form>
-</div>
-<div class="panel">
-<h2 class="section">Inventory</h2>
-<input id="productSearch" placeholder="Search products by name or code...">
-<div class="tablewrap"><table>
-<thead><tr><th>Product</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Action</th></tr></thead>
-<tbody id="productRows"></tbody>
-</table></div>
-</div>
-</section>
+  <!-- NEW SALE -->
+  <section class="page" id="sale">
+    <div class="two-col">
+      <div class="card">
+        <h2>Create New Bill</h2>
+        <form id="saleItemForm">
+          <div class="fields">
+            <div class="field full"><label>Select Product</label><select id="saleProduct"></select></div>
+            <div class="field"><label>Quantity</label><input id="saleQuantity" type="number" min="1" step="1" value="1" required></div>
+            <div class="field" style="align-self:end"><button class="btn" style="width:100%">Add to Bill</button></div>
+          </div>
+        </form>
+        <div class="muted" id="stockHint" style="margin-top:10px"></div>
+        <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
+        <h3>Cart Items</h3>
+        <div id="cartItems"><div class="empty">No products added yet.</div></div>
+      </div>
+      <div class="card">
+        <h2>Customer & Payment</h2>
+        <div class="field" style="margin-bottom:12px"><label>Customer Name</label><input id="customerName" placeholder="Walk-in Customer"></div>
+        <div class="field" style="margin-bottom:12px"><label>Customer Phone</label><input id="customerPhone" type="tel"></div>
+        <div class="field" style="margin-bottom:12px"><label>Payment Mode</label>
+          <select id="paymentMode">
+            <option>Cash</option><option>Google Pay</option><option>PhonePe</option><option>Paytm</option><option>Card</option><option>Bank Transfer</option><option>Credit / Udhaar</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:12px"><label>GST Type</label><select id="taxType"><option value="local">Local Sale (CGST + SGST)</option><option value="interstate">Interstate Sale (IGST)</option></select></div>
+        <div class="field" style="margin-bottom:12px"><label>Discount (₹)</label><input id="saleDiscount" type="number" min="0" step="0.01" value="0"></div>
+        <div id="billTotals">
+          <div class="total-line"><span>Subtotal</span><strong id="billSubtotal">₹0.00</strong></div>
+          <div class="total-line"><span>Discount</span><strong id="billDiscount">₹0.00</strong></div>
+          <div class="total-line"><span>Tax</span><strong id="billTax">₹0.00</strong></div>
+          <div class="total-line final"><span>Grand Total</span><strong id="billTotal">₹0.00</strong></div>
+        </div>
+        <div class="actions">
+          <button class="btn green-btn" id="completeSaleBtn">Complete Sale & Generate Bill</button>
+          <button class="btn grey-btn" id="clearCartBtn">Clear Cart</button>
+        </div>
+      </div>
+    </div>
+    <div class="card hidden" id="invoiceCard">
+      <div id="printArea"></div>
+      <div class="actions no-print"><button class="btn" id="printBillBtn">Print Invoice</button></div>
+    </div>
+  </section>
 
-<section id="sales" class="page">
-<div class="panel">
-<h2 class="section">Create New Bill</h2>
-<div class="grid">
-<div><label>Customer Name (optional)</label><input id="customer" placeholder="Customer name"></div>
-<div><label>Payment Mode</label><select id="paymentMode"><option>Cash</option><option>UPI - Google Pay</option><option>UPI - PhonePe</option><option>UPI - Paytm</option><option>Card</option><option>Bank Transfer</option><option>Credit / Udhaar</option></select></div>
-<div><label>Tax Type</label><select id="taxType"><option value="local">CGST + SGST (Local)</option><option value="inter">IGST (Interstate)</option></select></div>
-</div>
-<hr style="border:0;border-top:1px solid #eee;margin:12px 0">
-<h3>Add goods to this bill</h3>
-<p class="muted">Add two or more different products below. All selected goods will be included in one bill.</p>
-<div id="productEntryRows"></div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0">
-<button class="secondary" id="addProductRow" type="button">＋ Add Another Product</button>
-<button class="primary" id="addAllToCart" type="button">Add All Products to This Bill</button>
-</div>
-<div class="tablewrap"><table><thead><tr><th>Product</th><th>Rate</th><th>Qty</th><th>GST</th><th>Amount</th><th>Action</th></tr></thead><tbody id="cartRows"></tbody></table></div>
-<div class="notice" id="cartTotal">Subtotal: ₹0.00 | GST: ₹0.00 | Total: ₹0.00</div>
-<button class="primary" id="completeSale" type="button">Complete Sale & Generate Bill</button>
-</div>
-<div id="invoicePrint" class="panel" style="display:none"></div>
-</section>
+  <!-- DAILY SALES -->
+  <section class="page" id="daily">
+    <div class="card">
+      <h2>Daily Sales Register</h2>
+      <div class="field" style="max-width:250px;margin-bottom:15px"><label>Select Date</label><input id="dailyDate" type="date"></div>
+      <div class="grid">
+        <div class="stat"><small>Sales Total</small><strong id="dailyTotal">₹0.00</strong></div>
+        <div class="stat"><small>Number of Bills</small><strong id="dailyCount">0</strong></div>
+        <div class="stat"><small>Cash Received</small><strong id="dailyCash">₹0.00</strong></div>
+        <div class="stat"><small>Digital Payments</small><strong id="dailyDigital">₹0.00</strong></div>
+      </div>
+      <div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Bill</th><th>Customer</th><th>Items & Quantity</th><th>Payment Mode</th><th>Total</th></tr></thead><tbody id="dailyTable"></tbody></table></div>
+    </div>
+  </section>
 
-<section id="history" class="page">
-<div class="panel">
-<h2 class="section">Sales History</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Product</th><th>Payment</th><th>Total</th></tr></thead>
-<tbody id="historyRows"></tbody>
-</table></div>
-</div>
-</section>
+  <!-- EXPENSES -->
+  <section class="page" id="expenses">
+    <div class="card">
+      <h2>Record Business Expense</h2>
+      <form id="expenseForm">
+        <div class="fields">
+          <div class="field"><label>Expense Description *</label><input id="expenseName" required placeholder="Rent, electricity, transport..."></div>
+          <div class="field"><label>Amount (₹) *</label><input id="expenseAmount" type="number" min="0.01" step="0.01" required></div>
+          <div class="field"><label>Date</label><input id="expenseDate" type="date" required></div>
+          <div class="field"><label>Payment Mode</label><select id="expenseMode"><option>Cash</option><option>Google Pay</option><option>PhonePe</option><option>Paytm</option><option>Card</option><option>Bank Transfer</option></select></div>
+        </div>
+        <div class="actions"><button class="btn green-btn">Save Expense</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <h3>Expense Register</h3>
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Payment</th><th>Amount</th><th>Action</th></tr></thead><tbody id="expenseTable"></tbody></table></div>
+    </div>
+  </section>
 
-<section id="reports" class="page">
-<h2 class="section">Business Reports</h2>
-<div class="cards">
-<div class="card"><small>Total Sales</small><h2 id="allSales">₹0</h2></div>
-<div class="card"><small>Estimated Profit</small><h2 id="allProfit">₹0</h2></div>
-<div class="card"><small>GST Collected</small><h2 id="allGST">₹0</h2></div>
-<div class="card"><small>Units Sold</small><h2 id="allUnits">0</h2></div>
-</div>
-<div class="panel">
-<h2 class="section">Product-wise Stock</h2>
-<div class="tablewrap"><table>
-<thead><tr><th>Product</th><th>Remaining Stock</th><th>Stock Value (Cost)</th></tr></thead>
-<tbody id="stockReport"></tbody>
-</table></div>
-</div>
-</section>
+  <!-- SALES HISTORY -->
+  <section class="page" id="history">
+    <div class="card">
+      <h2>Sales History</h2>
+      <input id="historySearch" placeholder="Search bill number or customer..." style="max-width:400px;margin-bottom:12px">
+      <div class="table-wrap"><table><thead><tr><th>Bill No.</th><th>Date & Time</th><th>Customer</th><th>Payment</th><th>Total</th><th>Action</th></tr></thead><tbody id="historyTable"></tbody></table></div>
+    </div>
+  </section>
 
-<section id="backup" class="page">
-<div class="panel">
-<h2 class="section">Data Backup & Restore</h2>
-<p class="muted">Download a backup of your products and sales. You can restore it later on this device or another device.</p>
-<button class="primary" onclick="exportData()">Download Backup</button>
-<hr style="border:0;border-top:1px solid #eee;margin:20px 0">
-<label>Restore from backup file</label>
-<input type="file" id="restoreFile" accept=".json">
-<button class="primary" onclick="importData()">Restore Backup</button>
-<div class="notice">Your records are saved in this browser on this device. Clearing browser data may erase them. Keep regular backups.</div>
-<button class="danger" onclick="resetData()">Delete All App Data</button>
-</div>
-</section>
+  <!-- REPORTS -->
+  <section class="page" id="reports">
+    <div class="card">
+      <h2>Business Reports</h2>
+      <div class="grid">
+        <div class="stat"><small>All-Time Sales</small><strong id="reportSales">₹0.00</strong></div>
+        <div class="stat"><small>Cost of Goods Sold</small><strong id="reportCost">₹0.00</strong></div>
+        <div class="stat"><small>Gross Profit</small><strong id="reportGross">₹0.00</strong></div>
+        <div class="stat"><small>Net Estimated Profit</small><strong id="reportNet">₹0.00</strong></div>
+      </div>
+      <h3 style="margin-top:22px">Payment Mode Summary</h3>
+      <div class="table-wrap"><table><thead><tr><th>Payment Mode</th><th>Number of Bills</th><th>Total Amount</th></tr></thead><tbody id="paymentReport"></tbody></table></div>
+      <p class="muted">Profit is an estimate based on the product cost saved when each sale was made, minus recorded expenses. It is not a substitute for formal accounting or tax records.</p>
+    </div>
+  </section>
 
+  <!-- BACKUP -->
+  <section class="page" id="backup">
+    <div class="card">
+      <h2>Backup & Restore</h2>
+      <p>Download a backup of all firms and their records. Keep the file in a safe place.</p>
+      <div class="actions"><button class="btn green-btn" id="exportBtn">Download Full Backup</button></div>
+      <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+      <h3>Restore Backup</h3>
+      <p class="muted">Restoring replaces the current saved firm records with the records in your selected backup file.</p>
+      <input type="file" id="importFile" accept=".json,application/json">
+      <div class="actions"><button class="btn" id="importBtn">Restore Backup</button></div>
+      <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+      <h3>Delete Current Firm Data</h3>
+      <p class="muted">This permanently clears the current firm's products, sales and expenses. Other firms are not affected.</p>
+      <button class="btn red-btn" id="deleteDataBtn">Delete Current Firm Data</button>
+    </div>
+  </section>
 </main>
+<footer>SMART DUKAAN · Simple Shop Management System</footer>
 
 <script>
 "use strict";
-const KEY="smartDukaan_v2";
-const oldKey="smartDukaan_v1";
-const blank={firm:{name:"",owner:"",phone:"",email:"",gst:"",address:"",logo:""},products:[],sales:[],expenses:[]};
 
-function loadData(){
- try{
-  let d=JSON.parse(localStorage.getItem(KEY)||"null");
-  if(!d)d=JSON.parse(localStorage.getItem(oldKey)||"null");
-  if(d)return {...blank,...d,firm:{...blank.firm,...(d.firm||{})},expenses:d.expenses||[]};
- }catch(e){}
- return JSON.parse(JSON.stringify(blank));
-}
+/* -------------------- STORAGE & FIRM SETUP -------------------- */
+const MANAGER_KEY = "SMART_DUKAAN_FIRM_MANAGER_V1";
+const $ = id => document.getElementById(id);
+const money = value => "₹" + Number(value || 0).toFixed(2);
+const today = () => new Date().toISOString().slice(0,10);
+const uid = prefix => prefix + "_" + Date.now() + "_" + Math.random().toString(36).slice(2,7);
 
-let data=loadData(),cart=[],entryRows=[{productId:"",qty:1}];
-const $=id=>document.getElementById(id);
-const money=n=>"₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-const today=()=>{
- const d=new Date();
- return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-};
-const isoToday=()=>{let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
-const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
-function save(){
- localStorage.setItem(KEY,JSON.stringify(data));
- renderLogo();
- const headerEl=$("headerFirm");
- if(headerEl) headerEl.textContent=data.firm.name||"Smart Stock, Sales and Restocking Assistant for Small Shops";
- render();
-}
-
-function renderLogo(){
- const img=$("firmLogo");
- const svg=$("defaultLogo");
- if(data.firm&&data.firm.logo){
-  img.src=data.firm.logo;
-  img.style.display="inline-block";
-  svg.style.display="none";
- }else{
-  img.style.display="none";
-  svg.style.display="inline-grid";
- }
-}
-
-function emptyRow(n){return `<tr><td colspan="${n}" style="text-align:center;color:#78869a;padding:18px">No records yet.</td></tr>`}
-
-function showPage(id,btn){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- $(id).classList.add("active");
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- if(btn)btn.classList.add("active");else document.querySelector(`nav button[onclick*="'${id}'"]`)?.classList.add("active");
- render();
-}
-
-function render(){
- renderLogo();
- const p=data.products,s=data.sales,ex=data.expenses||[],ts=s.filter(x=>x.date===today()),te=ex.filter(x=>x.date===today());
- $("totalProducts").textContent=p.length;$("stockUnits").textContent=p.reduce((a,x)=>a+(+x.stock||0),0);
- $("todaySales").textContent=money(ts.reduce((a,x)=>a+(+x.total||0),0));
- $("todayExpenses").textContent=money(te.reduce((a,x)=>a+(+x.amount||0),0));
- $("dashboardAllExpenses").textContent=money(ex.reduce((a,x)=>a+(+x.amount||0),0));
- $("todayProfit").textContent=money(ts.reduce((a,x)=>a+(+x.profit||0),0)-te.reduce((a,x)=>a+(+x.amount||0),0));
- $("dashboardExpenses").innerHTML=ex.slice().reverse().slice(0,5).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${money(x.amount)}</td></tr>`).join("")||emptyRow(3);
- $("alerts").innerHTML=p.filter(x=>x.stock<=x.limit).map(x=>`<p class="bad">⚠️ ${esc(x.name)} — Only ${x.stock} left (limit: ${x.limit})</p>`).join("")||"<p class='good'>All products have sufficient stock.</p>";
- $("productRows").innerHTML=p.filter(x=>(x.name+" "+(x.code||"")).toLowerCase().includes(($("productSearch")?.value||"").toLowerCase())).map(x=>`<tr><td>${esc(x.name)}<br><small>${esc(x.code||"")}</small></td><td>${money(x.cost)}</td><td>${money(x.price)}</td><td>${x.stock}</td><td>${x.gst}%</td><td><button class="secondary" onclick="editProduct(${x.id})">Edit</button> <button class="danger" onclick="deleteProduct(${x.id})">Delete</button></td></tr>`).join("")||emptyRow(6);
- renderProductEntryRows();
- $("recentSales").innerHTML=s.slice(-5).reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc((x.items||[]).map(i=>i.name).join(", ")||x.product||"")}</td><td>${(x.items||[]).reduce((a,i)=>a+i.qty,0)||x.qty||0}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(4);
- $("historyRows").innerHTML=s.slice().reverse().map(x=>`<tr><td>${esc(x.invoice)}</td><td>${esc(x.date)}</td><td>${esc(x.customer||"-")}</td><td>${esc((x.items||[]).map(i=>i.name+" × "+i.qty).join(", ")||x.product||"")}</td><td>${esc(x.payment||"Cash")}</td><td>${money(x.total)}</td></tr>`).join("")||emptyRow(6);
- $("allSales").textContent=money(s.reduce((a,x)=>a+(+x.total||0),0));
- $("allProfit").textContent=money(s.reduce((a,x)=>a+(+x.profit||0),0)-ex.reduce((a,x)=>a+(+x.amount||0),0));
- $("allGST").textContent=money(s.reduce((a,x)=>a+(+x.tax||0),0));
- $("allUnits").textContent=s.reduce((a,x)=>a+(x.items||[]).reduce((b,i)=>b+i.qty,0)+(x.qty||0),0);
- $("stockReport").innerHTML=p.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.stock}</td><td>${money(x.stock*x.cost)}</td></tr>`).join("")||emptyRow(3);
- $("expenseRows").innerHTML=ex.slice().reverse().map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${money(x.amount)}</td><td><button class="danger" onclick="deleteExpense(${x.id})">Delete</button></td></tr>`).join("")||emptyRow(4);
- renderExtra();renderCart();
-}
-
-function renderExtra(){
- let f=data.firm||{};
-
- ["name","owner","phone","email","gst","address"].forEach(k=>{
-  let el=$("firm"+k[0].toUpperCase()+k.slice(1));
-  if(el && document.activeElement!==el)
-   el.value=f[k]||"";
- });
-
- const d=$("dailyDate");
-
- if(d&&!d.value)
-  d.value=isoToday();
-
- let v=d?d.value:isoToday();
-
- let [year,month,day]=v.split("-");
-
- let selectedDate=`${Number(day)}/${Number(month)}/${year}`;
-
- let s=data.sales.filter(x=>x.date===selectedDate);
-
- $("dailyTotal").textContent=money(
-  s.reduce((t,x)=>t+(+x.total||0),0)
- );
-
- $("dailyBills").textContent=s.length;
-
- $("paymentRows").innerHTML=
-  Object.entries(
-   s.reduce((o,x)=>{
-    let k=x.payment||"Cash";
-
-    o[k]??={count:0,total:0};
-
-    o[k].count++;
-    o[k].total+=Number(x.total)||0;
-
-    return o;
-   },{})
-  ).map(([k,x])=>`
-   <tr>
-    <td>${esc(k)}</td>
-    <td>${x.count}</td>
-    <td>${money(x.total)}</td>
-   </tr>
-  `).join("")||emptyRow(3);
-}
-$("firmForm").addEventListener("submit",e=>{
- e.preventDefault();
- const file=$("firmLogoInput").files[0];
- const saveFirmData=(logoData)=>{
-  data.firm={
-   name:$("firmName").value.trim(),
-   owner:$("firmOwner").value.trim(),
-   phone:$("firmPhone").value.trim(),
-   email:$("firmEmail").value.trim(),
-   gst:$("firmGST").value.trim(),
-   address:$("firmAddress").value.trim(),
-   logo:logoData!==undefined?logoData:(data.firm.logo||"")
+function blankData(name="My First Firm") {
+  return {
+    firm:{name,owner:"",phone:"",email:"",gst:"",address:"",logo:""},
+    products:[],sales:[],expenses:[]
   };
-  save();
-  alert("Firm profile and logo saved.");
- };
- if(file){
+}
+function readManager() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(MANAGER_KEY));
+    if(parsed && parsed.firms && parsed.activeFirmId) return parsed;
+  } catch(error) {}
+  return null;
+}
+let manager = readManager();
+if(!manager) {
+  const id = uid("firm");
+  manager = {activeFirmId:id,firms:{}};
+  manager.firms[id] = {name:"My First Firm",data:blankData(),updatedAt:new Date().toISOString()};
+  localStorage.setItem(MANAGER_KEY,JSON.stringify(manager));
+}
+let data = manager.firms[manager.activeFirmId]?.data || blankData();
+
+function saveAll() {
+  try {
+    manager.firms[manager.activeFirmId].data = data;
+    manager.firms[manager.activeFirmId].name = data.firm.name || "Unnamed Firm";
+    manager.firms[manager.activeFirmId].updatedAt = new Date().toISOString();
+    localStorage.setItem(MANAGER_KEY,JSON.stringify(manager));
+    $("saveStatus").textContent = "✓ Saved in this browser";
+    updateHeader();
+    updateFirmSelect();
+  } catch(error) {
+    alert("Unable to save. Your browser storage may be full. Download a backup and clear unnecessary data.");
+    console.error(error);
+  }
+}
+function updateHeader() {
+  $("headerFirm").textContent = data.firm.name || "Your Smart Business Manager";
+}
+function updateFirmSelect() {
+  const select = $("firmSelect");
+  select.innerHTML = "";
+  Object.entries(manager.firms).forEach(([id,firm]) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = firm.name || "Unnamed Firm";
+    select.appendChild(option);
+  });
+  select.value = manager.activeFirmId;
+}
+function switchFirm(id) {
+  if(!manager.firms[id]) return;
+  manager.activeFirmId = id;
+  data = manager.firms[id].data || blankData(manager.firms[id].name);
+  saveAll();
+  clearCart();
+  $("invoiceCard").classList.add("hidden");
+  renderAll();
+}
+$("switchFirmBtn").addEventListener("click",()=>switchFirm($("firmSelect").value));
+$("newFirmBtn").addEventListener("click",()=>{
+  const name = prompt("Enter the new business / firm name:");
+  if(!name || !name.trim()) return;
+  const id = uid("firm");
+  manager.firms[id] = {name:name.trim(),data:blankData(name.trim()),updatedAt:new Date().toISOString()};
+  manager.activeFirmId = id;
+  data = manager.firms[id].data;
+  saveAll();
+  clearCart();
+  renderAll();
+});
+
+/* -------------------- NAVIGATION -------------------- */
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(el=>el.classList.toggle("active",el.id===page));
+  document.querySelectorAll("#navigation button").forEach(el=>el.classList.toggle("active",el.dataset.page===page));
+  if(page==="daily") renderDaily();
+  if(page==="history") renderHistory();
+  if(page==="reports") renderReports();
+}
+$("navigation").addEventListener("click",event=>{
+  const button = event.target.closest("button[data-page]");
+  if(button) showPage(button.dataset.page);
+});
+document.querySelectorAll("[data-goto]").forEach(button=>{
+  button.addEventListener("click",()=>showPage(button.dataset.goto));
+});
+
+/* -------------------- SAFE HTML TEXT -------------------- */
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[char]));
+}
+
+/* -------------------- FIRM PROFILE -------------------- */
+function renderFirm() {
+  $("firmName").value=data.firm.name||"";
+  $("firmOwner").value=data.firm.owner||"";
+  $("firmPhone").value=data.firm.phone||"";
+  $("firmEmail").value=data.firm.email||"";
+  $("firmGst").value=data.firm.gst||"";
+  $("firmAddress").value=data.firm.address||"";
+  $("firmLogo").value=data.firm.logo||"";
+}
+$("firmForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  data.firm={
+    name:$("firmName").value.trim(),
+    owner:$("firmOwner").value.trim(),
+    phone:$("firmPhone").value.trim(),
+    email:$("firmEmail").value.trim(),
+    gst:$("firmGst").value.trim(),
+    address:$("firmAddress").value.trim(),
+    logo:$("firmLogo").value.trim()
+  };
+  saveAll();
+  alert("Firm profile saved successfully.");
+});
+
+/* -------------------- PRODUCTS -------------------- */
+function resetProductForm() {
+  $("productForm").reset();
+  $("editProductId").value="";
+  $("productSubmit").textContent="Save Product";
+  $("productStock").value="0";
+}
+$("cancelProductEdit").addEventListener("click",resetProductForm);
+
+$("productForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const id=$("editProductId").value;
+  const existing=data.products.find(p=>p.id===id);
+  const product={
+    id:id||uid("product"),
+    name:$("productName").value.trim(),
+    code:$("productCode").value.trim(),
+    cost:Number($("productCost").value),
+    price:Number($("productPrice").value),
+    stock:Number($("productStock").value),
+    gst:Number($("productGst").value)
+  };
+  if(!product.name || product.cost<0 || product.price<0 || product.stock<0) {
+    alert("Please enter valid product details.");
+    return;
+  }
+  if(existing) Object.assign(existing,product);
+  else data.products.push(product);
+  saveAll();
+  resetProductForm();
+  renderAll();
+  alert("Product saved successfully.");
+});
+
+function renderProducts() {
+  const search=($("productSearch").value||"").toLowerCase();
+  const products=data.products.filter(p=>(p.name+" "+(p.code||"")).toLowerCase().includes(search));
+  $("productTable").innerHTML=products.length?products.map(p=>`
+    <tr>
+      <td>${escapeHTML(p.name)}</td><td>${escapeHTML(p.code||"-")}</td>
+      <td>${money(p.cost)}</td><td>${money(p.price)}</td><td>${p.stock}</td><td>${p.gst}%</td>
+      <td><button class="btn light-btn" data-edit-product="${p.id}">Edit</button>
+      <button class="btn red-btn" data-delete-product="${p.id}">Delete</button></td>
+    </tr>`).join(""):`<tr><td colspan="7" class="empty">No products found.</td></tr>`;
+  const select=$("saleProduct");
+  select.innerHTML='<option value="">Select a product</option>'+data.products.map(p=>
+    `<option value="${p.id}">${escapeHTML(p.name)} — ${money(p.price)} (Stock: ${p.stock})</option>`
+  ).join("");
+}
+$("productSearch").addEventListener("input",renderProducts);
+$("productTable").addEventListener("click",event=>{
+  const edit=event.target.closest("[data-edit-product]");
+  const del=event.target.closest("[data-delete-product]");
+  if(edit) {
+    const p=data.products.find(item=>item.id===edit.dataset.editProduct);
+    if(!p)return;
+    $("editProductId").value=p.id;
+    $("productName").value=p.name;
+    $("productCode").value=p.code||"";
+    $("productCost").value=p.cost;
+    $("productPrice").value=p.price;
+    $("productStock").value=p.stock;
+    $("productGst").value=String(p.gst);
+    $("productSubmit").textContent="Update Product";
+    showPage("products");
+    $("productName").focus();
+  }
+  if(del) {
+    const p=data.products.find(item=>item.id===del.dataset.deleteProduct);
+    if(p && confirm("Delete "+p.name+"? This will not remove it from old bills.")) {
+      data.products=data.products.filter(item=>item.id!==p.id);
+      cart=cart.filter(item=>item.productId!==p.id);
+      saveAll();renderAll();
+    }
+  }
+});
+
+/* -------------------- CART & BILL CALCULATION -------------------- */
+let cart=[];
+function clearCart() {
+  cart=[];
+  $("customerName").value="";
+  $("customerPhone").value="";
+  $("saleDiscount").value="0";
+  renderCart();
+}
+$("saleProduct").addEventListener("change",()=>{
+  const p=data.products.find(item=>item.id===$("saleProduct").value);
+  $("stockHint").textContent=p?`Available stock: ${p.stock}`:"";
+});
+$("saleItemForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const product=data.products.find(p=>p.id===$("saleProduct").value);
+  const quantity=Number($("saleQuantity").value);
+  if(!product){alert("Please select a product.");return;}
+  const already=cart.find(item=>item.productId===product.id);
+  const currentQty=already?already.quantity:0;
+  if(!Number.isInteger(quantity)||quantity<1){alert("Enter a valid quantity.");return;}
+  if(currentQty+quantity>product.stock){alert("Not enough stock available.");return;}
+  if(already) already.quantity+=quantity;
+  else cart.push({
+    productId:product.id,name:product.name,price:product.price,
+    cost:product.cost,gst:product.gst,quantity
+  });
+  $("saleQuantity").value="1";
+  $("saleProduct").value="";
+  $("stockHint").textContent="";
+  renderCart();
+});
+function calculateBill() {
+  const subtotal=cart.reduce((sum,item)=>sum+item.price*item.quantity,0);
+  const discount=Math.min(Math.max(0,Number($("saleDiscount").value)||0),subtotal);
+  const taxable=subtotal-discount;
+  const tax=cart.reduce((sum,item)=>{
+    const line=item.price*item.quantity;
+    const lineDiscount=subtotal?discount*line/subtotal:0;
+    return sum+Math.max(0,line-lineDiscount)*item.gst/100;
+  },0);
+  return {subtotal,discount,tax,total:taxable+tax};
+}
+function renderCart() {
+  $("cartItems").innerHTML=cart.length?cart.map(item=>`
+    <div class="cart-line">
+      <span><strong>${escapeHTML(item.name)}</strong><br>
+      ${item.quantity} × ${money(item.price)} = ${money(item.quantity*item.price)}</span>
+      <button class="btn red-btn" data-remove-cart="${item.productId}">Remove</button>
+    </div>`).join(""):'<div class="empty">No products added yet.</div>';
+  const totals=calculateBill();
+  $("billSubtotal").textContent=money(totals.subtotal);
+  $("billDiscount").textContent=money(totals.discount);
+  $("billTax").textContent=money(totals.tax);
+  $("billTotal").textContent=money(totals.total);
+}
+$("cartItems").addEventListener("click",event=>{
+  const button=event.target.closest("[data-remove-cart]");
+  if(button){cart=cart.filter(item=>item.productId!==button.dataset.removeCart);renderCart();}
+});
+$("saleDiscount").addEventListener("input",renderCart);
+$("clearCartBtn").addEventListener("click",clearCart);
+
+/* -------------------- COMPLETE SALE & INVOICE -------------------- */
+$("completeSaleBtn").addEventListener("click",()=>{
+  if(!cart.length){alert("Please add at least one product.");return;}
+  for(const item of cart) {
+    const product=data.products.find(p=>p.id===item.productId);
+    if(!product || product.stock<item.quantity) {
+      alert("Stock changed for "+item.name+". Please check the cart.");
+      return;
+    }
+  }
+  const totals=calculateBill();
+  if(totals.total<=0){alert("Bill total must be greater than zero.");return;}
+  const taxType=$("taxType").value;
+  const sale={
+    id:uid("sale"),
+    billNo:"SD-"+Date.now().toString().slice(-9),
+    date:new Date().toISOString(),
+    day:today(),
+    customer:$("customerName").value.trim()||"Walk-in Customer",
+    phone:$("customerPhone").value.trim(),
+    payment:$("paymentMode").value,
+    taxType,
+    items:cart.map(item=>({...item})),
+    subtotal:totals.subtotal,
+    discount:totals.discount,
+    tax:totals.tax,
+    total:totals.total,
+    cost:cart.reduce((sum,item)=>sum+item.cost*item.quantity,0)
+  };
+  cart.forEach(item=>{
+    const product=data.products.find(p=>p.id===item.productId);
+    product.stock-=item.quantity;
+  });
+  data.sales.unshift(sale);
+  saveAll();
+  renderAll();
+  showInvoice(sale);
+  clearCart();
+  alert("Sale completed and saved successfully.");
+});
+
+function showInvoice(sale) {
+  const firm=data.firm;
+  const items=sale.items.map(item=>`
+    <tr><td>${escapeHTML(item.name)}</td><td>${item.quantity}</td>
+    <td>${money(item.price)}</td><td>${item.gst}%</td>
+    <td>${money(item.price*item.quantity)}</td></tr>`).join("");
+  const taxLabel=sale.taxType==="local"?"CGST + SGST":"IGST";
+  $("printArea").innerHTML=`
+    <div style="font-family:Arial;color:#172033">
+      <div style="text-align:center;border-bottom:2px solid #174ea6;padding-bottom:12px">
+        <h1>${escapeHTML(firm.name||"SMART DUKAAN")}</h1>
+        <p>${escapeHTML(firm.address||"")}</p>
+        <p>Phone: ${escapeHTML(firm.phone||"-")} | Email: ${escapeHTML(firm.email||"-")}</p>
+        <p>GSTIN: ${escapeHTML(firm.gst||"-")}</p>
+        <h2>TAX INVOICE / SALES BILL</h2>
+      </div>
+      <p><strong>Bill No:</strong> ${escapeHTML(sale.billNo)}<br>
+      <strong>Date:</strong> ${new Date(sale.date).toLocaleString()}<br>
+      <strong>Customer:</strong> ${escapeHTML(sale.customer)}<br>
+      <strong>Phone:</strong> ${escapeHTML(sale.phone||"-")}<br>
+      <strong>Payment:</strong> ${escapeHTML(sale.payment)}</p>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th style="border:1px solid #aaa">Product</th><th style="border:1px solid #aaa">Qty</th><th style="border:1px solid #aaa">Rate</th><th style="border:1px solid #aaa">GST</th><th style="border:1px solid #aaa">Amount</th></tr></thead>
+        <tbody>${items}</tbody>
+      </table>
+      <div style="margin-left:auto;max-width:300px;margin-top:15px">
+        <p>Subtotal: ${money(sale.subtotal)}</p>
+        <p>Discount: ${money(sale.discount)}</p>
+        <p>${taxLabel}: ${money(sale.tax)}</p>
+        <h2>Grand Total: ${money(sale.total)}</h2>
+      </div>
+      <p style="text-align:center;margin-top:40px">Thank you for shopping with us!</p>
+      <p style="text-align:center;font-size:11px">Generated using SMART DUKAAN</p>
+    </div>`;
+  $("invoiceCard").classList.remove("hidden");
+  $("invoiceCard").scrollIntoView({behavior:"smooth"});
+}
+$("printBillBtn").addEventListener("click",()=>window.print());
+
+/* -------------------- DAILY SALES -------------------- */
+$("dailyDate").value=today();
+$("dailyDate").addEventListener("change",renderDaily);
+function renderDaily() {
+  const date=$("dailyDate").value||today();
+  const sales=data.sales.filter(s=>s.day===date);
+  const total=sales.reduce((sum,s)=>sum+s.total,0);
+  const cash=sales.filter(s=>s.payment==="Cash").reduce((sum,s)=>sum+s.total,0);
+  const digital=sales.filter(s=>["Google Pay","PhonePe","Paytm","Card","Bank Transfer"].includes(s.payment)).reduce((sum,s)=>sum+s.total,0);
+  $("dailyTotal").textContent=money(total);
+  $("dailyCount").textContent=sales.length;
+  $("dailyCash").textContent=money(cash);
+  $("dailyDigital").textContent=money(digital);
+  $("dailyTable").innerHTML=sales.length?sales.map(s=>`
+    <tr><td>${escapeHTML(s.billNo)}</td><td>${escapeHTML(s.customer)}</td>
+    <td>${s.items.map(i=>escapeHTML(i.name)+" × "+i.quantity).join("<br>")}</td>
+    <td>${escapeHTML(s.payment)}</td><td>${money(s.total)}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">No sales recorded for this date.</td></tr>`;
+}
+
+/* -------------------- EXPENSES -------------------- */
+$("expenseDate").value=today();
+$("expenseForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const expense={
+    id:uid("expense"),
+    name:$("expenseName").value.trim(),
+    amount:Number($("expenseAmount").value),
+    date:$("expenseDate").value,
+    payment:$("expenseMode").value
+  };
+  if(!expense.name||expense.amount<=0){alert("Enter a valid expense.");return;}
+  data.expenses.unshift(expense);
+  saveAll();
+  $("expenseForm").reset();
+  $("expenseDate").value=today();
+  renderAll();
+  alert("Expense saved successfully.");
+});
+function renderExpenses() {
+  $("expenseTable").innerHTML=data.expenses.length?data.expenses.map(e=>`
+    <tr><td>${escapeHTML(e.date)}</td><td>${escapeHTML(e.name)}</td>
+    <td>${escapeHTML(e.payment)}</td><td>${money(e.amount)}</td>
+    <td><button class="btn red-btn" data-delete-expense="${e.id}">Delete</button></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No expenses recorded.</td></tr>`;
+}
+$("expenseTable").addEventListener("click",event=>{
+  const button=event.target.closest("[data-delete-expense]");
+  if(!button)return;
+  if(confirm("Delete this expense?")) {
+    data.expenses=data.expenses.filter(e=>e.id!==button.dataset.deleteExpense);
+    saveAll();renderAll();
+  }
+});
+
+/* -------------------- SALES HISTORY -------------------- */
+$("historySearch").addEventListener("input",renderHistory);
+function renderHistory() {
+  const q=($("historySearch").value||"").toLowerCase();
+  const sales=data.sales.filter(s=>(s.billNo+" "+s.customer).toLowerCase().includes(q));
+  $("historyTable").innerHTML=sales.length?sales.map(s=>`
+    <tr><td>${escapeHTML(s.billNo)}</td><td>${new Date(s.date).toLocaleString()}</td>
+    <td>${escapeHTML(s.customer)}</td><td>${escapeHTML(s.payment)}</td><td>${money(s.total)}</td>
+    <td><button class="btn light-btn" data-view-sale="${s.id}">View Bill</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">No matching sales found.</td></tr>`;
+}
+$("historyTable").addEventListener("click",event=>{
+  const button=event.target.closest("[data-view-sale]");
+  if(!button)return;
+  const sale=data.sales.find(s=>s.id===button.dataset.viewSale);
+  if(sale){showPage("sale");showInvoice(sale);}
+});
+
+/* -------------------- REPORTS & DASHBOARD -------------------- */
+function renderReports() {
+  const salesTotal=data.sales.reduce((sum,s)=>sum+s.total,0);
+  const cost=data.sales.reduce((sum,s)=>sum+(s.cost||0),0);
+  const expenses=data.expenses.reduce((sum,e)=>sum+e.amount,0);
+  const gross=salesTotal-cost;
+  $("reportSales").textContent=money(salesTotal);
+  $("reportCost").textContent=money(cost);
+  $("reportGross").textContent=money(gross);
+  $("reportNet").textContent=money(gross-expenses);
+  const modes={};
+  data.sales.forEach(s=>{
+    if(!modes[s.payment])modes[s.payment]={count:0,total:0};
+    modes[s.payment].count++;
+    modes[s.payment].total+=s.total;
+  });
+  $("paymentReport").innerHTML=Object.keys(modes).length?Object.entries(modes).map(([mode,value])=>`
+    <tr><td>${escapeHTML(mode)}</td><td>${value.count}</td><td>${money(value.total)}</td></tr>`).join(""):`<tr><td colspan="3" class="empty">No payment records yet.</td></tr>`;
+}
+function renderDashboard() {
+  const sales=data.sales.reduce((sum,s)=>sum+s.total,0);
+  const expenses=data.expenses.reduce((sum,e)=>sum+e.amount,0);
+  const cost=data.sales.reduce((sum,s)=>sum+(s.cost||0),0);
+  $("statSales").textContent=money(sales);
+  $("statExpenses").textContent=money(expenses);
+  $("statProfit").textContent=money(sales-cost-expenses);
+  $("statProducts").textContent=data.products.length;
+  const todaySales=data.sales.filter(s=>s.day===today());
+  $("todaySales").textContent=money(todaySales.reduce((sum,s)=>sum+s.total,0));
+  $("todayBills").textContent=todaySales.length;
+  $("todayExpenses").textContent=money(data.expenses.filter(e=>e.date===today()).reduce((sum,e)=>sum+e.amount,0));
+  $("recentSales").innerHTML=data.sales.length?data.sales.slice(0,5).map(s=>`
+    <tr><td>${escapeHTML(s.billNo)}</td><td>${escapeHTML(s.customer)}</td>
+    <td>${escapeHTML(s.day)}</td><td>${escapeHTML(s.payment)}</td><td>${money(s.total)}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">No sales yet. Create your first bill.</td></tr>`;
+}
+
+/* -------------------- BACKUP & RESTORE -------------------- */
+$("exportBtn").addEventListener("click",()=>{
+  saveAll();
+  const backup={app:"SMART DUKAAN",version:1,exportedAt:new Date().toISOString(),manager};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="smart-dukaan-backup-"+today()+".json";
+  link.click();
+  URL.revokeObjectURL(url);
+});
+$("importBtn").addEventListener("click",()=>{
+  const file=$("importFile").files[0];
+  if(!file){alert("Please choose a backup JSON file.");return;}
+  if(!confirm("Restore this backup? It will replace all currently saved firms."))return;
   const reader=new FileReader();
-  reader.onload=()=>saveFirmData(reader.result);
-  reader.readAsDataURL(file);
- }else{
-  saveFirmData();
- }
+  reader.onload=()=>{
+    try {
+      const backup=JSON.parse(reader.result);
+      const restored=backup.manager;
+      if(backup.app!=="SMART DUKAAN"||!restored||!restored.firms||!restored.activeFirmId||!restored.firms[restored.activeFirmId]) {
+        throw new Error("Invalid backup file.");
+      }
+      manager=restored;
+      data=manager.firms[manager.activeFirmId].data||blankData();
+      localStorage.setItem(MANAGER_KEY,JSON.stringify(manager));
+      clearCart();
+      renderAll();
+      alert("Backup restored successfully.");
+    } catch(error) {
+      alert("Could not restore this file. Please select a valid SMART DUKAAN backup.");
+      console.error(error);
+    }
+  };
+  reader.readAsText(file);
+});
+$("deleteDataBtn").addEventListener("click",()=>{
+  if(!confirm("Delete all products, sales and expenses for this firm?"))return;
+  if(!confirm("Are you sure? This action cannot be undone unless you have a backup."))return;
+  data=blankData(data.firm.name||"My Firm");
+  saveAll();
+  clearCart();
+  $("invoiceCard").classList.add("hidden");
+  renderAll();
+  alert("Current firm records have been cleared.");
 });
 
-$("productForm").addEventListener("submit",e=>{
- e.preventDefault();let id=+$("editProductId").value,x={id:id||Date.now(),name:$("pname").value.trim(),code:$("pcode").value.trim(),cost:+$("pcost").value,price:+$("pprice").value,stock:+$("pstock").value,limit:+$("plimit").value,gst:+$("pgst").value};
- if(!x.name||[x.cost,x.price,x.stock,x.limit].some(n=>!Number.isFinite(n)||n<0))return alert("Enter valid product details.");
- if(id){let i=data.products.findIndex(p=>p.id===id);if(i>=0)data.products[i]=x}else data.products.push(x);
- e.target.reset();$("editProductId").value="";$("productFormHeading").textContent="Add New Product";save();alert(id?"Product updated.":"Product added.");
-});
-
-function editProduct(id){let p=data.products.find(x=>x.id===id);if(!p)return;$("editProductId").value=p.id;$("pname").value=p.name;$("pcode").value=p.code||"";$("pcost").value=p.cost;$("pprice").value=p.price;$("pstock").value=p.stock;$("plimit").value=p.limit;$("pgst").value=p.gst;$("productFormHeading").textContent="Edit Product";$("productForm").scrollIntoView({behavior:"smooth"})}
-function deleteProduct(id){if(confirm("Delete this product?")){data.products=data.products.filter(x=>x.id!==id);save()}}
-$("productSearch").addEventListener("input",render);
-
-function renderProductEntryRows(){
- const host=$("productEntryRows");if(!host)return;
- host.innerHTML=entryRows.map((r,i)=>`<div class="grid" style="align-items:end;border:1px solid #dce5f0;border-radius:12px;padding:12px;margin:9px 0">
- <div><label>Product ${i+1}</label><select data-entry-product="${i}"><option value="">Choose a product</option>${data.products.map(p=>`<option value="${p.id}" ${String(r.productId)===String(p.id)?"selected":""}>${esc(p.name)} — Stock: ${p.stock} — ${money(p.price)}</option>`).join("")}</select></div>
- <div><label>Quantity</label><input data-entry-qty="${i}" type="number" min="1" step="1" value="${r.qty||1}"></div>
- <div><button class="danger" type="button" data-remove-entry="${i}" ${entryRows.length===1?"disabled":""}>Remove row</button></div>
- </div>`).join("")||"<p>No product rows. Click Add Another Product.</p>";
- host.querySelectorAll("[data-entry-product]").forEach(el=>el.addEventListener("change",()=>{entryRows[+el.dataset.entryProduct].productId=el.value}));
- host.querySelectorAll("[data-entry-qty]").forEach(el=>el.addEventListener("input",()=>{entryRows[+el.dataset.entryQty].qty=el.value}));
- host.querySelectorAll("[data-remove-entry]").forEach(el=>el.addEventListener("click",()=>{entryRows.splice(+el.dataset.removeEntry,1);if(!entryRows.length)entryRows.push({productId:"",qty:1});renderProductEntryRows()}));
+/* -------------------- RENDER EVERYTHING -------------------- */
+function renderAll() {
+  updateHeader();
+  updateFirmSelect();
+  renderFirm();
+  renderProducts();
+  renderCart();
+  renderExpenses();
+  renderHistory();
+  renderDaily();
+  renderReports();
+  renderDashboard();
 }
-
-$("addProductRow").onclick=()=>{entryRows.push({productId:"",qty:1});renderProductEntryRows()};
-$("addAllToCart").onclick=()=>{
- const chosen=entryRows.map(r=>({p:data.products.find(p=>String(p.id)===String(r.productId)),q:Number(r.qty)}));
- if(chosen.some(x=>!x.p))return alert("Please choose a product in every row, or remove the empty row.");
- if(chosen.some(x=>!Number.isInteger(x.q)||x.q<1))return alert("Enter a valid quantity for every product.");
- const totals={};chosen.forEach(({p,q})=>totals[p.id]=(totals[p.id]||0)+q);
- for(const {p} of chosen){const already=cart.filter(x=>x.id===p.id).reduce((a,x)=>a+x.qty,0);if(already+totals[p.id]>p.stock)return alert("Not enough stock for "+p.name+". Available stock: "+p.stock);}
- chosen.forEach(({p,q})=>{let item=cart.find(x=>x.id==p.id);if(item)item.qty+=q;else cart.push({id:p.id,name:p.name,price:p.price,cost:p.cost,qty:q,gst:p.gst})});
- entryRows=[{productId:"",qty:1}];renderProductEntryRows();renderCart();alert("All selected products have been added to one bill.");
-};
-
-function renderCart(){
- let base=0,tax=0;
- $("cartRows").innerHTML=cart.map((x,i)=>{
- let b=x.price*x.qty,t=b*x.gst/100;base+=b;tax+=t;
- return `<tr><td>${esc(x.name)}</td><td>${money(x.price)}</td><td>${x.qty}</td><td>${x.gst}%</td><td>${money(b+t)}</td><td><button class="danger" type="button" onclick="removeCart(${i})">Remove</button></td></tr>`;
- }).join("")||emptyRow(6);
- $("cartTotal").innerHTML=`Subtotal: ${money(base)}<br>GST: ${money(tax)}<br><b>Total: ${money(base+tax)}</b>`;
-}
-
-function removeCart(i){cart.splice(i,1);renderCart()}
-
-$("completeSale").onclick=()=>{
- if(!cart.length)return alert("Add at least one product to the bill.");
- for(let i of cart){let p=data.products.find(x=>x.id===i.id);if(!p||p.stock<i.qty)return alert("Insufficient stock for "+i.name);}
- let base=cart.reduce((a,x)=>a+x.price*x.qty,0);
- let tax=cart.reduce((a,x)=>a+x.price*x.qty*x.gst/100,0);
- let sale={invoice:"SD"+Date.now().toString().slice(-8),date:today(),customer:$("customer").value.trim(),payment:$("paymentMode").value,items:cart.map(x=>({...x})),base,tax,total:base+tax,profit:cart.reduce((a,x)=>a+(x.price-x.cost)*x.qty,0)};
- cart.forEach(i=>data.products.find(p=>p.id===i.id).stock-=i.qty);
- data.sales.push(sale);cart=[];save();showInvoice(sale);$("customer").value="";alert("Bill completed. Daily sales updated.");
-};
-
-function showInvoice(x){
- let f=data.firm||{};
- $("invoicePrint").style.display="block";
- $("invoicePrint").innerHTML=`<h2>${esc(f.name||"SMART DUKAAN")}</h2><p>${esc(f.address||"")}<br>${f.phone?"Phone: "+esc(f.phone):""}</p><h3>SALES INVOICE</h3><p>Invoice: ${esc(x.invoice)}<br>Date: ${esc(x.date)}<br>Customer: ${esc(x.customer||"Walk-in customer")}<br>Payment: ${esc(x.payment)}</p><div class="tablewrap"><table><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th></tr></thead><tbody>${x.items.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.qty}</td><td>${money(i.price)}</td><td>${i.gst}%</td><td>${money(i.price*i.qty*(1+i.gst/100))}</td></tr>`).join("")}</tbody></table></div><p>Subtotal: ${money(x.base)}<br>GST: ${money(x.tax)}</p><h2>Total: ${money(x.total)}</h2><button class="primary no-print" onclick="window.print()">Print Bill</button>`;
- $("invoicePrint").scrollIntoView({behavior:"smooth"});
-}
-
-$("dailyDate").value=isoToday();$("dailyDate").addEventListener("change",renderExtra);
-$("expenseDate").value=isoToday();
-$("expenseForm").addEventListener("submit",e=>{
- e.preventDefault();let amount=+$("expenseAmount").value;
- if(amount<=0)return alert("Enter a valid amount.");
- data.expenses.push({id:Date.now(),name:$("expenseName").value.trim(),amount,date:new Date($("expenseDate").value+"T12:00:00").toLocaleDateString("en-IN")});
- e.target.reset();$("expenseDate").value=isoToday();save();alert("Expense saved.");
-});
-
-function deleteExpense(id){if(confirm("Delete this expense?")){data.expenses=data.expenses.filter(x=>x.id!==id);save()}}
-
-function exportData(){
- let b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a"),u=URL.createObjectURL(b);
- a.href=u;a.download="smart-dukaan-backup.json";a.click();URL.revokeObjectURL(u);
-}
-
-function importData(){
- let f=$("restoreFile").files[0];if(!f)return alert("Choose a backup file.");
- let r=new FileReader();
- r.onload=()=>{
-  try{
-   let d=JSON.parse(r.result);
-   if(!Array.isArray(d.products)||!Array.isArray(d.sales))throw Error();
-   if(!confirm("Replace current data?"))return;
-   data={...blank,...d,firm:{...blank.firm,...(d.firm||{})},expenses:d.expenses||[]};
-   save();alert("Backup restored.");
-  }catch(e){alert("Invalid backup file.")}
- };
- r.readAsText(f);
-}
-
-function resetData(){
- if(confirm("Delete all app data? Download a backup first if needed.")){
-  data=JSON.parse(JSON.stringify(blank));cart=[];save()
- }
-}
-
-render();
+renderAll();
 </script>
 </body>
 </html>
