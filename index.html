@@ -1,10 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SMART DUKAAN</title>
+
+<!-- External Libraries for Excel and PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
 <style>
 :root {
   --blue:#174ea6;
@@ -105,7 +110,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
   <nav class="no-print" id="navigation">
     <button class="active" data-page="dashboard">Dashboard</button>
     <button data-page="firm">Firm Profile</button>
-    <button data-page="products">Products</button>
+    <button data-page="products">Products & Stock</button>
     <button data-page="sale">New Sale</button>
     <button data-page="daily">Daily Sales</button>
     <button data-page="expenses">Expenses</button>
@@ -164,10 +169,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
     </div>
   </section>
 
-  <!-- PRODUCTS -->
+  <!-- PRODUCTS & STOCK -->
   <section class="page" id="products">
     <div class="card">
-      <h2>Product Management</h2>
+      <h2>Product Management & Stock Control</h2>
       <form id="productForm">
         <input type="hidden" id="editProductId">
         <div class="fields">
@@ -185,7 +190,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
       </form>
     </div>
     <div class="card">
-      <h3>Product List</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <h3>Product Inventory & Stock List</h3>
+        <button class="btn green-btn" id="exportStockXlsBtn">Export Stock Excel (.xlsx)</button>
+      </div>
       <input id="productSearch" placeholder="Search product name or code..." style="max-width:400px;margin-bottom:12px">
       <div class="table-wrap"><table><thead><tr><th>Product</th><th>Code</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Actions</th></tr></thead><tbody id="productTable"></tbody></table></div>
     </div>
@@ -233,14 +241,22 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
     </div>
     <div class="card hidden" id="invoiceCard">
       <div id="printArea"></div>
-      <div class="actions no-print"><button class="btn" id="printBillBtn">Print Invoice</button></div>
+      <div class="actions no-print">
+        <button class="btn" id="printBillBtn">Print Invoice</button>
+        <button class="btn green-btn" id="downloadPdfBtn">Download PDF</button>
+        <button class="btn light-btn" id="exportBillXlsBtn">Export Excel (.xlsx)</button>
+        <button class="btn grey-btn" id="shareBillBtn">Quick Share</button>
+      </div>
     </div>
   </section>
 
   <!-- DAILY SALES -->
   <section class="page" id="daily">
     <div class="card">
-      <h2>Daily Sales Register</h2>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:15px">
+        <h2>Daily Sales Register</h2>
+        <button class="btn green-btn" id="exportDailyXlsBtn">Export Daily Register (.xlsx)</button>
+      </div>
       <div class="field" style="max-width:250px;margin-bottom:15px"><label>Select Date</label><input id="dailyDate" type="date"></div>
       <div class="grid">
         <div class="stat"><small>Sales Total</small><strong id="dailyTotal">₹0.00</strong></div>
@@ -326,6 +342,8 @@ const $ = id => document.getElementById(id);
 const money = value => "₹" + Number(value || 0).toFixed(2);
 const today = () => new Date().toISOString().slice(0,10);
 const uid = prefix => prefix + "_" + Date.now() + "_" + Math.random().toString(36).slice(2,7);
+
+let activeInvoiceSale = null;
 
 function blankData(name="My First Firm") {
   return {
@@ -447,7 +465,7 @@ $("firmForm").addEventListener("submit",event=>{
   alert("Firm profile saved successfully.");
 });
 
-/* -------------------- PRODUCTS -------------------- */
+/* -------------------- PRODUCTS & STOCK -------------------- */
 function resetProductForm() {
   $("productForm").reset();
   $("editProductId").value="";
@@ -487,9 +505,12 @@ function renderProducts() {
   $("productTable").innerHTML=products.length?products.map(p=>`
     <tr>
       <td>${escapeHTML(p.name)}</td><td>${escapeHTML(p.code||"-")}</td>
-      <td>${money(p.cost)}</td><td>${money(p.price)}</td><td>${p.stock}</td><td>${p.gst}%</td>
-      <td><button class="btn light-btn" data-edit-product="${p.id}">Edit</button>
-      <button class="btn red-btn" data-delete-product="${p.id}">Delete</button></td>
+      <td>${money(p.cost)}</td><td>${money(p.price)}</td><td><strong>${p.stock}</strong></td><td>${p.gst}%</td>
+      <td>
+        <button class="btn green-btn" data-update-stock="${p.id}" style="padding:6px 10px;font-size:12px;">+ Stock</button>
+        <button class="btn light-btn" data-edit-product="${p.id}" style="padding:6px 10px;font-size:12px;">Edit</button>
+        <button class="btn red-btn" data-delete-product="${p.id}" style="padding:6px 10px;font-size:12px;">Delete</button>
+      </td>
     </tr>`).join(""):`<tr><td colspan="7" class="empty">No products found.</td></tr>`;
   const select=$("saleProduct");
   select.innerHTML='<option value="">Select a product</option>'+data.products.map(p=>
@@ -497,31 +518,73 @@ function renderProducts() {
   ).join("");
 }
 $("productSearch").addEventListener("input",renderProducts);
+
 $("productTable").addEventListener("click",event=>{
-  const edit=event.target.closest("[data-edit-product]");
-  const del=event.target.closest("[data-delete-product]");
+  const edit = event.target.closest("[data-edit-product]");
+  const del = event.target.closest("[data-delete-product]");
+  const updStock = event.target.closest("[data-update-stock]");
+
   if(edit) {
-    const p=data.products.find(item=>item.id===edit.dataset.editProduct);
-    if(!p)return;
-    $("editProductId").value=p.id;
-    $("productName").value=p.name;
-    $("productCode").value=p.code||"";
-    $("productCost").value=p.cost;
-    $("productPrice").value=p.price;
-    $("productStock").value=p.stock;
-    $("productGst").value=String(p.gst);
-    $("productSubmit").textContent="Update Product";
+    const p = data.products.find(item => item.id === edit.dataset.editProduct);
+    if(!p) return;
+    $("editProductId").value = p.id;
+    $("productName").value = p.name;
+    $("productCode").value = p.code || "";
+    $("productCost").value = p.cost;
+    $("productPrice").value = p.price;
+    $("productStock").value = p.stock;
+    $("productGst").value = String(p.gst);
+    $("productSubmit").textContent = "Update Product";
     showPage("products");
     $("productName").focus();
   }
   if(del) {
-    const p=data.products.find(item=>item.id===del.dataset.deleteProduct);
-    if(p && confirm("Delete "+p.name+"? This will not remove it from old bills.")) {
-      data.products=data.products.filter(item=>item.id!==p.id);
-      cart=cart.filter(item=>item.productId!==p.id);
-      saveAll();renderAll();
+    const p = data.products.find(item => item.id === del.dataset.deleteProduct);
+    if(p && confirm("Delete " + p.name + "?")) {
+      data.products = data.products.filter(item => item.id !== p.id);
+      cart = cart.filter(item => item.productId !== p.id);
+      saveAll(); renderAll();
     }
   }
+  if(updStock) {
+    const p = data.products.find(item => item.id === updStock.dataset.updateStock);
+    if(!p) return;
+    const addQty = prompt(`Update stock for "${p.name}".\nCurrent Stock: ${p.stock}\n\nEnter quantity to add (e.g. 10) or type a negative number to reduce (e.g. -5):`, "0");
+    if(addQty === null) return;
+    const change = Number(addQty);
+    if(isNaN(change)) {
+      alert("Please enter a valid number.");
+      return;
+    }
+    p.stock = Math.max(0, p.stock + change);
+    saveAll();
+    renderAll();
+    alert(`Stock updated successfully! New stock for ${p.name}: ${p.stock}`);
+  }
+});
+
+// EXPORT PRODUCT STOCK TO EXCEL (.xlsx)
+$("exportStockXlsBtn").addEventListener("click", () => {
+  if (!data.products.length) {
+    alert("No products available to export.");
+    return;
+  }
+
+  const stockRows = data.products.map(p => ({
+    "Product Name": p.name,
+    "Code / SKU": p.code || "-",
+    "Purchase Cost (₹)": p.cost,
+    "Selling Price (₹)": p.price,
+    "Available Stock": p.stock,
+    "GST Rate (%)": p.gst,
+    "Stock Value (Cost) (₹)": p.cost * p.stock,
+    "Stock Value (Retail) (₹)": p.price * p.stock
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(stockRows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Product Stock");
+  XLSX.writeFile(wb, `Stock_Inventory_${data.firm.name || 'Firm'}_${today()}.xlsx`);
 });
 
 /* -------------------- CART & BILL CALCULATION -------------------- */
@@ -629,6 +692,7 @@ $("completeSaleBtn").addEventListener("click",()=>{
 });
 
 function showInvoice(sale) {
+  activeInvoiceSale = sale;
   const firm=data.firm;
   const items=sale.items.map(item=>`
     <tr><td>${escapeHTML(item.name)}</td><td>${item.quantity}</td>
@@ -666,6 +730,139 @@ function showInvoice(sale) {
   $("invoiceCard").scrollIntoView({behavior:"smooth"});
 }
 $("printBillBtn").addEventListener("click",()=>window.print());
+
+/* -------------------- EXCEL, PDF & QUICK SHARE -------------------- */
+function createInvoicePdf(sale) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const firm = data.firm;
+
+  doc.setFontSize(18);
+  doc.text(firm.name || "SMART DUKAAN", 14, 20);
+  
+  doc.setFontSize(10);
+  doc.text(`${firm.address || ''}`, 14, 26);
+  doc.text(`Phone: ${firm.phone || '-'} | GSTIN: ${firm.gst || '-'}`, 14, 31);
+  
+  doc.setLineWidth(0.5);
+  doc.line(14, 35, 196, 35);
+
+  doc.setFontSize(14);
+  doc.text("TAX INVOICE / BILL", 14, 43);
+
+  doc.setFontSize(10);
+  doc.text(`Bill No: ${sale.billNo}`, 14, 51);
+  doc.text(`Date: ${new Date(sale.date).toLocaleString()}`, 14, 56);
+  doc.text(`Customer: ${sale.customer}`, 14, 61);
+  doc.text(`Payment: ${sale.payment}`, 14, 66);
+
+  const tableRows = sale.items.map(i => [
+    i.name, i.quantity, `₹${i.price.toFixed(2)}`, `${i.gst}%`, `₹${(i.price * i.quantity).toFixed(2)}`
+  ]);
+
+  doc.autoTable({
+    startY: 72,
+    head: [['Product', 'Qty', 'Rate', 'GST', 'Amount']],
+    body: tableRows,
+    theme: 'grid'
+  });
+
+  const finalY = doc.lastAutoTable.finalY + 10;
+  const taxLabel = sale.taxType === "local" ? "CGST + SGST" : "IGST";
+
+  doc.text(`Subtotal: ₹${sale.subtotal.toFixed(2)}`, 140, finalY);
+  doc.text(`Discount: ₹${sale.discount.toFixed(2)}`, 140, finalY + 5);
+  doc.text(`${taxLabel}: ₹${sale.tax.toFixed(2)}`, 140, finalY + 10);
+  doc.setFontSize(12);
+  doc.text(`Grand Total: ₹${sale.total.toFixed(2)}`, 140, finalY + 18);
+
+  return doc;
+}
+
+$("downloadPdfBtn").addEventListener("click", () => {
+  if (!activeInvoiceSale) return;
+  const doc = createInvoicePdf(activeInvoiceSale);
+  doc.save(`Invoice_${activeInvoiceSale.billNo}.pdf`);
+});
+
+$("exportBillXlsBtn").addEventListener("click", () => {
+  if (!activeInvoiceSale) return;
+  const sale = activeInvoiceSale;
+  
+  const excelData = sale.items.map(i => ({
+    "Bill No": sale.billNo,
+    "Date": sale.day,
+    "Customer": sale.customer,
+    "Item": i.name,
+    "Quantity": i.quantity,
+    "Price (₹)": i.price,
+    "GST (%)": i.gst,
+    "Total (₹)": i.price * i.quantity
+  }));
+
+  excelData.push({});
+  excelData.push({ "Item": "Subtotal", "Total (₹)": sale.subtotal });
+  excelData.push({ "Item": "Discount", "Total (₹)": sale.discount });
+  excelData.push({ "Item": "Tax", "Total (₹)": sale.tax });
+  excelData.push({ "Item": "Grand Total", "Total (₹)": sale.total });
+
+  const ws = XLSX.utils.json_to_sheet(excelData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Invoice");
+  XLSX.writeFile(wb, `Invoice_${sale.billNo}.xlsx`);
+});
+
+$("exportDailyXlsBtn").addEventListener("click", () => {
+  const date = $("dailyDate").value || today();
+  const sales = data.sales.filter(s => s.day === date);
+
+  if (!sales.length) {
+    alert("No sales recorded on " + date + " to export.");
+    return;
+  }
+
+  const exportRows = sales.map(s => ({
+    "Bill No": s.billNo,
+    "Date": new Date(s.date).toLocaleString(),
+    "Customer": s.customer,
+    "Phone": s.phone || "-",
+    "Payment Mode": s.payment,
+    "Items Count": s.items.length,
+    "Subtotal (₹)": s.subtotal,
+    "Discount (₹)": s.discount,
+    "Tax (₹)": s.tax,
+    "Total Amount (₹)": s.total
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(exportRows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Daily Sales");
+  XLSX.writeFile(wb, `Sales_Register_${date}.xlsx`);
+});
+
+$("shareBillBtn").addEventListener("click", async () => {
+  if (!activeInvoiceSale) return;
+  const sale = activeInvoiceSale;
+  
+  const doc = createInvoicePdf(sale);
+  const pdfBlob = doc.output('blob');
+  const pdfFile = new File([pdfBlob], `Invoice_${sale.billNo}.pdf`, { type: 'application/pdf' });
+
+  if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+    try {
+      await navigator.share({
+        title: `Invoice ${sale.billNo}`,
+        text: `Here is your bill from ${data.firm.name || 'SMART DUKAAN'}. Total: ${money(sale.total)}`,
+        files: [pdfFile]
+      });
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error("Share failed:", err);
+    }
+  } else {
+    alert("Direct file sharing is not supported in this browser. Downloading PDF instead.");
+    doc.save(`Invoice_${sale.billNo}.pdf`);
+  }
+});
 
 /* -------------------- DAILY SALES -------------------- */
 $("dailyDate").value=today();
