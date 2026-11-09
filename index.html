@@ -245,6 +245,11 @@ footer{text-align:center;color:#94a3b8;padding:20px;font-size:12px}
 </div>
 
 <div class="card">
+<div class="actions" style="margin-top:0;margin-bottom:12px">
+<button class="btn-green" onclick="exportStock()">
+📊 Download Stock Excel (.xlsx)
+</button>
+</div>
 <input id="productSearch" placeholder="Search product..." oninput="renderProducts()">
 <div class="table-wrap" style="margin-top:14px"><table>
 <thead><tr><th>Code</th><th>Product</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Actions</th></tr></thead>
@@ -588,12 +593,21 @@ el("productForm").addEventListener("submit",e=>{
  if(d.products.some(p=>p.code.toLowerCase()===code.toLowerCase()&&p.id!==id)){
   alert("Product code already exists.");return;
  }
- const p={
-  id:id||uid(),name:el("productName").value.trim(),code,
-  cost:Number(el("productCost").value),price:Number(el("productPrice").value),
-  stock:Number(el("productStock").value),limit:Number(el("productLimit").value),
+  const oldProduct=d.products.find(x=>x.id===id);
+
+const p={
+  id:id||uid(),
+  name:el("productName").value.trim(),
+  code,
+  cost:Number(el("productCost").value),
+  price:Number(el("productPrice").value),
+  stock:Number(el("productStock").value),
+  openingStock:oldProduct
+    ? (oldProduct.openingStock ?? null)
+    : Number(el("productStock").value),
+  limit:Number(el("productLimit").value),
   gst:Number(el("productGst").value)
- };
+};
  if(p.cost<0||p.price<0||p.stock<0){alert("Enter valid non-negative values.");return}
  const index=d.products.findIndex(x=>x.id===id);
  if(index>=0)d.products[index]=p;else d.products.push(p);
@@ -892,7 +906,69 @@ function exportSales(){
   Taxable:s.taxable,CGST:s.cgst,SGST:s.sgst,IGST:s.igst,Total:s.total
  })));
 }
-function exportProducts(){
+function exportProducts(){function exportStock(){
+
+ const products=data().products;
+
+ if(!products.length){
+   alert("No products available to export.");
+   return;
+ }
+
+ const rows=products.map(p=>({
+
+   "Product Code":p.code,
+   "Product Name":p.name,
+
+   "Opening Stock":
+      p.openingStock ?? "",
+
+   "Available Stock":p.stock,
+
+   "Low Stock Limit":p.limit,
+
+   "Purchase Cost (₹)":p.cost,
+
+   "Selling Price (₹)":p.price,
+
+   "Total Stock Value (₹)":
+      Number(p.stock)*Number(p.cost),
+
+   "Potential Sales Value (₹)":
+      Number(p.stock)*Number(p.price),
+
+   "GST Rate":p.gst+"%",
+
+   "Stock Status":
+      p.stock<=0
+      ? "Out of Stock"
+      : p.stock<=p.limit
+      ? "Low Stock"
+      : "Available"
+
+ }));
+
+ const ws=XLSX.utils.json_to_sheet(rows);
+
+ ws["!cols"]=[
+   {wch:16},{wch:25},{wch:16},{wch:16},
+   {wch:16},{wch:18},{wch:18},{wch:23},
+   {wch:25},{wch:12},{wch:18}
+ ];
+
+ const wb=XLSX.utils.book_new();
+
+ XLSX.utils.book_append_sheet(
+   wb,ws,"Stock Register"
+ );
+
+ XLSX.writeFile(
+   wb,
+   "NEXORA_MART_Stock_Register.xlsx"
+ );
+
+ alert("Stock Excel downloaded successfully!");
+}
  exportExcel("Products.xlsx","Products",data().products.map(p=>({
   Code:p.code,Product:p.name,Cost:p.cost,Price:p.price,
   Stock:p.stock,LowStockLimit:p.limit,GST:p.gst
