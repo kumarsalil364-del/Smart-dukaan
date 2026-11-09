@@ -16,6 +16,7 @@
   --muted:#a6b4d0;
   --green:#35c995;
   --red:#ff7181;
+  --yellow:#f59e0b;
 }
 * { box-sizing:border-box; }
 body {
@@ -160,7 +161,7 @@ label {
 table {
   width:100%;
   border-collapse:collapse;
-  min-width:600px;
+  min-width:700px;
 }
 th,td {
   padding:12px;
@@ -170,6 +171,27 @@ th,td {
 }
 th { color:var(--muted); }
 .actions { display:flex; gap:5px; }
+.badge {
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:bold;
+  display:inline-block;
+}
+.badge-green { background:rgba(53, 201, 149, 0.2); color:var(--green); }
+.badge-yellow { background:rgba(245, 158, 11, 0.2); color:var(--yellow); }
+.badge-red { background:rgba(255, 113, 129, 0.2); color:var(--red); }
+
+.toolbar {
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+.toolbar input, .toolbar select {
+  max-width:250px;
+}
+
 .total {
   font-size:25px;
   color:var(--cyan);
@@ -197,6 +219,7 @@ th { color:var(--muted); }
   header { align-items:flex-start; flex-direction:column; }
   .form { grid-template-columns:1fr; }
   .full { grid-column:auto; }
+  .toolbar input, .toolbar select { max-width:100%; }
 }
 </style>
 </head>
@@ -255,6 +278,8 @@ let database = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
 };
 
 let currentPage = "dashboard";
+let productSearchQuery = "";
+let productCategoryFilter = "ALL";
 
 function saveDatabase() {
   localStorage.setItem(STORAGE_KEY,JSON.stringify(database));
@@ -325,6 +350,10 @@ function updateFirmSelect() {
   ).join("");
 }
 
+/* =====================================
+   1. FIRM MANAGEMENT FORM
+===================================== */
+
 function saveFirmForm(e) {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(e.target).entries());
@@ -394,27 +423,27 @@ function showFirmForm(firm = null) {
       
       <div>
         <label>Firm / Shop Name *</label>
-        <input name="name" value="${escapeHTML(firm?.name || '')}" required>
+        <input name="name" value="${escapeHTML(firm?.name || '')}" required placeholder="e.g. Balaji General Store">
       </div>
 
       <div>
         <label>Owner Name</label>
-        <input name="owner" value="${escapeHTML(firm?.owner || '')}">
+        <input name="owner" value="${escapeHTML(firm?.owner || '')}" placeholder="e.g. Ramesh Kumar">
       </div>
 
       <div>
         <label>Phone Number</label>
-        <input name="phone" value="${escapeHTML(firm?.phone || '')}">
+        <input name="phone" value="${escapeHTML(firm?.phone || '')}" placeholder="e.g. 9876543210">
       </div>
 
       <div>
         <label>Email Address</label>
-        <input name="email" type="email" value="${escapeHTML(firm?.email || '')}">
+        <input name="email" type="email" value="${escapeHTML(firm?.email || '')}" placeholder="shop@example.com">
       </div>
 
       <div>
         <label>GSTIN (Optional)</label>
-        <input name="gstin" value="${escapeHTML(firm?.gstin || '')}">
+        <input name="gstin" value="${escapeHTML(firm?.gstin || '')}" placeholder="22AAAAA0000A1Z5">
       </div>
 
       <div>
@@ -424,27 +453,27 @@ function showFirmForm(firm = null) {
 
       <div class="full">
         <label>Business Address</label>
-        <textarea name="address" rows="2">${escapeHTML(firm?.address || '')}</textarea>
+        <textarea name="address" rows="2" placeholder="Full shop address...">${escapeHTML(firm?.address || '')}</textarea>
       </div>
 
       <div>
         <label>Bank Name</label>
-        <input name="bank" value="${escapeHTML(firm?.bank || '')}">
+        <input name="bank" value="${escapeHTML(firm?.bank || '')}" placeholder="State Bank of India">
       </div>
 
       <div>
         <label>Account Number</label>
-        <input name="accountNo" value="${escapeHTML(firm?.accountNo || '')}">
+        <input name="accountNo" value="${escapeHTML(firm?.accountNo || '')}" placeholder="Account number">
       </div>
 
       <div>
         <label>IFSC Code</label>
-        <input name="ifsc" value="${escapeHTML(firm?.ifsc || '')}">
+        <input name="ifsc" value="${escapeHTML(firm?.ifsc || '')}" placeholder="SBIN0001234">
       </div>
 
-      <div class="full" style="display:flex; gap:10px;">
+      <div class="full" style="display:flex; gap:10px; margin-top:10px;">
         <button type="submit" class="primary">Save Firm Details</button>
-        <button type="button" onclick="render()">Cancel</button>
+        <button type="button" onclick="showPage('firms')">Cancel</button>
       </div>
     </form>
   </div>`;
@@ -563,114 +592,323 @@ function dashboard() {
   </div>`;
 }
 
-function productForm() {
-  const name=prompt("Product name:");
-  if(!name) return;
+/* =====================================
+   2. PRODUCTS & INVENTORY WORKFLOW
+===================================== */
 
-  const code=prompt("Product code:") || "";
-  const category=prompt("Category:") || "General";
-  const cost=Number(prompt("Purchase cost ₹:")||0);
-  const price=Number(prompt("Selling price ₹:")||0);
-  const stock=Number(prompt("Opening stock:")||0);
-  const minStock=Number(prompt("Minimum stock alert:")||0);
-  const gst=Number(prompt("GST rate (0,5,12,18,28):")||0);
+function showProductForm(product = null) {
+  const isEdit = !!product;
+  document.getElementById("app").innerHTML = `
+  <div class="card">
+    <h2>${isEdit ? "Edit Product Details" : "Add New Product"}</h2>
+    <form class="form" onsubmit="saveProductForm(event)">
+      <input type="hidden" name="productId" value="${product?.id || ''}">
 
-  addRecord("products",{name,code,category,cost,price,stock,minStock,gst});
-  render();
-  notify("Product added");
+      <div>
+        <label>Product Name *</label>
+        <input name="name" value="${escapeHTML(product?.name || '')}" required placeholder="e.g. Basmati Rice 5kg">
+      </div>
+
+      <div>
+        <label>Product Code / Barcode</label>
+        <input name="code" value="${escapeHTML(product?.code || '')}" placeholder="e.g. PRD-001">
+      </div>
+
+      <div>
+        <label>Category</label>
+        <input name="category" value="${escapeHTML(product?.category || 'General')}" placeholder="e.g. Groceries">
+      </div>
+
+      <div>
+        <label>GST Rate (%)</label>
+        <select name="gst">
+          <option value="0" ${Number(product?.gst)===0?'selected':''}>0%</option>
+          <option value="5" ${Number(product?.gst)===5?'selected':''}>5%</option>
+          <option value="12" ${Number(product?.gst)===12?'selected':''}>12%</option>
+          <option value="18" ${Number(product?.gst)===18?'selected':''}>18%</option>
+          <option value="28" ${Number(product?.gst)===28?'selected':''}>28%</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Purchase Cost (₹) *</label>
+        <input name="cost" type="number" step="0.01" min="0" value="${product?.cost || 0}" required>
+      </div>
+
+      <div>
+        <label>Selling Price (₹) *</label>
+        <input name="price" type="number" step="0.01" min="0" value="${product?.price || 0}" required>
+      </div>
+
+      <div>
+        <label>Opening Stock *</label>
+        <input name="stock" type="number" step="0.01" min="0" value="${product?.stock || 0}" required>
+      </div>
+
+      <div>
+        <label>Minimum Stock Alert Level</label>
+        <input name="minStock" type="number" step="0.01" min="0" value="${product?.minStock || 5}">
+      </div>
+
+      <div class="full" style="display:flex; gap:10px; margin-top:10px;">
+        <button type="submit" class="primary">Save Product</button>
+        <button type="button" onclick="showPage('products')">Cancel</button>
+      </div>
+    </form>
+  </div>`;
 }
 
-function editProduct(id) {
-  const p=records("products").find(x=>x.id===id);
-  if(!p) return;
+function saveProductForm(e) {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target).entries());
+  const productId = d.productId;
 
-  p.name=prompt("Product name:",p.name)||p.name;
-  p.code=prompt("Product code:",p.code)||p.code;
-  p.cost=Number(prompt("Cost:",p.cost)||p.cost);
-  p.price=Number(prompt("Selling price:",p.price)||p.price);
-  p.stock=Number(prompt("Stock:",p.stock)||p.stock);
-  p.gst=Number(prompt("GST:",p.gst)||p.gst);
+  const productData = {
+    name: d.name.trim(),
+    code: d.code.trim() || "N/A",
+    category: d.category.trim() || "General",
+    cost: Number(d.cost),
+    price: Number(d.price),
+    stock: Number(d.stock),
+    minStock: Number(d.minStock),
+    gst: Number(d.gst)
+  };
 
-  saveDatabase();
-  render();
+  if(productId) {
+    const existing = records("products").find(p => p.id === productId);
+    if(existing) {
+      existing.name = productData.name;
+      existing.code = productData.code;
+      existing.category = productData.category;
+      existing.cost = productData.cost;
+      existing.price = productData.price;
+      existing.stock = productData.stock;
+      existing.minStock = productData.minStock;
+      existing.gst = productData.gst;
+      saveDatabase();
+      notify("Product updated successfully");
+    }
+  } else {
+    addRecord("products", productData);
+    notify("New product added successfully");
+  }
+
+  showPage('products');
+}
+
+function editProductModal(id) {
+  const p = records("products").find(x => x.id === id);
+  if(p) showProductForm(p);
 }
 
 function productsPage() {
-  const data=records("products");
+  const allProducts = records("products");
+  const categories = ["ALL", ...new Set(allProducts.map(p => p.category || "General"))];
+
+  const filtered = allProducts.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || 
+                          p.code.toLowerCase().includes(productSearchQuery.toLowerCase());
+    const matchesCategory = productCategoryFilter === "ALL" || p.category === productCategoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
   return `
   <div class="card">
-    <h2>Products & Stock</h2>
-    <button class="primary" onclick="productForm()">+ Add Product</button>
-    <button onclick="exportCSV('products')">Export CSV</button>
-    <br><br>
-    ${makeTable(
-      ["Code","Product","Category","Cost","Selling Price","GST","Stock","Actions"],
-      data.map(p=>`<tr>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
+      <h2>Products & Stock Inventory</h2>
+      <div style="display:flex; gap:10px;">
+        <button class="primary" onclick="showProductForm()">+ Add New Product</button>
+        <button onclick="exportCSV('products')">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" placeholder="Search by name or code..." value="${escapeHTML(productSearchQuery)}" oninput="productSearchQuery=this.value; renderProductsTable();">
+      <select onchange="productCategoryFilter=this.value; renderProductsTable();">
+        ${categories.map(c => `<option value="${escapeHTML(c)}" ${productCategoryFilter===c?'selected':''}>Category: ${escapeHTML(c)}</option>`).join("")}
+      </select>
+    </div>
+
+    <div id="productTableContainer">
+      ${renderProductTableMarkup(filtered)}
+    </div>
+  </div>`;
+}
+
+function renderProductTableMarkup(data) {
+  return makeTable(
+    ["Code", "Product Name", "Category", "Cost", "Selling Price", "GST", "Stock Status", "Actions"],
+    data.map(p => {
+      const stockNum = Number(p.stock);
+      const minStockNum = Number(p.minStock || 0);
+      
+      let badge = `<span class="badge badge-green">In Stock (${p.stock})</span>`;
+      if(stockNum <= 0) {
+        badge = `<span class="badge badge-red">Out of Stock</span>`;
+      } else if(stockNum <= minStockNum) {
+        badge = `<span class="badge badge-yellow">Low Stock (${p.stock})</span>`;
+      }
+
+      return `<tr>
         <td>${escapeHTML(p.code)}</td>
-        <td>${escapeHTML(p.name)}</td>
+        <td><strong>${escapeHTML(p.name)}</strong></td>
         <td>${escapeHTML(p.category)}</td>
         <td>${money(p.cost)}</td>
         <td>${money(p.price)}</td>
         <td>${p.gst}%</td>
-        <td>${p.stock}</td>
+        <td>${badge}</td>
         <td class="actions">
-          <button onclick="editProduct('${p.id}')">Edit</button>
+          <button onclick="editProductModal('${p.id}')">Edit</button>
           <button class="danger" onclick="deleteRecord('products','${p.id}')">Delete</button>
         </td>
-      </tr>`)
-    )}
+      </tr>`;
+    })
+  );
+}
+
+function renderProductsTable() {
+  const container = document.getElementById("productTableContainer");
+  if(!container) return;
+
+  const allProducts = records("products");
+  const filtered = allProducts.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || 
+                          p.code.toLowerCase().includes(productSearchQuery.toLowerCase());
+    const matchesCategory = productCategoryFilter === "ALL" || p.category === productCategoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  container.innerHTML = renderProductTableMarkup(filtered);
+}
+
+/* =====================================
+   3. CUSTOMERS & SUPPLIERS STEP FORM
+===================================== */
+
+function showPartyForm(type, party = null) {
+  const isEdit = !!party;
+  const titleName = type === "customers" ? "Customer" : "Supplier";
+  
+  document.getElementById("app").innerHTML = `
+  <div class="card">
+    <h2>${isEdit ? `Edit ${titleName}` : `Add New ${titleName}`}</h2>
+    <form class="form" onsubmit="savePartyForm(event, '${type}')">
+      <input type="hidden" name="partyId" value="${party?.id || ''}">
+
+      <div>
+        <label>${titleName} Name *</label>
+        <input name="name" value="${escapeHTML(party?.name || '')}" required placeholder="Full name">
+      </div>
+
+      <div>
+        <label>Phone Number</label>
+        <input name="phone" value="${escapeHTML(party?.phone || '')}" placeholder="10-digit mobile number">
+      </div>
+
+      <div>
+        <label>GSTIN (Optional)</label>
+        <input name="gstin" value="${escapeHTML(party?.gstin || '')}" placeholder="GSTIN number">
+      </div>
+
+      <div class="full">
+        <label>Address</label>
+        <textarea name="address" rows="2" placeholder="Street, City, Pincode">${escapeHTML(party?.address || '')}</textarea>
+      </div>
+
+      <div class="full" style="display:flex; gap:10px; margin-top:10px;">
+        <button type="submit" class="primary">Save ${titleName}</button>
+        <button type="button" onclick="showPage('${type}')">Cancel</button>
+      </div>
+    </form>
   </div>`;
 }
 
-function partyForm(type) {
-  const name=prompt("Name:");
-  if(!name) return;
+function savePartyForm(e, type) {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target).entries());
+  const partyId = d.partyId;
 
-  const phone=prompt("Phone number:")||"";
-  const gstin=prompt("GSTIN (optional):")||"";
-  const address=prompt("Address:")||"";
+  const partyData = {
+    name: d.name.trim(),
+    phone: d.phone.trim() || "",
+    gstin: d.gstin.trim() || "",
+    address: d.address.trim() || ""
+  };
 
-  addRecord(type,{name,phone,gstin,address});
-  render();
-  notify("Contact saved");
+  if(partyId) {
+    const existing = records(type).find(x => x.id === partyId);
+    if(existing) {
+      existing.name = partyData.name;
+      existing.phone = partyData.phone;
+      existing.gstin = partyData.gstin;
+      existing.address = partyData.address;
+      saveDatabase();
+      notify("Contact updated successfully");
+    }
+  } else {
+    addRecord(type, partyData);
+    notify("New contact saved successfully");
+  }
+
+  showPage(type);
+}
+
+function editPartyModal(type, id) {
+  const party = records(type).find(x => x.id === id);
+  if(party) showPartyForm(type, party);
 }
 
 function partyPage(type) {
-  const data=records(type);
+  const data = records(type);
+  const titleName = type === "customers" ? "Customers" : "Suppliers";
+
   return `
   <div class="card">
-    <h2>${type==="customers"?"Customers":"Suppliers"}</h2>
-    <button class="primary" onclick="partyForm('${type}')">+ Add New</button>
-    <br><br>
-    ${makeTable(["Name","Phone","GSTIN","Address","Action"],
-      data.map(x=>`<tr>
-        <td>${escapeHTML(x.name)}</td>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h2>${titleName} Management</h2>
+      <button class="primary" onclick="showPartyForm('${type}')">+ Add New ${type === 'customers' ? 'Customer' : 'Supplier'}</button>
+    </div>
+    ${makeTable(["Name", "Phone", "GSTIN", "Address", "Actions"],
+      data.map(x => `<tr>
+        <td><strong>${escapeHTML(x.name)}</strong></td>
         <td>${escapeHTML(x.phone)}</td>
         <td>${escapeHTML(x.gstin)}</td>
         <td>${escapeHTML(x.address)}</td>
-        <td><button class="danger" onclick="deleteRecord('${type}','${x.id}')">Delete</button></td>
+        <td class="actions">
+          <button onclick="editPartyModal('${type}', '${x.id}')">Edit</button>
+          <button class="danger" onclick="deleteRecord('${type}', '${x.id}')">Delete</button>
+        </td>
       </tr>`))}
   </div>`;
 }
 
+/* =====================================
+   4. SALES & BILLING
+===================================== */
+
 function salesPage() {
   const products=records("products");
+
   return `
   <div class="card">
-    <h2>Create New Invoice</h2>
-    <form id="saleForm" class="form" onsubmit="handleSaleSubmit(event)">
+    <h2>Create New Tax Invoice</h2>
+
+    <form id="saleForm" class="form">
       <div>
         <label>Invoice Date</label>
         <input name="date" type="date" value="${today()}" required>
       </div>
+
       <div>
         <label>Customer Name</label>
         <input name="customer" placeholder="Customer name">
       </div>
+
       <div>
         <label>Phone Number</label>
         <input name="phone" placeholder="Phone number">
       </div>
+
       <div>
         <label>Payment Mode</label>
         <select name="payment">
@@ -683,6 +921,7 @@ function salesPage() {
           <option>Credit / Udhaar</option>
         </select>
       </div>
+
       <div>
         <label>GST Type</label>
         <select name="gstType">
@@ -690,6 +929,7 @@ function salesPage() {
           <option>Interstate - IGST</option>
         </select>
       </div>
+
       <div>
         <label>Product</label>
         <select name="productId" required>
@@ -699,14 +939,17 @@ function salesPage() {
             </option>`).join("")}
         </select>
       </div>
+
       <div>
         <label>Quantity</label>
         <input name="qty" type="number" min="0.01" step="0.01" value="1" required>
       </div>
+
       <div>
         <label>Discount ₹</label>
         <input name="discount" type="number" min="0" value="0">
       </div>
+
       <div>
         <label>Price Entry</label>
         <select name="priceMode">
@@ -714,8 +957,9 @@ function salesPage() {
           <option value="inclusive">Price Inclusive of GST</option>
         </select>
       </div>
+
       <div class="full">
-        <button type="submit" class="primary">Generate & Save Bill</button>
+        <button class="primary">Generate & Save Bill</button>
       </div>
     </form>
   </div>
@@ -734,99 +978,116 @@ function salesPage() {
   </div>`;
 }
 
-function handleSaleSubmit(e) {
-  e.preventDefault();
-  try {
-    const data=Object.fromEntries(new FormData(e.target).entries());
-    const product=records("products").find(p=>p.id===data.productId);
-    if(!product) throw new Error("Please add a product first");
+function saveSale(form) {
+  const data=Object.fromEntries(new FormData(form).entries());
+  const product=records("products").find(p=>p.id===data.productId);
 
-    const qty=Number(data.qty);
-    if(qty<=0 || qty>Number(product.stock)) {
-      throw new Error("Insufficient stock");
-    }
+  if(!product) throw new Error("Please add a product first");
 
-    const rate=Number(product.price);
-    const gst=Number(product.gst||0);
-    const discount=Math.max(0,Number(data.discount||0));
-
-    let taxable, tax, gross;
-    if(data.priceMode==="inclusive") {
-      gross=rate*qty;
-      taxable=gross/(1+gst/100);
-      tax=gross-taxable;
-    } else {
-      taxable=rate*qty;
-      tax=taxable*gst/100;
-      gross=taxable+tax;
-    }
-
-    const finalTaxable=Math.max(0,taxable-discount);
-    const finalTax=taxable>0?tax*(finalTaxable/taxable):0;
-    const total=finalTaxable+finalTax;
-    const interstate=data.gstType.startsWith("Interstate");
-    const invoice="SD-"+Date.now().toString().slice(-8);
-
-    const sale={
-      invoice,
-      date:data.date,
-      customer:data.customer||"Walk-in Customer",
-      phone:data.phone,
-      payment:data.payment,
-      gstType:data.gstType,
-      items:[{name:product.name,qty,price:rate,gst}],
-      subtotal:taxable,
-      discount,
-      taxable:finalTaxable,
-      tax:finalTax,
-      cgst:interstate?0:finalTax/2,
-      sgst:interstate?0:finalTax/2,
-      igst:interstate?finalTax:0,
-      total,
-      firmName:activeFirm()?.name||"SMART DUKAAN"
-    };
-
-    addRecord("sales",sale);
-    product.stock=Number(product.stock)-qty;
-    saveDatabase();
-    notify("Invoice saved successfully");
-    render();
-  } catch(error) {
-    alert(error.message);
+  const qty=Number(data.qty);
+  if(qty<=0 || qty>Number(product.stock)) {
+    throw new Error("Insufficient stock");
   }
+
+  const rate=Number(product.price);
+  const gst=Number(product.gst||0);
+  const discount=Math.max(0,Number(data.discount||0));
+
+  let taxable, tax, gross;
+
+  if(data.priceMode==="inclusive") {
+    gross=rate*qty;
+    taxable=gross/(1+gst/100);
+    tax=gross-taxable;
+  } else {
+    taxable=rate*qty;
+    tax=taxable*gst/100;
+    gross=taxable+tax;
+  }
+
+  const finalTaxable=Math.max(0,taxable-discount);
+  const finalTax=taxable>0?tax*(finalTaxable/taxable):0;
+  const total=finalTaxable+finalTax;
+  const interstate=data.gstType.startsWith("Interstate");
+
+  const invoice="SD-"+Date.now().toString().slice(-8);
+
+  const sale={
+    invoice,
+    date:data.date,
+    customer:data.customer||"Walk-in Customer",
+    phone:data.phone,
+    payment:data.payment,
+    gstType:data.gstType,
+    items:[{
+      name:product.name,
+      qty,
+      price:rate,
+      gst
+    }],
+    subtotal:taxable,
+    discount,
+    taxable:finalTaxable,
+    tax:finalTax,
+    cgst:interstate?0:finalTax/2,
+    sgst:interstate?0:finalTax/2,
+    igst:interstate?finalTax:0,
+    total,
+    firmName:activeFirm()?.name||"SMART DUKAAN"
+  };
+
+  addRecord("sales",sale);
+
+  product.stock=Number(product.stock)-qty;
+  saveDatabase();
+
+  notify("Invoice saved successfully");
+  render();
 }
+
+/* =====================================
+   5. PURCHASES
+===================================== */
 
 function purchasesPage() {
   return `
   <div class="card">
-    <h2>Record Purchase</h2>
-    <form id="purchaseForm" class="form" onsubmit="handlePurchaseSubmit(event)">
+    <h2>Record Purchase & Restock</h2>
+
+    <form id="purchaseForm" class="form">
       <div>
         <label>Date</label>
         <input name="date" type="date" value="${today()}">
       </div>
+
       <div>
         <label>Supplier</label>
         <select name="supplier">
-          ${records("suppliers").map(s=>`<option>${escapeHTML(s.name)}</option>`).join("")}
+          ${records("suppliers").map(s=>
+            `<option>${escapeHTML(s.name)}</option>`).join("")}
         </select>
       </div>
+
       <div>
         <label>Product</label>
         <select name="productId">
-          ${records("products").map(p=>`<option value="${p.id}">${escapeHTML(p.name)}</option>`).join("")}
+          ${records("products").map(p=>
+            `<option value="${p.id}">${escapeHTML(p.name)}</option>`).join("")}
         </select>
       </div>
+
       <div>
         <label>Quantity</label>
         <input name="qty" type="number" min="0.01" step="0.01" required>
       </div>
+
       <div>
         <label>Purchase Rate ₹</label>
         <input name="rate" type="number" min="0" step="0.01" required>
       </div>
+
       <div class="full">
-        <button type="submit" class="primary">Save Purchase</button>
+        <button class="primary">Save Purchase & Update Stock</button>
       </div>
     </form>
   </div>
@@ -845,46 +1106,48 @@ function purchasesPage() {
   </div>`;
 }
 
-function handlePurchaseSubmit(e) {
-  e.preventDefault();
-  try {
-    const d=Object.fromEntries(new FormData(e.target).entries());
-    const product=records("products").find(p=>p.id===d.productId);
-    if(!product) throw new Error("Select a product");
+function savePurchase(form) {
+  const d=Object.fromEntries(new FormData(form).entries());
+  const product=records("products").find(p=>p.id===d.productId);
+  if(!product) throw new Error("Select a product");
 
-    const qty=Number(d.qty);
-    const rate=Number(d.rate);
-    if(qty<=0) throw new Error("Enter a valid quantity");
+  const qty=Number(d.qty);
+  const rate=Number(d.rate);
+  if(qty<=0) throw new Error("Enter a valid quantity");
 
-    addRecord("purchases",{
-      date:d.date,
-      supplier:d.supplier,
-      productName:product.name,
-      productId:product.id,
-      qty,
-      rate,
-      total:qty*rate
-    });
+  addRecord("purchases",{
+    date:d.date,
+    supplier:d.supplier,
+    productName:product.name,
+    productId:product.id,
+    qty,
+    rate,
+    total:qty*rate
+  });
 
-    product.stock=Number(product.stock)+qty;
-    product.cost=rate;
-    saveDatabase();
-    notify("Purchase saved and stock updated");
-    render();
-  } catch(error) {
-    alert(error.message);
-  }
+  product.stock=Number(product.stock)+qty;
+  product.cost=rate;
+
+  saveDatabase();
+  notify("Purchase saved and stock updated");
+  render();
 }
+
+/* =====================================
+   6. EXPENSE MANAGEMENT
+===================================== */
 
 function expensesPage() {
   return `
   <div class="card">
     <h2>Add Business Expense</h2>
-    <form id="expenseForm" class="form" onsubmit="handleExpenseSubmit(event)">
+
+    <form id="expenseForm" class="form">
       <div>
         <label>Date</label>
         <input type="date" name="date" value="${today()}">
       </div>
+
       <div>
         <label>Category</label>
         <select name="category">
@@ -897,14 +1160,17 @@ function expensesPage() {
           <option>Other</option>
         </select>
       </div>
+
       <div>
         <label>Description</label>
-        <input name="description" required>
+        <input name="description" required placeholder="Expense note">
       </div>
+
       <div>
         <label>Amount ₹</label>
         <input type="number" name="amount" min="0.01" step="0.01" required>
       </div>
+
       <div>
         <label>Payment Mode</label>
         <select name="payment">
@@ -913,8 +1179,9 @@ function expensesPage() {
           <option>Bank Transfer</option>
         </select>
       </div>
+
       <div class="full">
-        <button type="submit" class="primary">Save Expense</button>
+        <button class="primary">Save Expense</button>
       </div>
     </form>
   </div>
@@ -933,14 +1200,9 @@ function expensesPage() {
   </div>`;
 }
 
-function handleExpenseSubmit(e) {
-  e.preventDefault();
-  const d=Object.fromEntries(new FormData(e.target).entries());
-  d.amount=Number(d.amount);
-  addRecord("expenses",d);
-  notify("Expense saved");
-  render();
-}
+/* =====================================
+   7. INVOICE PRINTING
+===================================== */
 
 function printBill(id) {
   const sale=records("sales").find(s=>s.id===id);
@@ -948,6 +1210,7 @@ function printBill(id) {
 
   const firm=activeFirm()||{};
   const w=window.open("","_blank");
+
   if(!w) {
     alert("Please allow pop-ups to print invoices.");
     return;
@@ -1015,8 +1278,13 @@ function printBill(id) {
     <script>window.onload=()=>window.print();<\/script>
   </body>
   </html>`);
+
   w.document.close();
 }
+
+/* =====================================
+   8. REPORTS
+===================================== */
 
 function reportsPage() {
   const sales=records("sales");
@@ -1056,6 +1324,10 @@ function reportsPage() {
   </p>`;
 }
 
+/* =====================================
+   9. BACKUP & RESTORE
+===================================== */
+
 function backupPage() {
   return `
   <div class="card">
@@ -1073,7 +1345,9 @@ function backupPage() {
 }
 
 function backupData() {
-  const blob=new Blob([JSON.stringify(database,null,2)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify(database,null,2)],{
+    type:"application/json"
+  });
   downloadBlob(blob,"smart-dukaan-backup.json");
 }
 
@@ -1085,12 +1359,14 @@ function restoreData() {
   }
 
   const reader=new FileReader();
+
   reader.onload=()=>{
     try {
       const restored=JSON.parse(reader.result);
       if(!Array.isArray(restored.firms) || !restored.records) {
         throw new Error("Invalid backup format");
       }
+
       if(!confirm("Restore will replace the current browser data. Continue?")) return;
 
       database=restored;
@@ -1102,16 +1378,22 @@ function restoreData() {
       alert("Could not restore: "+e.message);
     }
   };
+
   reader.readAsText(file);
 }
 
 function clearCurrentFirm() {
   if(!confirm("Delete all records of this firm?")) return;
+
   database.records[database.activeFirm]={};
   saveDatabase();
   render();
   notify("Firm records cleared");
 }
+
+/* =====================================
+   CSV EXPORT
+===================================== */
 
 function downloadBlob(blob,filename) {
   const url=URL.createObjectURL(blob);
@@ -1124,21 +1406,32 @@ function downloadBlob(blob,filename) {
 
 function exportCSV(type) {
   const data=records(type);
+
   if(!data.length) {
     alert("No records to export.");
     return;
   }
 
   const headers=[...new Set(data.flatMap(x=>Object.keys(x)))];
-  const quote=value=>'"'+String(typeof value==="object"?JSON.stringify(value):value??"").replace(/"/g,'""')+'"';
+
+  const quote=value=>'"'+String(
+    typeof value==="object"?JSON.stringify(value):value??""
+  ).replace(/"/g,'""')+'"';
 
   const csv=[
     headers.map(quote).join(","),
     ...data.map(row=>headers.map(h=>quote(row[h])).join(","))
   ].join("\n");
 
-  downloadBlob(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),type+"-export.csv");
+  downloadBlob(
+    new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),
+    type+"-export.csv"
+  );
 }
+
+/* =====================================
+   MAIN RENDER FUNCTION
+===================================== */
 
 function render() {
   if(!database.activeFirm || !activeFirm()) {
@@ -1198,7 +1491,33 @@ function render() {
   document.getElementById("app").innerHTML=pages[currentPage]();
 }
 
-// Initialize Application
+/* =====================================
+   FORM SUBMISSION
+===================================== */
+
+document.getElementById("app").addEventListener("submit",function(e) {
+  e.preventDefault();
+
+  try {
+    if(e.target.id==="saleForm") saveSale(e.target);
+    if(e.target.id==="purchaseForm") savePurchase(e.target);
+
+    if(e.target.id==="expenseForm") {
+      const d=Object.fromEntries(new FormData(e.target).entries());
+      d.amount=Number(d.amount);
+      addRecord("expenses",d);
+      notify("Expense saved");
+      render();
+    }
+  } catch(error) {
+    alert(error.message);
+  }
+});
+
+/* =====================================
+   INITIALIZE APPLICATION
+===================================== */
+
 if(database.firms.length===0) {
   const firm={
     id:uid(),
@@ -1213,6 +1532,7 @@ if(database.firms.length===0) {
     ifsc:"",
     logo:""
   };
+
   database.firms.push(firm);
   database.activeFirm=firm.id;
   database.records[firm.id]={};
@@ -1221,6 +1541,7 @@ if(database.firms.length===0) {
 
 updateFirmSelect();
 render();
+
 </script>
 </body>
 </html>
