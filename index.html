@@ -1,870 +1,1226 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SMART DUKAAN</title>
-
-<!-- Excel export library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<title>SMART DUKAAN PRO</title>
 
 <style>
-:root{
- --blue:#2563eb;--navy:#172554;--bg:#f1f5f9;
- --green:#16a34a;--red:#dc2626;--text:#1e293b;
- --muted:#64748b;--border:#e2e8f0;--white:#fff;
+:root {
+  --bg:#0b1224;
+  --panel:#15213b;
+  --line:#293b5d;
+  --blue:#5685ff;
+  --cyan:#41d6df;
+  --text:#f1f5ff;
+  --muted:#a6b4d0;
+  --green:#35c995;
+  --red:#ff7181;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{
- background:linear-gradient(120deg,var(--navy),var(--blue));
- color:white;padding:17px 22px;display:flex;
- align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
 }
-.brand{display:flex;align-items:center;gap:12px}
-.brand-icon{
- width:44px;height:44px;border-radius:12px;background:white;color:var(--blue);
- display:grid;place-items:center;font-size:24px;font-weight:bold
+.layout {
+  display:grid;
+  grid-template-columns:250px 1fr;
+  min-height:100vh;
 }
-header h1{margin:0;font-size:23px}
-header p{margin:4px 0 0;font-size:12px;opacity:.85}
-.header-firm{background:#ffffff22;padding:9px 13px;border-radius:20px;font-size:13px}
-.layout{display:flex;min-height:calc(100vh - 78px)}
-nav{
- width:215px;flex-shrink:0;background:white;padding:13px 9px;
- border-right:1px solid var(--border)
+.sidebar {
+  background:#101a32;
+  border-right:1px solid var(--line);
+  padding:20px 14px;
 }
-nav button{
- display:block;width:100%;text-align:left;background:transparent;
- color:#334155;padding:12px;margin:3px 0;border-radius:8px
+.brand-box {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px;
+  margin-bottom:20px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:15px;
 }
-nav button:hover,nav button.active{background:#dbeafe;color:#1d4ed8}
-main{flex:1;min-width:0;padding:22px}
-.page{display:none}.page.active{display:block}
-h2{font-size:22px;margin:0 0 17px}
-h3{font-size:16px;margin:0 0 13px}
-.card,.stat{
- background:white;border-radius:12px;padding:17px;margin-bottom:17px;
- box-shadow:0 2px 9px #0f172a0a
+.brand-logo {
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--cyan);
 }
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin-bottom:17px}
-.stat{border-left:4px solid var(--blue);margin:0}
-.stat small{color:var(--muted)}
-.stat h2{margin:9px 0 0;color:var(--navy)}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-label{display:block;font-size:13px;font-weight:bold;margin:11px 0 6px}
-input,select,textarea{
- width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
- font-size:14px;background:white;color:var(--text)
+.brand-title {
+  font-size:18px;
+  font-weight:bold;
+  color:var(--cyan);
+  line-height:1.2;
 }
-input:focus,select:focus,textarea:focus{outline:2px solid #bfdbfe;border-color:var(--blue)}
-button{border:0;padding:10px 13px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:13px}
-button:disabled{opacity:.5;cursor:not-allowed}
-.btn{background:var(--blue);color:white}
-.btn-green{background:var(--green);color:white}
-.btn-red{background:var(--red);color:white}
-.btn-gray{background:#e2e8f0;color:#334155}
-.btn-small{padding:6px 9px;margin:2px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:620px;background:white}
-th,td{padding:10px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}
-th{background:#eff6ff;color:#1e40af}
-.muted{font-size:12px;color:var(--muted)}
-.alert{background:#fef3c7;color:#92400e;padding:10px;border-radius:8px;margin:7px 0}
-.total-line{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
-.grand{font-size:20px;color:#1d4ed8;font-weight:bold}
-.logo{width:85px;height:85px;object-fit:contain;border:1px dashed #94a3b8;border-radius:9px;padding:5px;display:none;margin-top:8px}
-.badge{font-size:11px;padding:4px 7px;border-radius:20px;background:#dbeafe;color:#1d4ed8}
-footer{text-align:center;color:#94a3b8;padding:18px;font-size:12px}
-@media(max-width:760px){
- .layout{display:block}nav{width:100%;display:flex;overflow-x:auto;padding:7px}
- nav button{width:auto;min-width:max-content;margin:2px}
- main{padding:12px}header{padding:14px}
+.brand-title small {
+  display:block;
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:1px;
+  margin-top:3px;
+}
+nav button {
+  width:100%;
+  padding:12px;
+  margin:3px 0;
+  border:0;
+  border-radius:9px;
+  text-align:left;
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  font-size:14px;
+}
+nav button:hover,nav button.active {
+  background:#294675;
+}
+main { padding:25px; min-width:0; }
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+}
+h1 { margin:0; font-size:26px; }
+h2 { font-size:18px; margin-top:0; }
+.muted { color:var(--muted); }
+.card {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
+}
+.firm-header-preview {
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:15px;
+}
+.firm-logo-img {
+  width:60px;
+  height:60px;
+  border-radius:8px;
+  object-fit:cover;
+  border:1px solid var(--line);
+  background:#0c1730;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+}
+.stat strong {
+  display:block;
+  font-size:24px;
+  margin:8px 0;
+}
+.stat small { color:var(--muted); }
+button,.btn {
+  padding:10px 14px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#203657;
+  color:white;
+  cursor:pointer;
+}
+.primary {
+  background:var(--blue);
+  border-color:var(--blue);
+}
+.danger {
+  background:#702b3a;
+}
+input,select,textarea {
+  width:100%;
+  padding:10px;
+  background:#0c1730;
+  border:1px solid var(--line);
+  color:white;
+  border-radius:8px;
+}
+label {
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin:10px 0 4px;
+}
+.form {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.full { grid-column:1/-1; }
+.table-wrap { overflow-x:auto; }
+table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:600px;
+}
+th,td {
+  padding:12px;
+  text-align:left;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+th { color:var(--muted); }
+.actions { display:flex; gap:5px; }
+.total {
+  font-size:25px;
+  color:var(--cyan);
+  font-weight:bold;
+}
+#toast {
+  display:none;
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#24446d;
+  padding:14px 20px;
+  border-radius:10px;
+  z-index:99;
+}
+@media(max-width:850px) {
+  .stats { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:650px) {
+  .layout { display:block; }
+  .sidebar { padding:10px; }
+  nav { display:flex; overflow-x:auto; }
+  nav button { min-width:max-content; }
+  main { padding:13px; }
+  header { align-items:flex-start; flex-direction:column; }
+  .form { grid-template-columns:1fr; }
+  .full { grid-column:auto; }
 }
 </style>
 </head>
 
 <body>
-<header>
- <div class="brand">
-  <div class="brand-icon">S</div>
-  <div><h1>SMART DUKAAN</h1><p>Your Smart Business Manager</p></div>
- </div>
- <div class="header-firm" id="headerFirm">My Store</div>
-</header>
-
 <div class="layout">
-<nav>
- <button class="active" onclick="showPage('dashboard',this)">📊 Dashboard</button>
- <button onclick="showPage('firm',this)">🏢 Firm Profile</button>
- <button onclick="showPage('products',this)">📦 Products</button>
- <button onclick="showPage('sale',this)">🛒 New Sale</button>
- <button onclick="showPage('daily',this)">📅 Daily Sales</button>
- <button onclick="showPage('expenses',this)">💸 Expenses</button>
- <button onclick="showPage('history',this)">📋 History</button>
- <button onclick="showPage('reports',this)">📈 Reports</button>
- <button onclick="showPage('backup',this)">💾 Backup</button>
-</nav>
+
+<aside class="sidebar">
+  <div class="brand-box">
+    <img src="SMART DUKAAN LOGO 12.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+    <div class="brand-title">
+      SMART DUKAAN
+      <small>BUSINESS SUITE PRO</small>
+    </div>
+  </div>
+
+  <nav>
+    <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
+    <button onclick="showPage('firms',this)">▣ Firm Management</button>
+    <button onclick="showPage('products',this)">▤ Products & Stock</button>
+    <button onclick="showPage('customers',this)">♙ Customers</button>
+    <button onclick="showPage('suppliers',this)">♧ Suppliers</button>
+    <button onclick="showPage('sales',this)">＋ Sales & Billing</button>
+    <button onclick="showPage('purchases',this)">⇩ Purchases</button>
+    <button onclick="showPage('expenses',this)">₹ Expenses</button>
+    <button onclick="showPage('reports',this)">▥ Reports</button>
+    <button onclick="showPage('backup',this)">⚙ Backup & Restore</button>
+  </nav>
+</aside>
 
 <main>
-
-<!-- DASHBOARD -->
-<section id="dashboard" class="page active">
- <h2>Business Dashboard</h2>
- <div class="grid">
-  <div class="stat"><small>Total Sales</small><h2 id="dashSales">₹0.00</h2></div>
-  <div class="stat"><small>Total Expenses</small><h2 id="dashExpenses">₹0.00</h2></div>
-  <div class="stat"><small>Estimated Profit</small><h2 id="dashProfit">₹0.00</h2></div>
-  <div class="stat"><small>Total Products</small><h2 id="dashProducts">0</h2></div>
-  <div class="stat"><small>Total Bills</small><h2 id="dashBills">0</h2></div>
- </div>
- <div class="card"><h3>Low Stock Alerts</h3><div id="lowStock">No low-stock products.</div></div>
- <div class="card">
-  <h3>Recent Sales</h3>
-  <div class="table-wrap"><table>
-   <thead><tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Payment</th><th>Total</th></tr></thead>
-   <tbody id="recentSales"></tbody>
-  </table></div>
- </div>
-</section>
-
-<!-- FIRM -->
-<section id="firm" class="page">
- <h2>Firm Profile & Management</h2>
- <div class="card">
-  <h3>Switch or Create Firm</h3>
-  <div class="form-grid">
-   <div><label>Select Firm</label><select id="firmSelect"></select></div>
-   <div style="align-self:end" class="actions">
-    <button class="btn" onclick="switchFirm()">Switch Firm</button>
-    <button class="btn-green" onclick="newFirm()">Create New Firm</button>
-   </div>
+<header>
+  <div>
+    <p class="muted">YOUR SMART BUSINESS MANAGER</p>
+    <h1 id="pageTitle">Dashboard</h1>
   </div>
-  <p class="muted" id="saveStatus">Saved in this browser.</p>
- </div>
- <div class="card">
-  <h3>Firm Details</h3>
-  <form id="firmForm">
-   <div class="form-grid">
-    <div><label>Firm Name *</label><input id="firmName" required></div>
-    <div><label>Owner Name</label><input id="firmOwner"></div>
-    <div><label>Phone Number</label><input id="firmPhone"></div>
-    <div><label>Email</label><input id="firmEmail" type="email"></div>
-    <div><label>GSTIN</label><input id="firmGst"></div>
-    <div><label>Business Type</label><input id="firmType" placeholder="Retail / Wholesale"></div>
-    <div><label>State</label><input id="firmState"></div>
-   </div>
-   <label>Business Address</label><textarea id="firmAddress" rows="2"></textarea>
-   <label>Upload Firm Logo</label><input type="file" id="firmLogoFile" accept="image/*">
-   <img id="logoPreview" class="logo" alt="Firm logo">
-   <div class="actions">
-    <button class="btn" type="submit">Save Firm Details</button>
-    <button class="btn-red" type="button" onclick="deleteFirm()">Delete Current Firm</button>
-   </div>
-  </form>
- </div>
-</section>
+  <select id="firmSelect" onchange="switchFirm()"></select>
+</header>
 
-<!-- PRODUCTS -->
-<section id="products" class="page">
- <h2>Product Management</h2>
- <div class="card">
-  <h3>Add / Edit Product</h3>
-  <form id="productForm">
-   <input type="hidden" id="editProductId">
-   <div class="form-grid">
-    <div><label>Product Name *</label><input id="productName" required></div>
-    <div><label>Product Code *</label><input id="productCode" required></div>
-    <div><label>Purchase Cost (₹) *</label><input id="productCost" type="number" min="0" step=".01" required></div>
-    <div><label>Selling Price (₹) *</label><input id="productPrice" type="number" min="0" step=".01" required></div>
-    <div><label>Opening / Current Stock *</label><input id="productStock" type="number" min="0" step="1" required></div>
-    <div><label>Low Stock Limit</label><input id="productLimit" type="number" min="0" value="5"></div>
-    <div><label>GST Rate</label>
-     <select id="productGst">
-      <option value="0">0%</option><option value="5">5%</option>
-      <option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
-     </select>
-    </div>
-   </div>
-   <div class="actions">
-    <button class="btn" type="submit">Save Product</button>
-    <button class="btn-gray" type="button" onclick="resetProductForm()">Clear Form</button>
-   </div>
-  </form>
- </div>
- <div class="card">
-  <div class="actions" style="margin-top:0;margin-bottom:12px">
-   <button class="btn-green" onclick="exportStock()">📊 Download Stock Excel</button>
-   <button class="btn" onclick="exportProducts()">Export Products Excel</button>
-  </div>
-  <input id="productSearch" placeholder="Search product by name or code..." oninput="renderProducts()">
-  <div class="table-wrap" style="margin-top:13px"><table>
-   <thead><tr><th>Code</th><th>Product</th><th>Cost</th><th>Price</th><th>Stock</th><th>GST</th><th>Actions</th></tr></thead>
-   <tbody id="productTable"></tbody>
-  </table></div>
- </div>
-</section>
-
-<!-- SALE -->
-<section id="sale" class="page">
- <h2>New Sale & Billing</h2>
- <div class="card">
-  <h3>Customer & Sale Details</h3>
-  <div class="form-grid">
-   <div><label>Customer Name</label><input id="customerName" placeholder="Walk-in Customer"></div>
-   <div><label>Phone Number</label><input id="customerPhone" placeholder="Customer phone"></div>
-   <div><label>Payment Mode</label>
-    <select id="paymentMode">
-     <option>Cash</option><option>Google Pay</option><option>PhonePe</option>
-     <option>Paytm</option><option>Card</option><option>Bank Transfer</option><option>Credit / Udhaar</option>
-    </select>
-   </div>
-   <div><label>GST Type</label>
-    <select id="gstType"><option value="local">Local (CGST + SGST)</option><option value="interstate">Interstate (IGST)</option></select>
-   </div>
-   <div><label>Price Entry</label>
-    <select id="priceMode"><option value="exclusive">Price exclusive of GST</option><option value="inclusive">Price inclusive of GST</option></select>
-   </div>
-   <div><label>Discount (₹)</label><input id="saleDiscount" type="number" min="0" step=".01" value="0" oninput="renderCart()"></div>
-  </div>
- </div>
- <div class="card">
-  <h3>Add Products to Cart</h3>
-  <div class="form-grid">
-   <div><label>Select Product</label><select id="saleProduct"></select></div>
-   <div><label>Quantity</label><input id="saleQuantity" type="number" min="1" step="1" value="1"></div>
-   <div style="align-self:end"><button class="btn" onclick="addToCart()">Add to Cart</button></div>
-  </div>
-  <div class="table-wrap" style="margin-top:14px"><table>
-   <thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th><th>Action</th></tr></thead>
-   <tbody id="cartTable"></tbody>
-  </table></div>
- </div>
- <div class="card">
-  <h3>Bill Summary</h3>
-  <div class="total-line"><span>Subtotal</span><strong id="billSubtotal">₹0.00</strong></div>
-  <div class="total-line"><span>Discount</span><strong id="billDiscount">₹0.00</strong></div>
-  <div class="total-line"><span>Taxable Amount</span><strong id="billTaxable">₹0.00</strong></div>
-  <div class="total-line"><span>CGST</span><strong id="billCgst">₹0.00</strong></div>
-  <div class="total-line"><span>SGST</span><strong id="billSgst">₹0.00</strong></div>
-  <div class="total-line"><span>IGST</span><strong id="billIgst">₹0.00</strong></div>
-  <div class="total-line grand"><span>Grand Total</span><strong id="billTotal">₹0.00</strong></div>
-  <div class="actions">
-   <button class="btn-green" onclick="completeSale()">Generate & Print Bill</button>
-   <button class="btn-gray" onclick="clearCart()">Clear Cart</button>
-  </div>
-  <p class="muted">Stock is reduced only when a sale is completed.</p>
- </div>
-</section>
-
-<!-- DAILY -->
-<section id="daily" class="page">
- <h2>Daily Sales Register</h2>
- <div class="card">
-  <div class="form-grid">
-   <div><label>Select Date</label><input type="date" id="dailyDate" onchange="renderDaily()"></div>
-   <div style="align-self:end"><button class="btn-green" onclick="exportDaily()">Export Daily Excel</button></div>
-  </div>
-  <div class="grid" style="margin-top:15px">
-   <div class="stat"><small>Daily Sales</small><h2 id="dailyTotal">₹0.00</h2></div>
-   <div class="stat"><small>Number of Bills</small><h2 id="dailyCount">0</h2></div>
-  </div>
-  <div class="table-wrap"><table>
-   <thead><tr><th>Invoice</th><th>Customer</th><th>Time</th><th>Payment</th><th>Total</th></tr></thead>
-   <tbody id="dailyTable"></tbody>
-  </table></div>
- </div>
-</section>
-
-<!-- EXPENSES -->
-<section id="expenses" class="page">
- <h2>Expense Management</h2>
- <div class="card">
-  <h3>Add / Edit Expense</h3>
-  <form id="expenseForm">
-   <input type="hidden" id="editExpenseId">
-   <div class="form-grid">
-    <div><label>Expense Name *</label><input id="expenseName" required></div>
-    <div><label>Category</label><select id="expenseCategory">
-     <option>Rent</option><option>Electricity</option><option>Transport</option>
-     <option>Salary</option><option>Purchase</option><option>Other</option>
-    </select></div>
-    <div><label>Amount (₹) *</label><input id="expenseAmount" type="number" min=".01" step=".01" required></div>
-    <div><label>Date *</label><input id="expenseDate" type="date" required></div>
-    <div><label>Payment Method</label><select id="expensePayment">
-     <option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Card</option>
-    </select></div>
-   </div>
-   <div class="actions"><button class="btn">Save Expense</button><button type="button" class="btn-gray" onclick="resetExpenseForm()">Clear</button></div>
-  </form>
- </div>
- <div class="card">
-  <h3>Expense Register</h3>
-  <div class="table-wrap"><table>
-   <thead><tr><th>Date</th><th>Name</th><th>Category</th><th>Payment</th><th>Amount</th><th>Actions</th></tr></thead>
-   <tbody id="expenseTable"></tbody>
-  </table></div>
- </div>
-</section>
-
-<!-- HISTORY -->
-<section id="history" class="page">
- <h2>Sales History</h2>
- <div class="card">
-  <input id="historySearch" placeholder="Search invoice or customer..." oninput="renderHistory()">
-  <div class="table-wrap" style="margin-top:13px"><table>
-   <thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Payment</th><th>Total</th><th>Action</th></tr></thead>
-   <tbody id="historyTable"></tbody>
-  </table></div>
- </div>
-</section>
-
-<!-- REPORTS -->
-<section id="reports" class="page">
- <h2>Business Reports</h2>
- <div class="grid">
-  <div class="stat"><small>Total Revenue</small><h2 id="reportRevenue">₹0.00</h2></div>
-  <div class="stat"><small>Total Expenses</small><h2 id="reportExpense">₹0.00</h2></div>
-  <div class="stat"><small>Estimated Profit</small><h2 id="reportProfit">₹0.00</h2></div>
- </div>
- <div class="card">
-  <h3>Monthly Sales & Expense Report</h3>
-  <div class="table-wrap"><table>
-   <thead><tr><th>Month</th><th>Sales</th><th>Expenses</th><th>Estimated Profit</th></tr></thead>
-   <tbody id="monthlyReport"></tbody>
-  </table></div>
- </div>
- <div class="card">
-  <h3>Payment-wise Sales</h3>
-  <div class="table-wrap"><table>
-   <thead><tr><th>Payment Mode</th><th>Total Sales</th></tr></thead>
-   <tbody id="paymentReport"></tbody>
-  </table></div>
- </div>
- <div class="card">
-  <button class="btn" onclick="exportSales()">Export Sales Excel</button>
-  <button class="btn-green" onclick="exportProducts()">Export Products Excel</button>
-  <button class="btn-gray" onclick="exportStock()">Export Stock Excel</button>
- </div>
-</section>
-
-<!-- BACKUP -->
-<section id="backup" class="page">
- <h2>Backup & Restore</h2>
- <div class="card">
-  <h3>Download Backup</h3>
-  <p class="muted">Backup includes all firms, products, sales, expenses and logos.</p>
-  <button class="btn" onclick="downloadBackup()">Download Full Backup JSON</button>
- </div>
- <div class="card">
-  <h3>Restore Backup</h3>
-  <label>Select JSON backup file</label>
-  <input type="file" id="backupFile" accept=".json,application/json">
-  <div class="actions"><button class="btn-green" onclick="restoreBackup()">Restore Backup</button></div>
-  <p class="muted">Restoring replaces saved records. Download a backup before restoring.</p>
- </div>
- <div class="card">
-  <h3>Storage Information</h3>
-  <p class="muted">Records are stored in this browser on this device. They are not automatically synced to another device or online account.</p>
- </div>
-</section>
-
-<footer>SMART DUKAAN · Your Smart Business Manager</footer>
+<div id="app"></div>
 </main>
 </div>
+
+<div id="toast"></div>
 
 <script>
 "use strict";
 
-const STORAGE_KEY="SMART_DUKAAN_FIRM_MANAGER_V1";
-let manager=loadManager();
-let cart=[];
+const STORAGE_KEY = "SMART_DUKAAN_PRO_DATA";
+const APP_LOGO = "SMART DUKAAN LOGO 12.jpeg";
 
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
-function el(id){return document.getElementById(id)}
-function money(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}
-function today(){
- const d=new Date();
- return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let database = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+  firms: [],
+  activeFirm: null,
+  records: {}
+};
+
+let currentPage = "dashboard";
+
+function saveDatabase() {
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(database));
 }
-function esc(v){
- return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function uid() {
+  return Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 }
-function blankFirm(name){
- return {id:uid(),name,data:{
-  firm:{name,owner:"",phone:"",email:"",gst:"",type:"",state:"",address:"",logo:""},
-  products:[],sales:[],expenses:[]
- }};
+
+function money(value) {
+  return "₹"+Number(value || 0).toLocaleString("en-IN",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
 }
-function loadManager(){
- try{
-  const old=JSON.parse(localStorage.getItem(STORAGE_KEY));
-  if(old&&Array.isArray(old.firms)&&old.firms.length){
-   old.firms.forEach(f=>{
-    f.data=f.data||{};
-    f.data.firm=f.data.firm||{name:f.name||"My Store"};
-    f.data.products=Array.isArray(f.data.products)?f.data.products:[];
-    f.data.sales=Array.isArray(f.data.sales)?f.data.sales:[];
-    f.data.expenses=Array.isArray(f.data.expenses)?f.data.expenses:[];
-   });
-   if(!old.firms.some(f=>f.id===old.activeFirmId))old.activeFirmId=old.firms[0].id;
-   return old;
-  }
- }catch(e){}
- const first=blankFirm("My Store");
- return {firms:[first],activeFirmId:first.id};
+
+function today() {
+  return new Date().toISOString().slice(0,10);
 }
-function activeFirm(){return manager.firms.find(f=>f.id===manager.activeFirmId)}
-function data(){return activeFirm().data}
-function saveManager(){
- try{
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(manager));
-  if(el("saveStatus"))el("saveStatus").textContent="✓ Data saved in this browser.";
-  return true;
- }catch(e){
-  alert("Could not save. Browser storage may be full. Try a smaller logo and download a backup.");
-  return false;
- }
+
+function notify(message) {
+  const toast=document.getElementById("toast");
+  toast.textContent=message;
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",2500);
 }
-function showPage(id,button){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- el(id).classList.add("active");
- document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
- if(button)button.classList.add("active");
- refreshAll();
- if(id==="firm")renderFirm();
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  }[c]));
 }
-function refreshAll(){
- if(!activeFirm())return;
- el("headerFirm").textContent=data().firm.name||activeFirm().name;
- renderFirmSelect();renderDashboard();renderProducts();renderSaleProducts();
- renderCart();renderDaily();renderExpenses();renderHistory();renderReports();
+
+function activeFirm() {
+  return database.firms.find(f=>f.id===database.activeFirm);
 }
-function renderFirmSelect(){
- const s=el("firmSelect");s.innerHTML="";
- manager.firms.forEach(f=>{
-  const o=document.createElement("option");
-  o.value=f.id;o.textContent=f.data.firm.name||f.name;s.appendChild(o);
- });
- s.value=manager.activeFirmId;
+
+function records(type) {
+  if(!database.activeFirm) return [];
+  const key=database.activeFirm;
+  if(!database.records[key]) database.records[key]={};
+  if(!database.records[key][type]) database.records[key][type]=[];
+  return database.records[key][type];
 }
-function renderFirm(){
- const f=data().firm;
- ["Name","Owner","Phone","Email","Gst","Type","State","Address"].forEach(k=>{
-  const id="firm"+k;const key=k.toLowerCase();
-  if(el(id))el(id).value=f[key]||"";
- });
- el("logoPreview").src=f.logo||"";
- el("logoPreview").style.display=f.logo?"block":"none";
+
+function addRecord(type,record) {
+  record.id=uid();
+  records(type).push(record);
+  saveDatabase();
 }
-function switchFirm(){
- const id=el("firmSelect").value;
- if(!manager.firms.some(f=>f.id===id))return;
- manager.activeFirmId=id;cart=[];saveManager();refreshAll();renderFirm();
- alert("Firm switched successfully.");
+
+function deleteRecord(type,id) {
+  const data=records(type);
+  const index=data.findIndex(x=>x.id===id);
+  if(index>=0) data.splice(index,1);
+  saveDatabase();
+  render();
+  notify("Record deleted");
 }
-function newFirm(){
- const name=prompt("Enter the new firm name:");
- if(!name||!name.trim())return;
- const f=blankFirm(name.trim());manager.firms.push(f);
- manager.activeFirmId=f.id;cart=[];saveManager();refreshAll();renderFirm();
- alert("New firm created.");
+
+function updateFirmSelect() {
+  const select=document.getElementById("firmSelect");
+  select.innerHTML=database.firms.map(f=>
+    `<option value="${f.id}" ${f.id===database.activeFirm?"selected":""}>
+      ${escapeHTML(f.name)}
+    </option>`
+  ).join("");
 }
-function deleteFirm(){
- if(manager.firms.length<=1){alert("At least one firm must remain.");return}
- if(!confirm("Delete this firm and all its records?"))return;
- manager.firms=manager.firms.filter(f=>f.id!==manager.activeFirmId);
- manager.activeFirmId=manager.firms[0].id;cart=[];
- saveManager();refreshAll();renderFirm();
-}
-el("firmForm").addEventListener("submit",e=>{
- e.preventDefault();const f=data().firm;
- f.name=el("firmName").value.trim();
- f.owner=el("firmOwner").value.trim();f.phone=el("firmPhone").value.trim();
- f.email=el("firmEmail").value.trim();f.gst=el("firmGst").value.trim();
- f.type=el("firmType").value.trim();f.state=el("firmState").value.trim();
- f.address=el("firmAddress").value.trim();activeFirm().name=f.name;
- saveManager();refreshAll();alert("Firm details saved.");
-});
-el("firmLogoFile").addEventListener("change",function(){
- const file=this.files[0];if(!file)return;
- if(!file.type.startsWith("image/")){alert("Select an image file.");this.value="";return}
- if(file.size>5*1024*1024){alert("Choose an image smaller than 5 MB.");this.value="";return}
- const reader=new FileReader();
- reader.onload=()=>{
-  const img=new Image();
-  img.onload=()=>{
-   const canvas=document.createElement("canvas");
-   const scale=Math.min(1,500/Math.max(img.width,img.height));
-   canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);
-   canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
-   data().firm.logo=canvas.toDataURL("image/jpeg",.8);
-   el("logoPreview").src=data().firm.logo;el("logoPreview").style.display="block";
-   saveManager();
+
+function saveFirmForm(e) {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  
+  const processFirm = (logoData) => {
+    if (data.firmId) {
+      const firm = database.firms.find(f=>f.id===data.firmId);
+      if(firm) {
+        firm.name = data.name.trim();
+        firm.owner = data.owner;
+        firm.phone = data.phone;
+        firm.email = data.email;
+        firm.address = data.address;
+        firm.gstin = data.gstin;
+        firm.bank = data.bank;
+        firm.accountNo = data.accountNo;
+        firm.ifsc = data.ifsc;
+        if(logoData) firm.logo = logoData;
+      }
+      notify("Firm updated successfully");
+    } else {
+      const firm = {
+        id: uid(),
+        name: data.name.trim(),
+        owner: data.owner || "",
+        phone: data.phone || "",
+        email: data.email || "",
+        address: data.address || "",
+        gstin: data.gstin || "",
+        bank: data.bank || "",
+        accountNo: data.accountNo || "",
+        ifsc: data.ifsc || "",
+        logo: logoData || ""
+      };
+      database.firms.push(firm);
+      database.activeFirm = firm.id;
+      database.records[firm.id] = {};
+      notify("New firm created");
+    }
+    saveDatabase();
+    updateFirmSelect();
+    render();
   };
-  img.onerror=()=>alert("Could not read this image.");
-  img.src=reader.result;
- };
- reader.readAsDataURL(file);
-});
 
-/* PRODUCTS */
-function resetProductForm(){
- el("productForm").reset();el("editProductId").value="";el("productLimit").value=5;
-}
-el("productForm").addEventListener("submit",e=>{
- e.preventDefault();const d=data(),id=el("editProductId").value;
- const code=el("productCode").value.trim();
- if(d.products.some(p=>p.code.toLowerCase()===code.toLowerCase()&&p.id!==id)){
-  alert("This product code already exists.");return;
- }
- const old=d.products.find(p=>p.id===id);
- const stock=Number(el("productStock").value);
- const p={
-  id:id||uid(),name:el("productName").value.trim(),code,
-  cost:Number(el("productCost").value),price:Number(el("productPrice").value),
-  stock,openingStock:old?(old.openingStock??old.stock):stock,
-  limit:Number(el("productLimit").value),gst:Number(el("productGst").value)
- };
- if(!p.name||!p.code||p.cost<0||p.price<0||stock<0||!Number.isFinite(stock)){
-  alert("Please enter valid product details.");return;
- }
- const index=d.products.findIndex(x=>x.id===id);
- if(index>=0)d.products[index]=p;else d.products.push(p);
- saveManager();resetProductForm();refreshAll();
-});
-function renderProducts(){
- const q=(el("productSearch").value||"").toLowerCase();
- const list=data().products.filter(p=>(p.name+" "+p.code).toLowerCase().includes(q));
- el("productTable").innerHTML=list.map(p=>`
- <tr><td>${esc(p.code)}</td><td>${esc(p.name)}</td><td>${money(p.cost)}</td>
- <td>${money(p.price)}</td><td>${p.stock}</td><td>${p.gst}%</td>
- <td><button class="btn-small btn" onclick="editProduct('${p.id}')">Edit</button>
- <button class="btn-small btn-red" onclick="removeProduct('${p.id}')">Delete</button></td></tr>
- `).join("")||"<tr><td colspan='7'>No products found.</td></tr>";
-}
-function editProduct(id){
- const p=data().products.find(x=>x.id===id);if(!p)return;
- el("editProductId").value=p.id;el("productName").value=p.name;
- el("productCode").value=p.code;el("productCost").value=p.cost;
- el("productPrice").value=p.price;el("productStock").value=p.stock;
- el("productLimit").value=p.limit;el("productGst").value=p.gst;
- showPage("products",document.querySelectorAll("nav button")[2]);
-}
-function removeProduct(id){
- if(!confirm("Delete this product?"))return;
- data().products=data().products.filter(p=>p.id!==id);saveManager();refreshAll();
-}
-function renderSaleProducts(){
- const s=el("saleProduct");s.innerHTML="";
- data().products.forEach(p=>{
-  const o=document.createElement("option");o.value=p.id;
-  o.textContent=p.name+" — "+money(p.price)+" (Stock: "+p.stock+")";s.appendChild(o);
- });
+  const fileInput = e.target.logoFile;
+  if (fileInput && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = () => processFirm(reader.result);
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    processFirm(null);
+  }
 }
 
-/* CART AND GST */
-function addToCart(){
- const p=data().products.find(x=>x.id===el("saleProduct").value);
- const qty=Number(el("saleQuantity").value);
- if(!p){alert("Please add a product first.");return}
- if(!Number.isInteger(qty)||qty<1){alert("Enter a valid whole-number quantity.");return}
- const old=cart.find(x=>x.productId===p.id);
- if(qty+(old?.qty||0)>p.stock){alert("Not enough stock available.");return}
- if(old)old.qty+=qty;
- else cart.push({productId:p.id,name:p.name,qty,price:p.price,cost:p.cost,gst:p.gst});
- renderCart();
-}
-function calculateBill(){
- const subtotal=cart.reduce((s,i)=>s+i.qty*i.price,0);
- const discount=Math.min(subtotal,Math.max(0,Number(el("saleDiscount").value)||0));
- const ratio=subtotal?(subtotal-discount)/subtotal:0;
- const inclusive=el("priceMode").value==="inclusive";
- let taxable=0,cgst=0,sgst=0,igst=0;
- const items=cart.map(i=>{
-  const gross=i.qty*i.price*ratio,rate=i.gst/100;
-  const base=inclusive?gross/(1+rate):gross;
-  const tax=inclusive?gross-base:base*rate;
-  taxable+=base;
-  if(el("gstType").value==="local"){cgst+=tax/2;sgst+=tax/2}
-  else igst+=tax;
-  return {...i,lineGross:gross,base,tax};
- });
- const total=inclusive?subtotal-discount:taxable+cgst+sgst+igst;
- return {subtotal,discount,taxable,cgst,sgst,igst,total,items};
-}
-function renderCart(){
- if(!el("cartTable"))return;
- el("cartTable").innerHTML=cart.map((i,n)=>`
- <tr><td>${esc(i.name)}</td><td>${i.qty}</td><td>${money(i.price)}</td>
- <td>${i.gst}%</td><td>${money(i.qty*i.price)}</td>
- <td><button class="btn-small btn-red" onclick="removeCartItem(${n})">Remove</button></td></tr>
- `).join("")||"<tr><td colspan='6'>Cart is empty.</td></tr>";
- const b=calculateBill();
- ["Subtotal","Discount","Taxable","Cgst","Sgst","Igst","Total"].forEach(k=>{
-  const key=k.toLowerCase();const id="bill"+k;
-  if(el(id))el(id).textContent=money(b[key]);
- });
-}
-function removeCartItem(i){cart.splice(i,1);renderCart()}
-function clearCart(){cart=[];el("saleDiscount").value=0;renderCart()}
-["gstType","priceMode"].forEach(id=>el(id).addEventListener("change",renderCart));
-
-/* INVOICE AND SALE */
-function completeSale(){
- if(!cart.length){alert("Add products to the cart first.");return}
- const b=calculateBill();
- for(const i of cart){
-  const p=data().products.find(x=>x.id===i.productId);
-  if(!p||p.stock<i.qty){alert("Stock changed. Please check the cart.");return}
- }
- const sale={
-  id:uid(),invoice:"SD-"+Date.now(),date:new Date().toISOString(),
-  customer:el("customerName").value.trim()||"Walk-in Customer",
-  phone:el("customerPhone").value.trim(),payment:el("paymentMode").value,
-  gstType:el("gstType").value,priceMode:el("priceMode").value,...b
- };
- data().sales.push(sale);
- sale.items.forEach(i=>{
-  const p=data().products.find(x=>x.id===i.productId);p.stock-=i.qty;
- });
- if(!saveManager())return;
- cart=[];el("saleDiscount").value=0;el("customerName").value="";el("customerPhone").value="";
- refreshAll();showInvoice(sale);
-}
-function showInvoice(sale){
- const f=data().firm;const w=window.open("","_blank");
- if(!w){alert("Allow pop-ups for this website to print invoices.");return}
- const rows=sale.items.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.qty}</td><td>${money(i.price)}</td><td>${i.gst}%</td><td>${money(i.lineGross)}</td></tr>`).join("");
- w.document.write(`<!DOCTYPE html><html><head><title>${esc(sale.invoice)}</title>
- <style>
- body{font-family:Arial;padding:25px;color:#222}h2{text-align:center}
- .center{text-align:center}img{max-width:90px;max-height:70px}
- table{width:100%;border-collapse:collapse;margin-top:18px}
- th,td{border:1px solid #ccc;padding:9px;text-align:left;font-size:13px}
- .right{text-align:right}.total{font-size:20px;font-weight:bold}
- @media print{button{display:none}}
- </style></head><body>
- <div class="center">${f.logo?`<img src="${f.logo}">`:""}
- <h2>${esc(f.name||"SMART DUKAAN")}</h2>
- <p>${esc(f.address||"")}<br>${esc(f.phone||"")}${f.gst?" | GSTIN: "+esc(f.gst):""}</p></div>
- <hr><h3>INVOICE</h3>
- <p>Invoice: ${esc(sale.invoice)}<br>Date: ${new Date(sale.date).toLocaleString("en-IN")}<br>
- Customer: ${esc(sale.customer)}<br>Phone: ${esc(sale.phone)}</p>
- <table><tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th><th>Amount</th></tr>${rows}</table>
- <p class="right">Subtotal: ${money(sale.subtotal)}<br>Discount: ${money(sale.discount)}<br>
- Taxable: ${money(sale.taxable)}<br>CGST: ${money(sale.cgst)}<br>
- SGST: ${money(sale.sgst)}<br>IGST: ${money(sale.igst)}</p>
- <p class="right total">Grand Total: ${money(sale.total)}</p>
- <p>Payment: ${esc(sale.payment)}</p><center>Thank you for your business!</center>
- <br><button onclick="window.print()">Print Bill</button>
- </body></html>`);
- w.document.close();
-}
-function showInvoiceById(id){
- const s=data().sales.find(x=>x.id===id);if(s)showInvoice(s);
+function editFirmModal(id) {
+  const firm = database.firms.find(f=>f.id===id) || {};
+  showFirmForm(firm);
 }
 
-/* DAILY SALES */
-function renderDaily(){
- if(!el("dailyTable"))return;
- const date=el("dailyDate").value||today();
- const list=data().sales.filter(s=>s.date.slice(0,10)===date);
- el("dailyTable").innerHTML=list.map(s=>`
- <tr><td>${esc(s.invoice)}</td><td>${esc(s.customer)}</td>
- <td>${new Date(s.date).toLocaleTimeString("en-IN")}</td>
- <td>${esc(s.payment)}</td><td>${money(s.total)}</td></tr>
- `).join("")||"<tr><td colspan='5'>No sales for this date.</td></tr>";
- el("dailyTotal").textContent=money(list.reduce((a,s)=>a+s.total,0));
- el("dailyCount").textContent=list.length;
+function showFirmForm(firm = null) {
+  const isEdit = !!firm;
+  document.getElementById("app").innerHTML = `
+  <div class="card">
+    <h2>${isEdit ? "Edit Firm Details" : "Create New Firm"}</h2>
+    <form class="form" onsubmit="saveFirmForm(event)">
+      <input type="hidden" name="firmId" value="${firm?.id || ''}">
+      
+      <div>
+        <label>Firm / Shop Name *</label>
+        <input name="name" value="${escapeHTML(firm?.name || '')}" required>
+      </div>
+
+      <div>
+        <label>Owner Name</label>
+        <input name="owner" value="${escapeHTML(firm?.owner || '')}">
+      </div>
+
+      <div>
+        <label>Phone Number</label>
+        <input name="phone" value="${escapeHTML(firm?.phone || '')}">
+      </div>
+
+      <div>
+        <label>Email Address</label>
+        <input name="email" type="email" value="${escapeHTML(firm?.email || '')}">
+      </div>
+
+      <div>
+        <label>GSTIN (Optional)</label>
+        <input name="gstin" value="${escapeHTML(firm?.gstin || '')}">
+      </div>
+
+      <div>
+        <label>Firm Logo Image</label>
+        <input name="logoFile" type="file" accept="image/*">
+      </div>
+
+      <div class="full">
+        <label>Business Address</label>
+        <textarea name="address" rows="2">${escapeHTML(firm?.address || '')}</textarea>
+      </div>
+
+      <div>
+        <label>Bank Name</label>
+        <input name="bank" value="${escapeHTML(firm?.bank || '')}">
+      </div>
+
+      <div>
+        <label>Account Number</label>
+        <input name="accountNo" value="${escapeHTML(firm?.accountNo || '')}">
+      </div>
+
+      <div>
+        <label>IFSC Code</label>
+        <input name="ifsc" value="${escapeHTML(firm?.ifsc || '')}">
+      </div>
+
+      <div class="full" style="display:flex; gap:10px;">
+        <button type="submit" class="primary">Save Firm Details</button>
+        <button type="button" onclick="render()">Cancel</button>
+      </div>
+    </form>
+  </div>`;
 }
 
-/* EXPENSES */
-function resetExpenseForm(){el("expenseForm").reset();el("editExpenseId").value="";el("expenseDate").value=today()}
-el("expenseForm").addEventListener("submit",e=>{
- e.preventDefault();
- const id=el("editExpenseId").value;
- const x={id:id||uid(),name:el("expenseName").value.trim(),
- category:el("expenseCategory").value,amount:Number(el("expenseAmount").value),
- date:el("expenseDate").value,payment:el("expensePayment").value};
- if(!x.name||!x.date||x.amount<=0){alert("Enter valid expense details.");return}
- const index=data().expenses.findIndex(a=>a.id===id);
- if(index>=0)data().expenses[index]=x;else data().expenses.push(x);
- resetExpenseForm();saveManager();refreshAll();
-});
-function renderExpenses(){
- el("expenseTable").innerHTML=data().expenses.map(x=>`
- <tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${esc(x.category)}</td>
- <td>${esc(x.payment)}</td><td>${money(x.amount)}</td>
- <td><button class="btn-small btn" onclick="editExpense('${x.id}')">Edit</button>
- <button class="btn-small btn-red" onclick="deleteExpense('${x.id}')">Delete</button></td></tr>
- `).join("")||"<tr><td colspan='6'>No expenses recorded.</td></tr>";
-}
-function editExpense(id){
- const x=data().expenses.find(a=>a.id===id);if(!x)return;
- el("editExpenseId").value=x.id;el("expenseName").value=x.name;
- el("expenseCategory").value=x.category;el("expenseAmount").value=x.amount;
- el("expenseDate").value=x.date;el("expensePayment").value=x.payment;
-}
-function deleteExpense(id){
- if(!confirm("Delete this expense?"))return;
- data().expenses=data().expenses.filter(x=>x.id!==id);saveManager();refreshAll();
+function switchFirm() {
+  database.activeFirm=document.getElementById("firmSelect").value;
+  saveDatabase();
+  render();
 }
 
-/* HISTORY */
-function renderHistory(){
- const q=(el("historySearch").value||"").toLowerCase();
- const list=[...data().sales].reverse().filter(s=>(s.invoice+" "+s.customer).toLowerCase().includes(q));
- el("historyTable").innerHTML=list.map(s=>`
- <tr><td>${esc(s.invoice)}</td><td>${new Date(s.date).toLocaleDateString("en-IN")}</td>
- <td>${esc(s.customer)}</td><td>${esc(s.payment)}</td><td>${money(s.total)}</td>
- <td><button class="btn-small btn" onclick="showInvoiceById('${s.id}')">Print</button></td></tr>
- `).join("")||"<tr><td colspan='6'>No sales found.</td></tr>";
+function deleteFirm(id) {
+  if(database.firms.length<=1) {
+    alert("At least one firm must remain.");
+    return;
+  }
+  if(!confirm("Delete this firm and all its records?")) return;
+
+  database.firms=database.firms.filter(f=>f.id!==id);
+  delete database.records[id];
+
+  if(database.activeFirm===id) {
+    database.activeFirm=database.firms[0].id;
+  }
+
+  saveDatabase();
+  updateFirmSelect();
+  render();
 }
 
-/* DASHBOARD AND REPORTS */
-function calculateProfit(){
- const d=data();
- const revenue=d.sales.reduce((a,s)=>a+Number(s.total||0),0);
- const cost=d.sales.reduce((a,s)=>a+(s.items||[]).reduce((b,i)=>b+Number(i.cost||0)*Number(i.qty||0),0),0);
- const expenses=d.expenses.reduce((a,x)=>a+Number(x.amount||0),0);
- return {revenue,cost,expenses,profit:revenue-cost-expenses};
-}
-function renderDashboard(){
- const d=data(),p=calculateProfit();
- el("dashSales").textContent=money(p.revenue);
- el("dashExpenses").textContent=money(p.expenses);
- el("dashProfit").textContent=money(p.profit);
- el("dashProducts").textContent=d.products.length;
- el("dashBills").textContent=d.sales.length;
- const low=d.products.filter(x=>x.stock<=x.limit);
- el("lowStock").innerHTML=low.length?low.map(x=>`<div class="alert">${esc(x.name)} — ${x.stock} left (limit ${x.limit})</div>`).join(""):"No low-stock products.";
- el("recentSales").innerHTML=[...d.sales].reverse().slice(0,5).map(s=>`
- <tr><td>${esc(s.invoice)}</td><td>${esc(s.customer)}</td>
- <td>${new Date(s.date).toLocaleDateString("en-IN")}</td>
- <td>${esc(s.payment)}</td><td>${money(s.total)}</td></tr>
- `).join("")||"<tr><td colspan='5'>No sales yet.</td></tr>";
-}
-function renderReports(){
- const p=calculateProfit(),d=data();
- el("reportRevenue").textContent=money(p.revenue);
- el("reportExpense").textContent=money(p.expenses);
- el("reportProfit").textContent=money(p.profit);
- const months={},expenseMonths={};
- d.sales.forEach(s=>{const m=s.date.slice(0,7);months[m]=(months[m]||0)+Number(s.total||0)});
- d.expenses.forEach(x=>{const m=x.date.slice(0,7);expenseMonths[m]=(expenseMonths[m]||0)+Number(x.amount||0)});
- const keys=[...new Set([...Object.keys(months),...Object.keys(expenseMonths)])].sort().reverse();
- el("monthlyReport").innerHTML=keys.map(m=>{
-  const sales=months[m]||0,expenses=expenseMonths[m]||0;
-  return `<tr><td>${m}</td><td>${money(sales)}</td><td>${money(expenses)}</td><td>${money(sales-expenses)}</td></tr>`;
- }).join("")||"<tr><td colspan='4'>No report data.</td></tr>";
- const payments={};
- d.sales.forEach(s=>payments[s.payment]=(payments[s.payment]||0)+Number(s.total||0));
- el("paymentReport").innerHTML=Object.entries(payments).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${money(v)}</td></tr>`).join("")||"<tr><td colspan='2'>No payment data.</td></tr>";
+function showPage(page,button) {
+  currentPage=page;
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  if(button) button.classList.add("active");
+  render();
 }
 
-/* EXCEL EXPORTS */
-function downloadExcel(filename,sheetName,rows,columns){
- if(typeof XLSX==="undefined"){
-  alert("Excel library did not load. Check your internet connection and reload the website.");
-  return;
- }
- if(!rows.length){alert("There is no data to export.");return}
- try{
-  const ws=XLSX.utils.json_to_sheet(rows);
-  if(columns)ws["!cols"]=columns.map(w=>({wch:w}));
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,sheetName);
-  XLSX.writeFile(wb,filename);
- }catch(error){
-  console.error(error);alert("Excel export failed: "+error.message);
- }
-}
-function exportStock(){
- const products=data().products;
- const rows=products.map(p=>({
-  "Product Code":p.code,
-  "Product Name":p.name,
-  "Opening Stock":p.openingStock??"",
-  "Available Stock":p.stock,
-  "Low Stock Limit":p.limit,
-  "Purchase Cost (₹)":p.cost,
-  "Selling Price (₹)":p.price,
-  "Total Stock Value (₹)":Number(p.stock)*Number(p.cost),
-  "Potential Sales Value (₹)":Number(p.stock)*Number(p.price),
-  "GST Rate":p.gst+"%",
-  "Stock Status":p.stock<=0?"Out of Stock":p.stock<=p.limit?"Low Stock":"Available"
- }));
- downloadExcel("SMART_DUKAAN_Stock_Register.xlsx","Stock Register",rows,
- [16,25,16,16,16,18,18,23,25,12,18]);
-}
-function exportProducts(){
- const rows=data().products.map(p=>({
-  Code:p.code,Product:p.name,Cost:p.cost,Price:p.price,
-  OpeningStock:p.openingStock??"",AvailableStock:p.stock,
-  LowStockLimit:p.limit,GST:p.gst+"%"
- }));
- downloadExcel("SMART_DUKAAN_Products.xlsx","Products",rows);
-}
-function exportSales(){
- const rows=data().sales.map(s=>({
-  Invoice:s.invoice,Date:s.date,Customer:s.customer,Phone:s.phone,
-  Payment:s.payment,GSTType:s.gstType,PriceMode:s.priceMode,
-  Subtotal:s.subtotal,Discount:s.discount,Taxable:s.taxable,
-  CGST:s.cgst,SGST:s.sgst,IGST:s.igst,Total:s.total
- }));
- downloadExcel("SMART_DUKAAN_Sales.xlsx","Sales",rows);
-}
-function exportDaily(){
- const date=el("dailyDate").value||today();
- const rows=data().sales.filter(s=>s.date.slice(0,10)===date).map(s=>({
-  Invoice:s.invoice,Date:s.date,Customer:s.customer,Phone:s.phone,
-  Payment:s.payment,Subtotal:s.subtotal,Discount:s.discount,
-  Taxable:s.taxable,CGST:s.cgst,SGST:s.sgst,IGST:s.igst,Total:s.total
- }));
- downloadExcel("SMART_DUKAAN_Daily_"+date+".xlsx","Daily Sales",rows);
+function makeTable(headers,rows) {
+  return `
+  <div class="table-wrap">
+  <table>
+    <thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+    <tbody>
+      ${rows.length?rows.join(""):
+        `<tr><td colspan="${headers.length}">No records found</td></tr>`}
+    </tbody>
+  </table>
+  </div>`;
 }
 
-/* BACKUP AND RESTORE */
-function downloadBackup(){
- const blob=new Blob([JSON.stringify(manager,null,2)],{type:"application/json"});
- const url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="SMART_DUKAAN_BACKUP.json";
- document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-function restoreBackup(){
- const file=el("backupFile").files[0];
- if(!file){alert("Choose a backup JSON file first.");return}
- if(!confirm("Restore this backup and replace all saved firms?"))return;
- const reader=new FileReader();
- reader.onload=()=>{
-  try{
-   const restored=JSON.parse(reader.result);
-   if(!Array.isArray(restored.firms)||!restored.firms.length)throw new Error("Invalid backup");
-   restored.firms.forEach(f=>{
-    if(!f.id||!f.data)throw new Error("Invalid firm");
-    f.data.firm=f.data.firm||{name:f.name||"My Store"};
-    f.data.products=Array.isArray(f.data.products)?f.data.products:[];
-    f.data.sales=Array.isArray(f.data.sales)?f.data.sales:[];
-    f.data.expenses=Array.isArray(f.data.expenses)?f.data.expenses:[];
-   });
-   manager=restored;
-   if(!manager.firms.some(f=>f.id===manager.activeFirmId))manager.activeFirmId=manager.firms[0].id;
-   cart=[];saveManager();refreshAll();renderFirm();
-   alert("Backup restored successfully.");
-  }catch(e){alert("Invalid or unsupported backup file.");}
- };
- reader.readAsText(file);
+function dashboard() {
+  const sales=records("sales");
+  const products=records("products");
+  const expenses=records("expenses");
+  const firm = activeFirm() || {};
+  const month=today().slice(0,7);
+
+  const monthlySales=sales.filter(s=>(s.date||"").startsWith(month));
+  const todaySales=sales.filter(s=>s.date===today());
+  const monthlyExpenses=expenses.filter(e=>(e.date||"").startsWith(month));
+
+  const totalToday=todaySales.reduce((a,b)=>a+Number(b.total),0);
+  const totalMonth=monthlySales.reduce((a,b)=>a+Number(b.total),0);
+  const totalExpenses=monthlyExpenses.reduce((a,b)=>a+Number(b.amount),0);
+
+  return `
+  <div class="card">
+    <div class="firm-header-preview">
+      ${firm.logo ? `<img src="${firm.logo}" class="firm-logo-img">` : ''}
+      <div>
+        <h2 style="margin:0">${escapeHTML(firm.name || '')}</h2>
+        <small class="muted">${escapeHTML(firm.address || 'No address added')} | Phone: ${escapeHTML(firm.phone || 'N/A')}</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card stat">
+      <small>Today's Sales</small>
+      <strong>${money(totalToday)}</strong>
+      <small>${todaySales.length} invoices</small>
+    </div>
+    <div class="card stat">
+      <small>Monthly Sales</small>
+      <strong>${money(totalMonth)}</strong>
+      <small>${monthlySales.length} invoices</small>
+    </div>
+    <div class="card stat">
+      <small>Monthly Expenses</small>
+      <strong>${money(totalExpenses)}</strong>
+      <small>Current month</small>
+    </div>
+    <div class="card stat">
+      <small>Total Products</small>
+      <strong>${products.length}</strong>
+      <small>Inventory items</small>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Business Overview</h2>
+    <p class="muted">Active firm: ${escapeHTML(firm.name||"")}</p>
+    <p>Sales minus recorded expenses:</p>
+    <div class="total">${money(totalMonth-totalExpenses)}</div>
+  </div>
+
+  <div class="card">
+    <h2>Low Stock Alerts</h2>
+    ${makeTable(["Product","Stock","Minimum Stock"],
+      products.filter(p=>Number(p.stock)<=Number(p.minStock||0))
+      .map(p=>`<tr>
+        <td>${escapeHTML(p.name)}</td>
+        <td>${p.stock}</td>
+        <td>${p.minStock||0}</td>
+      </tr>`))}
+  </div>`;
 }
 
-/* STARTUP */
-el("dailyDate").value=today();
-el("expenseDate").value=today();
-refreshAll();
-renderFirm();
+function productForm() {
+  const name=prompt("Product name:");
+  if(!name) return;
+
+  const code=prompt("Product code:") || "";
+  const category=prompt("Category:") || "General";
+  const cost=Number(prompt("Purchase cost ₹:")||0);
+  const price=Number(prompt("Selling price ₹:")||0);
+  const stock=Number(prompt("Opening stock:")||0);
+  const minStock=Number(prompt("Minimum stock alert:")||0);
+  const gst=Number(prompt("GST rate (0,5,12,18,28):")||0);
+
+  addRecord("products",{name,code,category,cost,price,stock,minStock,gst});
+  render();
+  notify("Product added");
+}
+
+function editProduct(id) {
+  const p=records("products").find(x=>x.id===id);
+  if(!p) return;
+
+  p.name=prompt("Product name:",p.name)||p.name;
+  p.code=prompt("Product code:",p.code)||p.code;
+  p.cost=Number(prompt("Cost:",p.cost)||p.cost);
+  p.price=Number(prompt("Selling price:",p.price)||p.price);
+  p.stock=Number(prompt("Stock:",p.stock)||p.stock);
+  p.gst=Number(prompt("GST:",p.gst)||p.gst);
+
+  saveDatabase();
+  render();
+}
+
+function productsPage() {
+  const data=records("products");
+  return `
+  <div class="card">
+    <h2>Products & Stock</h2>
+    <button class="primary" onclick="productForm()">+ Add Product</button>
+    <button onclick="exportCSV('products')">Export CSV</button>
+    <br><br>
+    ${makeTable(
+      ["Code","Product","Category","Cost","Selling Price","GST","Stock","Actions"],
+      data.map(p=>`<tr>
+        <td>${escapeHTML(p.code)}</td>
+        <td>${escapeHTML(p.name)}</td>
+        <td>${escapeHTML(p.category)}</td>
+        <td>${money(p.cost)}</td>
+        <td>${money(p.price)}</td>
+        <td>${p.gst}%</td>
+        <td>${p.stock}</td>
+        <td class="actions">
+          <button onclick="editProduct('${p.id}')">Edit</button>
+          <button class="danger" onclick="deleteRecord('products','${p.id}')">Delete</button>
+        </td>
+      </tr>`)
+    )}
+  </div>`;
+}
+
+function partyForm(type) {
+  const name=prompt("Name:");
+  if(!name) return;
+
+  const phone=prompt("Phone number:")||"";
+  const gstin=prompt("GSTIN (optional):")||"";
+  const address=prompt("Address:")||"";
+
+  addRecord(type,{name,phone,gstin,address});
+  render();
+  notify("Contact saved");
+}
+
+function partyPage(type) {
+  const data=records(type);
+  return `
+  <div class="card">
+    <h2>${type==="customers"?"Customers":"Suppliers"}</h2>
+    <button class="primary" onclick="partyForm('${type}')">+ Add New</button>
+    <br><br>
+    ${makeTable(["Name","Phone","GSTIN","Address","Action"],
+      data.map(x=>`<tr>
+        <td>${escapeHTML(x.name)}</td>
+        <td>${escapeHTML(x.phone)}</td>
+        <td>${escapeHTML(x.gstin)}</td>
+        <td>${escapeHTML(x.address)}</td>
+        <td><button class="danger" onclick="deleteRecord('${type}','${x.id}')">Delete</button></td>
+      </tr>`))}
+  </div>`;
+}
+
+function salesPage() {
+  const products=records("products");
+  return `
+  <div class="card">
+    <h2>Create New Invoice</h2>
+    <form id="saleForm" class="form" onsubmit="handleSaleSubmit(event)">
+      <div>
+        <label>Invoice Date</label>
+        <input name="date" type="date" value="${today()}" required>
+      </div>
+      <div>
+        <label>Customer Name</label>
+        <input name="customer" placeholder="Customer name">
+      </div>
+      <div>
+        <label>Phone Number</label>
+        <input name="phone" placeholder="Phone number">
+      </div>
+      <div>
+        <label>Payment Mode</label>
+        <select name="payment">
+          <option>Cash</option>
+          <option>Google Pay</option>
+          <option>PhonePe</option>
+          <option>Paytm</option>
+          <option>Card</option>
+          <option>Bank Transfer</option>
+          <option>Credit / Udhaar</option>
+        </select>
+      </div>
+      <div>
+        <label>GST Type</label>
+        <select name="gstType">
+          <option>Local - CGST + SGST</option>
+          <option>Interstate - IGST</option>
+        </select>
+      </div>
+      <div>
+        <label>Product</label>
+        <select name="productId" required>
+          ${products.map(p=>`
+            <option value="${p.id}">
+              ${escapeHTML(p.name)} - ${money(p.price)} (Stock ${p.stock})
+            </option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <label>Quantity</label>
+        <input name="qty" type="number" min="0.01" step="0.01" value="1" required>
+      </div>
+      <div>
+        <label>Discount ₹</label>
+        <input name="discount" type="number" min="0" value="0">
+      </div>
+      <div>
+        <label>Price Entry</label>
+        <select name="priceMode">
+          <option value="exclusive">Price Exclusive of GST</option>
+          <option value="inclusive">Price Inclusive of GST</option>
+        </select>
+      </div>
+      <div class="full">
+        <button type="submit" class="primary">Generate & Save Bill</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Sales History</h2>
+    ${makeTable(["Invoice","Date","Customer","Payment","Total","Action"],
+      records("sales").map(s=>`<tr>
+        <td>${escapeHTML(s.invoice)}</td>
+        <td>${s.date}</td>
+        <td>${escapeHTML(s.customer)}</td>
+        <td>${escapeHTML(s.payment)}</td>
+        <td>${money(s.total)}</td>
+        <td><button onclick="printBill('${s.id}')">Print</button></td>
+      </tr>`))}
+  </div>`;
+}
+
+function handleSaleSubmit(e) {
+  e.preventDefault();
+  try {
+    const data=Object.fromEntries(new FormData(e.target).entries());
+    const product=records("products").find(p=>p.id===data.productId);
+    if(!product) throw new Error("Please add a product first");
+
+    const qty=Number(data.qty);
+    if(qty<=0 || qty>Number(product.stock)) {
+      throw new Error("Insufficient stock");
+    }
+
+    const rate=Number(product.price);
+    const gst=Number(product.gst||0);
+    const discount=Math.max(0,Number(data.discount||0));
+
+    let taxable, tax, gross;
+    if(data.priceMode==="inclusive") {
+      gross=rate*qty;
+      taxable=gross/(1+gst/100);
+      tax=gross-taxable;
+    } else {
+      taxable=rate*qty;
+      tax=taxable*gst/100;
+      gross=taxable+tax;
+    }
+
+    const finalTaxable=Math.max(0,taxable-discount);
+    const finalTax=taxable>0?tax*(finalTaxable/taxable):0;
+    const total=finalTaxable+finalTax;
+    const interstate=data.gstType.startsWith("Interstate");
+    const invoice="SD-"+Date.now().toString().slice(-8);
+
+    const sale={
+      invoice,
+      date:data.date,
+      customer:data.customer||"Walk-in Customer",
+      phone:data.phone,
+      payment:data.payment,
+      gstType:data.gstType,
+      items:[{name:product.name,qty,price:rate,gst}],
+      subtotal:taxable,
+      discount,
+      taxable:finalTaxable,
+      tax:finalTax,
+      cgst:interstate?0:finalTax/2,
+      sgst:interstate?0:finalTax/2,
+      igst:interstate?finalTax:0,
+      total,
+      firmName:activeFirm()?.name||"SMART DUKAAN"
+    };
+
+    addRecord("sales",sale);
+    product.stock=Number(product.stock)-qty;
+    saveDatabase();
+    notify("Invoice saved successfully");
+    render();
+  } catch(error) {
+    alert(error.message);
+  }
+}
+
+function purchasesPage() {
+  return `
+  <div class="card">
+    <h2>Record Purchase</h2>
+    <form id="purchaseForm" class="form" onsubmit="handlePurchaseSubmit(event)">
+      <div>
+        <label>Date</label>
+        <input name="date" type="date" value="${today()}">
+      </div>
+      <div>
+        <label>Supplier</label>
+        <select name="supplier">
+          ${records("suppliers").map(s=>`<option>${escapeHTML(s.name)}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <label>Product</label>
+        <select name="productId">
+          ${records("products").map(p=>`<option value="${p.id}">${escapeHTML(p.name)}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <label>Quantity</label>
+        <input name="qty" type="number" min="0.01" step="0.01" required>
+      </div>
+      <div>
+        <label>Purchase Rate ₹</label>
+        <input name="rate" type="number" min="0" step="0.01" required>
+      </div>
+      <div class="full">
+        <button type="submit" class="primary">Save Purchase</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Purchase History</h2>
+    ${makeTable(["Date","Supplier","Product","Quantity","Rate","Total"],
+      records("purchases").map(p=>`<tr>
+        <td>${p.date}</td>
+        <td>${escapeHTML(p.supplier)}</td>
+        <td>${escapeHTML(p.productName)}</td>
+        <td>${p.qty}</td>
+        <td>${money(p.rate)}</td>
+        <td>${money(p.total)}</td>
+      </tr>`))}
+  </div>`;
+}
+
+function handlePurchaseSubmit(e) {
+  e.preventDefault();
+  try {
+    const d=Object.fromEntries(new FormData(e.target).entries());
+    const product=records("products").find(p=>p.id===d.productId);
+    if(!product) throw new Error("Select a product");
+
+    const qty=Number(d.qty);
+    const rate=Number(d.rate);
+    if(qty<=0) throw new Error("Enter a valid quantity");
+
+    addRecord("purchases",{
+      date:d.date,
+      supplier:d.supplier,
+      productName:product.name,
+      productId:product.id,
+      qty,
+      rate,
+      total:qty*rate
+    });
+
+    product.stock=Number(product.stock)+qty;
+    product.cost=rate;
+    saveDatabase();
+    notify("Purchase saved and stock updated");
+    render();
+  } catch(error) {
+    alert(error.message);
+  }
+}
+
+function expensesPage() {
+  return `
+  <div class="card">
+    <h2>Add Business Expense</h2>
+    <form id="expenseForm" class="form" onsubmit="handleExpenseSubmit(event)">
+      <div>
+        <label>Date</label>
+        <input type="date" name="date" value="${today()}">
+      </div>
+      <div>
+        <label>Category</label>
+        <select name="category">
+          <option>Rent</option>
+          <option>Electricity</option>
+          <option>Salary</option>
+          <option>Transport</option>
+          <option>Packaging</option>
+          <option>Maintenance</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Description</label>
+        <input name="description" required>
+      </div>
+      <div>
+        <label>Amount ₹</label>
+        <input type="number" name="amount" min="0.01" step="0.01" required>
+      </div>
+      <div>
+        <label>Payment Mode</label>
+        <select name="payment">
+          <option>Cash</option>
+          <option>UPI</option>
+          <option>Bank Transfer</option>
+        </select>
+      </div>
+      <div class="full">
+        <button type="submit" class="primary">Save Expense</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Expense Register</h2>
+    ${makeTable(["Date","Category","Description","Payment","Amount","Action"],
+      records("expenses").map(e=>`<tr>
+        <td>${e.date}</td>
+        <td>${escapeHTML(e.category)}</td>
+        <td>${escapeHTML(e.description)}</td>
+        <td>${escapeHTML(e.payment)}</td>
+        <td>${money(e.amount)}</td>
+        <td><button class="danger" onclick="deleteRecord('expenses','${e.id}')">Delete</button></td>
+      </tr>`))}
+  </div>`;
+}
+
+function handleExpenseSubmit(e) {
+  e.preventDefault();
+  const d=Object.fromEntries(new FormData(e.target).entries());
+  d.amount=Number(d.amount);
+  addRecord("expenses",d);
+  notify("Expense saved");
+  render();
+}
+
+function printBill(id) {
+  const sale=records("sales").find(s=>s.id===id);
+  if(!sale) return;
+
+  const firm=activeFirm()||{};
+  const w=window.open("","_blank");
+  if(!w) {
+    alert("Please allow pop-ups to print invoices.");
+    return;
+  }
+
+  w.document.write(`
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>${sale.invoice}</title>
+    <style>
+      body{font-family:Arial;padding:25px;color:#111}
+      .header-container{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #333;padding-bottom:15px;margin-bottom:15px}
+      .firm-logo{max-height:70px;max-width:140px;object-fit:contain}
+      .firm-info{text-align:right}
+      h1{margin:0;font-size:22px}
+      table{width:100%;border-collapse:collapse;margin-top:20px}
+      th,td{border:1px solid #aaa;padding:9px;text-align:left}
+      .right{text-align:right}
+      .bank-details{margin-top:20px;padding:10px;border:1px solid #ddd;background:#f9f9f9;font-size:12px}
+    </style>
+  </head>
+  <body>
+    <div class="header-container">
+      <div>
+        ${firm.logo ? `<img src="${firm.logo}" class="firm-logo">` : `<img src="${APP_LOGO}" class="firm-logo">`}
+      </div>
+      <div class="firm-info">
+        <h1>${escapeHTML(firm.name||sale.firmName)}</h1>
+        <p style="margin:4px 0;font-size:13px">${escapeHTML(firm.address||"")}</p>
+        <p style="margin:2px 0;font-size:12px">Phone: ${escapeHTML(firm.phone||"")} | Email: ${escapeHTML(firm.email||"N/A")}</p>
+        <p style="margin:2px 0;font-size:12px">GSTIN: ${escapeHTML(firm.gstin||"N/A")}</p>
+      </div>
+    </div>
+
+    <h2>Tax Invoice</h2>
+    <p>Invoice: <strong>${escapeHTML(sale.invoice)}</strong></p>
+    <p>Date: ${sale.date}</p>
+    <p>Customer: ${escapeHTML(sale.customer)}</p>
+    <p>Payment: ${escapeHTML(sale.payment)}</p>
+    <table>
+      <tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th></tr>
+      ${sale.items.map(i=>`
+        <tr>
+          <td>${escapeHTML(i.name)}</td>
+          <td>${i.qty}</td>
+          <td>${money(i.price)}</td>
+          <td>${i.gst}%</td>
+        </tr>`).join("")}
+    </table>
+    <p class="right">Taxable Value: ${money(sale.taxable)}</p>
+    <p class="right">Discount: ${money(sale.discount)}</p>
+    <p class="right">CGST: ${money(sale.cgst)}</p>
+    <p class="right">SGST: ${money(sale.sgst)}</p>
+    <p class="right">IGST: ${money(sale.igst)}</p>
+    <h2 class="right">Total: ${money(sale.total)}</h2>
+
+    ${(firm.bank || firm.accountNo) ? `
+    <div class="bank-details">
+      <strong>Bank Payment Details:</strong><br>
+      Bank: ${escapeHTML(firm.bank || 'N/A')} | Account No: ${escapeHTML(firm.accountNo || 'N/A')} | IFSC: ${escapeHTML(firm.ifsc || 'N/A')}
+    </div>` : ''}
+
+    <p style="text-align:center;margin-top:30px;font-size:12px;color:#666">Thank you for shopping with us!</p>
+    <script>window.onload=()=>window.print();<\/script>
+  </body>
+  </html>`);
+  w.document.close();
+}
+
+function reportsPage() {
+  const sales=records("sales");
+  const expenses=records("expenses");
+  const month=today().slice(0,7);
+
+  const monthlySales=sales.filter(s=>(s.date||"").startsWith(month));
+  const monthlyExpenses=expenses.filter(e=>(e.date||"").startsWith(month));
+
+  const saleTotal=monthlySales.reduce((a,b)=>a+Number(b.total),0);
+  const taxTotal=monthlySales.reduce((a,b)=>a+Number(b.tax),0);
+  const expenseTotal=monthlyExpenses.reduce((a,b)=>a+Number(b.amount),0);
+
+  return `
+  <div class="stats">
+    <div class="card stat"><small>Monthly Sales</small><strong>${money(saleTotal)}</strong></div>
+    <div class="card stat"><small>GST Recorded</small><strong>${money(taxTotal)}</strong></div>
+    <div class="card stat"><small>Expenses</small><strong>${money(expenseTotal)}</strong></div>
+    <div class="card stat"><small>Sales - Expenses</small><strong>${money(saleTotal-expenseTotal)}</strong></div>
+  </div>
+
+  <div class="card">
+    <h2>Monthly Sales Register</h2>
+    ${makeTable(["Invoice","Date","Customer","Total"],
+      monthlySales.map(s=>`<tr>
+        <td>${escapeHTML(s.invoice)}</td>
+        <td>${s.date}</td>
+        <td>${escapeHTML(s.customer)}</td>
+        <td>${money(s.total)}</td>
+      </tr>`))}
+    <button onclick="exportCSV('sales')">Export Sales CSV</button>
+  </div>
+
+  <p class="muted">
+    These are operational summaries, not statutory GST returns or audited accounts.
+    Verify tax treatment before using figures for filing.
+  </p>`;
+}
+
+function backupPage() {
+  return `
+  <div class="card">
+    <h2>Backup & Restore</h2>
+    <p class="muted">Save a copy of all firms and their records.</p>
+    <button class="primary" onclick="backupData()">Download Full Backup</button>
+    <br><br>
+    <label>Restore Backup JSON</label>
+    <input type="file" id="restoreFile" accept=".json">
+    <br><br>
+    <button onclick="restoreData()">Restore Data</button>
+    <hr>
+    <button class="danger" onclick="clearCurrentFirm()">Delete Current Firm Records</button>
+  </div>`;
+}
+
+function backupData() {
+  const blob=new Blob([JSON.stringify(database,null,2)],{type:"application/json"});
+  downloadBlob(blob,"smart-dukaan-backup.json");
+}
+
+function restoreData() {
+  const file=document.getElementById("restoreFile").files[0];
+  if(!file) {
+    alert("Choose a backup file first.");
+    return;
+  }
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try {
+      const restored=JSON.parse(reader.result);
+      if(!Array.isArray(restored.firms) || !restored.records) {
+        throw new Error("Invalid backup format");
+      }
+      if(!confirm("Restore will replace the current browser data. Continue?")) return;
+
+      database=restored;
+      saveDatabase();
+      updateFirmSelect();
+      render();
+      notify("Backup restored");
+    } catch(e) {
+      alert("Could not restore: "+e.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearCurrentFirm() {
+  if(!confirm("Delete all records of this firm?")) return;
+  database.records[database.activeFirm]={};
+  saveDatabase();
+  render();
+  notify("Firm records cleared");
+}
+
+function downloadBlob(blob,filename) {
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV(type) {
+  const data=records(type);
+  if(!data.length) {
+    alert("No records to export.");
+    return;
+  }
+
+  const headers=[...new Set(data.flatMap(x=>Object.keys(x)))];
+  const quote=value=>'"'+String(typeof value==="object"?JSON.stringify(value):value??"").replace(/"/g,'""')+'"';
+
+  const csv=[
+    headers.map(quote).join(","),
+    ...data.map(row=>headers.map(h=>quote(row[h])).join(","))
+  ].join("\n");
+
+  downloadBlob(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),type+"-export.csv");
+}
+
+function render() {
+  if(!database.activeFirm || !activeFirm()) {
+    document.getElementById("app").innerHTML=`
+      <div class="card">
+        <h2>Welcome to SMART DUKAAN PRO</h2>
+        <p>Create your first business firm to begin.</p>
+        <button class="primary" onclick="showFirmForm()">Create First Firm</button>
+      </div>`;
+    return;
+  }
+
+  const pages={
+    dashboard,
+    firms:()=>`
+      <div class="card">
+        <h2>Firm Management</h2>
+        <button class="primary" onclick="showFirmForm()">+ Create New Firm</button>
+        <br><br>
+        ${makeTable(["Logo", "Firm Name","Owner","Phone","GSTIN","Actions"],
+          database.firms.map(f=>`<tr>
+            <td>${f.logo ? `<img src="${f.logo}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;">` : 'No logo'}</td>
+            <td>${escapeHTML(f.name)}</td>
+            <td>${escapeHTML(f.owner)}</td>
+            <td>${escapeHTML(f.phone)}</td>
+            <td>${escapeHTML(f.gstin)}</td>
+            <td class="actions">
+              <button onclick="editFirmModal('${f.id}')">Edit</button>
+              <button class="danger" onclick="deleteFirm('${f.id}')">Delete</button>
+            </td>
+          </tr>`))}
+      </div>`,
+    products:productsPage,
+    customers:()=>partyPage("customers"),
+    suppliers:()=>partyPage("suppliers"),
+    sales:salesPage,
+    purchases:purchasesPage,
+    expenses:expensesPage,
+    reports:reportsPage,
+    backup:backupPage
+  };
+
+  const titles={
+    dashboard:"Dashboard",
+    firms:"Firm Management",
+    products:"Products & Stock",
+    customers:"Customers",
+    suppliers:"Suppliers",
+    sales:"Sales & Billing",
+    purchases:"Purchases",
+    expenses:"Expenses",
+    reports:"Reports",
+    backup:"Backup & Restore"
+  };
+
+  document.getElementById("pageTitle").textContent=titles[currentPage];
+  document.getElementById("app").innerHTML=pages[currentPage]();
+}
+
+// Initialize Application
+if(database.firms.length===0) {
+  const firm={
+    id:uid(),
+    name:"My First Business",
+    owner:"",
+    phone:"",
+    email:"",
+    address:"",
+    gstin:"",
+    bank:"",
+    accountNo:"",
+    ifsc:"",
+    logo:""
+  };
+  database.firms.push(firm);
+  database.activeFirm=firm.id;
+  database.records[firm.id]={};
+  saveDatabase();
+}
+
+updateFirmSelect();
+render();
 </script>
 </body>
 </html>
