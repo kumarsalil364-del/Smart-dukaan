@@ -1,1720 +1,3666 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SMART DUKAAN PRO</title>
-</style>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
 <style>
 :root {
-  --bg:#F3F7FF;
-  --panel:#FFFFFF;
-  --line:#DCE6F5;
-  --blue:#2563EB;
-  --cyan:#38BDF8;
-  --text:#172B4D;
-  --muted:#64748B;
-  --green:#16A34A;
-  --red:#EF4444;
-  --yellow:#D97706;
+    --bg:#0b1220;
+    --panel:#121d31;
+    --panel2:#17243b;
+    --line:#263752;
+    --text:#edf3ff;
+    --muted:#9aabc5;
+    --gold:#e8bd62;
+    --green:#35c78a;
+    --red:#ff6b75;
+    --blue:#70a7ff;
 }
 
-* {
-  box-sizing:border-box;
-}
+* { box-sizing:border-box; }
 
 body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,sans-serif;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    line-height:1.5;
 }
 
-.layout {
-  display:grid;
-  grid-template-columns:250px 1fr;
-  min-height:100vh;
+button,input,select,textarea { font:inherit; }
+
+button {
+    cursor:pointer;
+    border:0;
+    border-radius:10px;
+    padding:10px 14px;
+    background:var(--gold);
+    color:#172033;
+    font-weight:bold;
 }
 
-.sidebar {
-  background:#1746A2;
-  border-right:1px solid #123B89;
-  padding:20px 14px;
-  box-shadow:3px 0 15px rgba(23,70,162,.12);
+button:hover { filter:brightness(1.08); }
+button:disabled { opacity:.5; cursor:not-allowed; }
+
+button.secondary {
+    background:#263752;
+    color:white;
 }
 
-.brand-box {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px;
-  margin-bottom:20px;
-  border-bottom:1px solid rgba(255,255,255,.2);
-  padding-bottom:15px;
+button.danger {
+    background:#612c38;
+    color:white;
 }
 
-.brand-logo {
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid white;
-}
-
-.brand-title {
-  font-size:18px;
-  font-weight:bold;
-  color:#FFFFFF;
-  line-height:1.2;
-}
-
-.brand-title small {
-  display:block;
-  font-size:9px;
-  color:#C7DCFF;
-  letter-spacing:1px;
-  margin-top:3px;
-}
-
-nav button {
-  width:100%;
-  padding:13px;
-  margin:4px 0;
-  border:0;
-  border-radius:9px;
-  text-align:left;
-  background:transparent;
-  color:#FFFFFF;
-  cursor:pointer;
-  font-size:14px;
-  transition:.25s;
-}
-
-nav button:hover {
-  background:rgba(255,255,255,.15);
-  transform:translateX(3px);
-}
-
-nav button.active {
-  background:#FFFFFF;
-  color:#1746A2;
-  font-weight:bold;
-  box-shadow:0 3px 10px rgba(0,0,0,.12);
-}
-
-main {
-  padding:25px;
-  min-width:0;
-}
-
-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin-bottom:25px;
-}
-
-h1 {
-  margin:0;
-  font-size:28px;
-  color:#1746A2;
-}
-
-h2 {
-  font-size:19px;
-  margin-top:0;
-  color:#1746A2;
-}
-
-.muted {
-  color:var(--muted);
-}
-
-.card {
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:20px;
-  margin-bottom:18px;
-  box-shadow:0 4px 15px rgba(30,64,175,.055);
-  transition:.2s;
-}
-
-.card:hover {
-  box-shadow:0 7px 20px rgba(30,64,175,.09);
-}
-
-.firm-header-preview {
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-bottom:15px;
-}
-
-.firm-logo-img {
-  width:60px;
-  height:60px;
-  border-radius:10px;
-  object-fit:cover;
-  border:1px solid var(--line);
-  background:#EFF6FF;
-}
-
-.stats {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:13px;
-}
-
-.stat {
-  border-top:4px solid var(--blue);
-}
-
-.stat strong {
-  display:block;
-  font-size:24px;
-  margin:10px 0;
-  color:#1746A2;
-}
-
-.stat small {
-  color:var(--muted);
-}
-
-button,.btn {
-  padding:10px 15px;
-  border:1px solid #DCE6F5;
-  border-radius:9px;
-  background:#E8F0FF;
-  color:#1746A2;
-  cursor:pointer;
-  font-weight:600;
-  transition:.2s;
-}
-
-button:hover,.btn:hover {
-  transform:translateY(-2px);
-  box-shadow:0 4px 10px rgba(37,99,235,.15);
-}
-
-.primary {
-  background:#2563EB;
-  border-color:#2563EB;
-  color:white;
-}
-
-.primary:hover {
-  background:#1746A2;
-}
-
-.danger {
-  background:#FEE2E2;
-  color:#DC2626;
-  border-color:#FECACA;
+button.success {
+    background:#176b50;
+    color:white;
 }
 
 input,select,textarea {
-  width:100%;
-  padding:11px;
-  background:#FFFFFF;
-  border:1px solid #CBD9EF;
-  color:#172B4D;
-  border-radius:8px;
-  outline:none;
-  font-family:Arial,sans-serif;
-  transition:.2s;
+    width:100%;
+    background:#0c1729;
+    color:white;
+    border:1px solid var(--line);
+    border-radius:9px;
+    padding:10px;
+    outline:none;
 }
 
 input:focus,select:focus,textarea:focus {
-  border-color:#2563EB;
-  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    border-color:var(--gold);
 }
 
 label {
-  display:block;
-  color:#475569;
-  font-size:12px;
-  font-weight:600;
-  margin:10px 0 5px;
+    display:block;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:5px;
 }
 
-.form {
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+.app {
+    max-width:1500px;
+    margin:auto;
+    padding:18px;
 }
 
-.full {
-  grid-column:1/-1;
+.top {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:linear-gradient(120deg,#172640,#101a2d);
+    border:1px solid var(--line);
+    padding:17px;
+    border-radius:18px;
 }
 
-.table-wrap {
-  overflow-x:auto;
+.brand {
+    display:flex;
+    align-items:center;
+    gap:13px;
+    min-width:0;
+}
+
+.logo {
+    width:54px;
+    height:54px;
+    object-fit:contain;
+    border-radius:12px;
+    background:white;
+    padding:4px;
+}
+
+.brandmark {
+    width:54px;
+    height:54px;
+    border-radius:14px;
+    background:var(--gold);
+    color:#172033;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+    font-size:22px;
+}
+
+h1 { font-size:21px; margin:0; }
+h2 { font-size:20px; }
+h3 { margin-top:0; }
+
+.sub {
+    font-size:12px;
+    color:var(--muted);
+}
+
+.topright {
+    display:flex;
+    align-items:center;
+    gap:9px;
+    flex-wrap:wrap;
+}
+
+.firm-select {
+    width:auto;
+    min-width:150px;
+}
+
+.nav {
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:14px 0;
+}
+
+.nav button {
+    white-space:nowrap;
+    background:#17243b;
+    color:#b8c7dc;
+    border:1px solid var(--line);
+}
+
+.nav button.active {
+    background:var(--gold);
+    color:#172033;
+}
+
+.page { display:none; }
+.page.active { display:block; }
+
+.heading {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    margin:10px 0 15px;
+}
+
+.heading h2 { margin:0; }
+
+.grid {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:13px;
+}
+
+.card {
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:15px;
+    padding:15px;
+    min-width:0;
+}
+
+.stat small { color:var(--muted); }
+
+.stat strong {
+    display:block;
+    font-size:25px;
+    margin-top:5px;
+}
+
+.stat .hint {
+    font-size:12px;
+    color:var(--muted);
+}
+
+.formgrid {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px;
+}
+
+.field { min-width:0; }
+.field.full { grid-column:1/-1; }
+
+.actions,.toolbar {
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-top:13px;
+}
+
+.toolbar input { max-width:280px; }
+
+.tablewrap {
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:12px;
+    margin-top:12px;
 }
 
 table {
-  width:100%;
-  border-collapse:collapse;
-  min-width:700px;
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:var(--panel);
 }
 
 th,td {
-  padding:13px;
-  text-align:left;
-  border-bottom:1px solid #E5EDF8;
-  font-size:13px;
-  color:#334155;
+    padding:11px 12px;
+    text-align:left;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
 }
 
 th {
-  color:#1746A2;
-  background:#EFF5FF;
-  font-weight:bold;
+    color:var(--gold);
+    background:#17243b;
 }
 
-tbody tr:hover {
-  background:#F5F8FF;
+.muted { color:var(--muted); }
+
+.pill {
+    display:inline-block;
+    border-radius:20px;
+    padding:3px 9px;
+    font-size:11px;
+    background:#263752;
 }
 
-.actions {
-  display:flex;
-  gap:5px;
+.pill.low,.badge.danger {
+    background:#592d37;
+    color:#ffd6d9;
+}
+
+.pill.good,.badge.success {
+    background:#174a3b;
+    color:#c5ffe8;
 }
 
 .badge {
-  padding:5px 9px;
-  border-radius:6px;
-  font-size:11px;
-  font-weight:bold;
-  display:inline-block;
+    display:inline-block;
+    border-radius:20px;
+    padding:4px 9px;
+    font-size:11px;
+    font-weight:bold;
 }
 
-.badge-green {
-  background:#DCFCE7;
-  color:#15803D;
+.small {
+    padding:7px 10px;
+    font-size:13px;
 }
 
-.badge-yellow {
-  background:#FEF3C7;
-  color:#B45309;
+.empty {
+    text-align:center;
+    color:var(--muted);
+    padding:25px;
 }
 
-.badge-red {
-  background:#FEE2E2;
-  color:#DC2626;
+.bill-total,.totals {
+    max-width:420px;
+    margin:14px 0 0 auto;
+    background:#0c1729;
+    border:1px solid var(--line);
+    padding:14px;
+    border-radius:12px;
 }
 
-.toolbar {
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
-  flex-wrap:wrap;
-}
-
-.toolbar input,.toolbar select {
-  max-width:250px;
-}
-
-.total {
-  font-size:27px;
-  color:#2563EB;
-  font-weight:bold;
-}
-
-#toast {
-  display:none;
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#1746A2;
-  color:white;
-  padding:14px 20px;
-  border-radius:10px;
-  z-index:99;
-  box-shadow:0 5px 20px rgba(0,0,0,.15);
-}
-
-hr {
-  border:0;
-  border-top:1px solid var(--line);
-  margin:20px 0;
-}
-
-@media(max-width:850px) {
-  .stats {
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:650px) {
-  .layout {
-    display:block;
-  }
-
-  .sidebar {
-    padding:10px;
-  }
-
-  nav {
+.total-row,.totalrow {
     display:flex;
-    overflow-x:auto;
-    gap:5px;
-  }
-
-  nav button {
-    min-width:max-content;
-    width:auto;
-    padding:11px;
-  }
-
-  main {
-    padding:13px;
-  }
-
-  header {
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .form {
-    grid-template-columns:1fr;
-  }
-
-  .full {
-    grid-column:auto;
-  }
-
-  .toolbar input,.toolbar select {
-    max-width:100%;
-  }
-
-  h1 {
-    font-size:23px;
-  }
+    justify-content:space-between;
+    gap:15px;
+    padding:5px 0;
 }
-</style>
+
+.total-row.grand-total,.totalrow.final {
+    font-weight:800;
+    color:var(--gold);
+    font-size:18px;
+    border-top:1px solid var(--line);
+    margin-top:7px;
+    padding-top:10px;
+}
+
+.cart-controls {
+    display:grid;
+    grid-template-columns:2fr 1fr auto;
+    gap:9px;
+    align-items:end;
+}
+
+.logo-preview {
+    width:90px;
+    height:90px;
+    object-fit:contain;
+    background:white;
+    border-radius:12px;
+    padding:5px;
+    display:none;
+}
+
+.footer {
+    color:var(--muted);
+    font-size:12px;
+    text-align:center;
+    padding:25px 0;
+}
+
+.notice {
+    padding:11px 13px;
+    border:1px solid #725e32;
+    background:#322a19;
+    color:#f5dda0;
+    border-radius:10px;
+    margin:12px 0;
+    font-size:13px;
+}
+
+#printArea { display:none; }
+
+@media(max-width:900px) {
+    .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .formgrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:600px) {
+    .app { padding:10px; }
+    .top {
+        align-items:flex-start;
+        flex-direction:column;
+    }
+    .topright { width:100%; }
+    .firm-select { flex:1; }
+    .grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+    }
+    .stat strong { font-size:20px; }
+    .formgrid { grid-template-columns:1fr; }
+    .field.full { grid-column:auto; }
+    .cart-controls { grid-template-columns:1fr 1fr; }
+    .cart-controls button { grid-column:1/-1; }
+    .bill-total { max-width:100%; }
+}
+
+@media print {
+    body { background:white; color:black; }
+    .app { display:none!important; }
+    #printArea {
+        display:block!important;
+        color:black;
+        padding:20px;
+    }
+}
 </style>
 </head>
 
 <body>
-<div class="layout">
+<div class="app">
 
-<aside class="sidebar">
-  <div class="brand-box">
-    <img src="SMART DUKAAN LOGO 12.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
-    <div class="brand-title">
-      SMART DUKAAN
-      <small>BUSINESS SUITE PRO</small>
+<header class="top">
+    <div class="brand">
+        <div class="brandmark" id="brandMark">SD</div>
+        <img id="headerLogo" class="logo" alt="Firm Logo" style="display:none">
+        <div>
+            <h1>SMART DUKAAN PRO</h1>
+            <div class="sub">YOUR SMART BUSINESS MANAGER</div>
+            <div class="sub" id="headerFirm">No firm selected</div>
+        </div>
     </div>
-  </div>
 
-  <nav>
-    <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
-    <button onclick="showPage('firms',this)">▣ Firm Management</button>
-    <button onclick="showPage('products',this)">▤ Products & Stock</button>
-    <button onclick="showPage('customers',this)">♙ Customers</button>
-    <button onclick="showPage('suppliers',this)">♧ Suppliers</button>
-    <button onclick="showPage('sales',this)">＋ Sales & Billing</button>
-    <button onclick="showPage('purchases',this)">⇩ Purchases</button>
-    <button onclick="showPage('expenses',this)">₹ Expenses</button>
-    <button onclick="showPage('reports',this)">▥ Reports</button>
-    <button onclick="showPage('backup',this)">⚙ Backup & Restore</button>
-  </nav>
-</aside>
-
-<main>
-<header>
-  <div>
-    <p class="muted">YOUR SMART BUSINESS MANAGER</p>
-    <h1 id="pageTitle">Dashboard</h1>
-  </div>
-  <select id="firmSelect" onchange="switchFirm()"></select>
+    <div class="topright">
+        <select id="firmSelect" class="firm-select"></select>
+        <button class="secondary small" id="switchFirmBtn">Switch</button>
+        <button class="small" id="newFirmBtn">+ New Firm</button>
+    </div>
 </header>
 
-<div id="app"></div>
-</main>
+<nav class="nav">
+    <button class="active" data-page="dashboard">Dashboard</button>
+    <button data-page="firm">Firm Profile</button>
+    <button data-page="stock">Stock</button>
+    <button data-page="sales">Sales & Billing</button>
+    <button data-page="expenses">Expenses</button>
+    <button data-page="reports">Reports</button>
+    <button data-page="backup">Backup</button>
+</nav>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="page active">
+    <div class="heading">
+        <h2>Business Dashboard</h2>
+        <span class="pill" id="todayLabel"></span>
+    </div>
+
+    <div class="grid">
+        <div class="card stat">
+            <small>Total Products</small>
+            <strong id="dashProducts">0</strong>
+            <div class="hint">Products in stock list</div>
+        </div>
+        <div class="card stat">
+            <small>Stock Units</small>
+            <strong id="dashUnits">0</strong>
+            <div class="hint">Current quantity</div>
+        </div>
+        <div class="card stat">
+            <small>Total Sales</small>
+            <strong id="dashSales">₹0.00</strong>
+            <div class="hint">Recorded taxable sales</div>
+        </div>
+        <div class="card stat">
+            <small>Total Expenses</small>
+            <strong id="dashExpenses">₹0.00</strong>
+            <div class="hint">Recorded expenses</div>
+        </div>
+        <div class="card stat">
+            <small>Estimated Net Profit</small>
+            <strong id="dashProfit">₹0.00</strong>
+            <div class="hint">Estimated business profit</div>
+        </div>
+        <div class="card stat">
+            <small>Low Stock Items</small>
+            <strong id="dashLow">0</strong>
+            <div class="hint">Reorder alerts</div>
+        </div>
+        <div class="card stat">
+            <small>Number of Bills</small>
+            <strong id="dashBills">0</strong>
+            <div class="hint">Saved invoices</div>
+        </div>
+        <div class="card stat">
+            <small>Expense Entries</small>
+            <strong id="dashExpenseCount">0</strong>
+            <div class="hint">Saved expenses</div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+        <div class="heading">
+            <h2>Low Stock Alerts</h2>
+            <button class="secondary small" onclick="showPage('stock')">Manage Stock</button>
+        </div>
+        <div id="lowStockList" class="muted">No low-stock products.</div>
+    </div>
+</section>
+
+<!-- FIRM PROFILE -->
+<section id="firm" class="page">
+    <div class="heading">
+        <h2>Firm Profile</h2>
+        <span class="muted">Business information and logo</span>
+    </div>
+
+    <div class="card">
+        <div class="formgrid">
+            <div class="field">
+                <label>Firm / Shop Name *</label>
+                <input id="firmName" placeholder="Example: Kumar Stores">
+            </div>
+            <div class="field">
+                <label>Owner Name</label>
+                <input id="ownerName" placeholder="Owner name">
+            </div>
+            <div class="field">
+                <label>Phone Number</label>
+                <input id="firmPhone" type="tel" placeholder="Phone">
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input id="firmEmail" type="email" placeholder="Email">
+            </div>
+            <div class="field">
+                <label>GSTIN</label>
+                <input id="firmGST" placeholder="GST number">
+            </div>
+            <div class="field">
+                <label>State</label>
+                <input id="firmState" placeholder="Tamil Nadu">
+            </div>
+            <div class="field full">
+                <label>Business Address</label>
+                <textarea id="firmAddress" rows="2" placeholder="Full shop address"></textarea>
+            </div>
+            <div class="field">
+                <label>Upload Firm Logo</label>
+                <input id="firmLogoFile" type="file" accept="image/*">
+            </div>
+            <div class="field">
+                <label>Logo Preview</label>
+                <img id="logoPreview" class="logo-preview" alt="Firm logo preview">
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="saveFirmBtn">Save Firm Details</button>
+            <button class="secondary" id="removeLogoBtn">Remove Logo</button>
+        </div>
+    </div>
+</section>
+
+<!-- STOCK MANAGEMENT -->
+<section id="stock" class="page">
+    <div class="heading">
+        <h2>Stock Management</h2>
+        <button class="success" id="exportStockBtn">Export Stock Excel</button>
+    </div>
+
+    <div class="card">
+        <h3 id="productFormTitle">Add Product</h3>
+        <input id="editProductId" type="hidden">
+
+        <div class="formgrid">
+            <div class="field">
+                <label>Product Name *</label>
+                <input id="pName" placeholder="Product name">
+            </div>
+            <div class="field">
+                <label>Product Code / SKU</label>
+                <input id="pCode" placeholder="SKU001">
+            </div>
+            <div class="field">
+                <label>Category</label>
+                <input id="pCategory" placeholder="Grocery / Snacks">
+            </div>
+            <div class="field">
+                <label>Purchase Cost (₹) *</label>
+                <input id="pCost" type="number" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="field">
+                <label>Selling Price (₹) *</label>
+                <input id="pPrice" type="number" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div class="field">
+                <label>Opening / Current Stock</label>
+                <input id="pStock" type="number" min="0" step="1" value="0">
+            </div>
+            <div class="field">
+                <label>Low Stock Alert At</label>
+                <input id="pLow" type="number" min="0" step="1" value="5">
+            </div>
+            <div class="field">
+                <label>GST Rate</label>
+                <select id="pGST">
+                    <option value="0">0%</option>
+                    <option value="5">5%</option>
+                    <option value="12">12%</option>
+                    <option value="18">18%</option>
+                    <option value="28">28%</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Unit</label>
+                <select id="pUnit">
+                    <option>pcs</option>
+                    <option>packet</option>
+                    <option>box</option>
+                    <option>kg</option>
+                    <option>g</option>
+                    <option>litre</option>
+                    <option>ml</option>
+                    <option>dozen</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="saveProductBtn">Save Product</button>
+            <button class="secondary" id="cancelProductBtn">Clear</button>
+        </div>
+    </div>
+
+    <div class="heading">
+        <h2>Product List</h2>
+        <div class="toolbar">
+            <input id="stockSearch" placeholder="Search products...">
+            <select id="stockFilter">
+                <option value="all">All products</option>
+                <option value="low">Low stock only</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="tablewrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th><th>Code</th><th>Cost</th>
+                    <th>Price</th><th>GST</th><th>Stock</th>
+                    <th>Alert At</th><th>Status</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="stockTable"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- SALES AND BILLING -->
+<section id="sales" class="page">
+
+    <div class="heading">
+        <h2>Sales & Billing</h2>
+        <span class="pill">NEW BILL</span>
+    </div>
+
+    <div class="card">
+        <h3>Customer Details</h3>
+
+        <div class="formgrid">
+            <div class="field">
+                <label>Customer Name</label>
+                <input id="customerName" placeholder="Customer name">
+            </div>
+
+            <div class="field">
+                <label>Mobile Number</label>
+                <input id="customerPhone" type="tel" placeholder="Mobile number">
+            </div>
+
+            <div class="field">
+                <label>Payment Method</label>
+                <select id="paymentMode">
+                    <option value="Cash">Cash</option>
+                    <option value="Google Pay">Google Pay</option>
+                    <option value="PhonePe">PhonePe</option>
+                    <option value="Paytm">Paytm</option>
+                    <option value="Card">Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Credit / Udhaar">Credit / Udhaar</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>GST Type</label>
+                <select id="gstType">
+                    <option value="intra">Local Sale (CGST + SGST)</option>
+                    <option value="inter">Interstate Sale (IGST)</option>
+                    <option value="none">No GST</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Bill Date</label>
+                <input id="billDate" type="date">
+            </div>
+
+            <div class="field">
+                <label>Discount (₹)</label>
+                <input id="billDiscount" type="number" min="0" step="0.01" value="0">
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+        <h3>Add Products to Bill</h3>
+
+        <div class="cart-controls">
+            <div>
+                <label>Select Product</label>
+                <select id="saleProduct">
+                    <option value="">Select product</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Quantity</label>
+                <input id="saleQty" type="number" min="1" step="1" value="1">
+            </div>
+
+            <button id="addToCartBtn">+ Add Item</button>
+        </div>
+
+        <div class="tablewrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>GST</th>
+                        <th>Qty</th>
+                        <th>Taxable</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="cartTable">
+                    <tr>
+                        <td colspan="7" class="empty">No products added yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bill-total">
+            <div class="total-row">
+                <span>Subtotal</span>
+                <strong id="cartSubtotal">₹0.00</strong>
+            </div>
+
+            <div class="total-row">
+                <span>CGST</span>
+                <strong id="cartCGST">₹0.00</strong>
+            </div>
+
+            <div class="total-row">
+                <span>SGST</span>
+                <strong id="cartSGST">₹0.00</strong>
+            </div>
+
+            <div class="total-row">
+                <span>IGST</span>
+                <strong id="cartIGST">₹0.00</strong>
+            </div>
+
+            <div class="total-row">
+                <span>Discount</span>
+                <strong id="cartDiscount">₹0.00</strong>
+            </div>
+
+            <div class="total-row grand-total">
+                <span>Grand Total</span>
+                <strong id="cartGrandTotal">₹0.00</strong>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="generateBillBtn">Generate Bill</button>
+            <button class="secondary" id="clearCartBtn">Clear Cart</button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+        <h3>Bill Information</h3>
+        <p class="muted">
+            Generate Bill saves the sale, updates product stock and
+            creates an invoice that you can print or save as PDF.
+        </p>
+        <div id="billMessage" class="muted">No bill generated yet.</div>
+    </div>
+
+</section>
+
+
+<!-- EXPENSE MANAGEMENT -->
+<section id="expenses" class="page">
+
+    <div class="heading">
+        <h2>Expense Management</h2>
+        <button class="success" id="exportExpensesBtn">
+            Export Expenses Excel
+        </button>
+    </div>
+
+    <div class="card">
+        <h3 id="expenseFormTitle">Add New Expense</h3>
+
+        <input id="editExpenseId" type="hidden">
+
+        <div class="formgrid">
+
+            <div class="field">
+                <label>Expense Name *</label>
+                <input id="expenseName" placeholder="Electricity / Rent">
+            </div>
+
+            <div class="field">
+                <label>Expense Category</label>
+                <select id="expenseCategory">
+                    <option>Rent</option>
+                    <option>Electricity</option>
+                    <option>Water</option>
+                    <option>Salary</option>
+                    <option>Transport</option>
+                    <option>Purchase</option>
+                    <option>Maintenance</option>
+                    <option>Marketing</option>
+                    <option>Internet</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Amount (₹) *</label>
+                <input id="expenseAmount" type="number"
+                       min="0.01" step="0.01" placeholder="0.00">
+            </div>
+
+            <div class="field">
+                <label>Payment Method</label>
+                <select id="expensePayment">
+                    <option>Cash</option>
+                    <option>Google Pay</option>
+                    <option>PhonePe</option>
+                    <option>Paytm</option>
+                    <option>Card</option>
+                    <option>Bank Transfer</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Expense Date</label>
+                <input id="expenseDate" type="date">
+            </div>
+
+            <div class="field">
+                <label>Reference / Bill Number</label>
+                <input id="expenseReference" placeholder="Optional">
+            </div>
+
+            <div class="field full">
+                <label>Description</label>
+                <textarea id="expenseDescription" rows="2"
+                          placeholder="Additional details"></textarea>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button id="saveExpenseBtn">Save Expense</button>
+            <button class="secondary" id="cancelExpenseBtn">Clear</button>
+        </div>
+    </div>
+
+    <div class="heading">
+        <h2>Expense Register</h2>
+        <input id="expenseSearch" placeholder="Search expenses..."
+               style="max-width:280px">
+    </div>
+
+    <div class="tablewrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Expense</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Reference</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="expenseTable"></tbody>
+        </table>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+        <div class="stat">
+            <small>Total Recorded Expenses</small>
+            <strong id="expenseTotal">₹0.00</strong>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- REPORTS -->
+<section id="reports" class="page">
+
+    <div class="heading">
+        <h2>Business Reports</h2>
+        <button class="success" id="exportReportsBtn">
+            Export Reports Excel
+        </button>
+    </div>
+
+    <div class="grid">
+
+        <div class="card stat">
+            <small>Gross Sales</small>
+            <strong id="reportSales">₹0.00</strong>
+        </div>
+
+        <div class="card stat">
+            <small>Cost of Goods Sold</small>
+            <strong id="reportCost">₹0.00</strong>
+        </div>
+
+        <div class="card stat">
+            <small>Gross Profit</small>
+            <strong id="reportGrossProfit">₹0.00</strong>
+        </div>
+
+        <div class="card stat">
+            <small>Total Expenses</small>
+            <strong id="reportExpenses">₹0.00</strong>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:14px">
+        <h3>Sales Summary</h3>
+
+        <div class="tablewrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Particulars</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reportTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- BACKUP AND RESTORE -->
+<section id="backup" class="page">
+
+    <div class="heading">
+        <h2>Backup & Data Management</h2>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Download Backup</h3>
+            <p class="muted">
+                Save all your firms, products, sales, expenses and
+                business information in a JSON backup file.
+            </p>
+            <button id="backupBtn">Download Backup</button>
+        </div>
+
+        <div class="card">
+            <h3>Restore Backup</h3>
+            <p class="muted">
+                Restore previously saved business records from a
+                SMART DUKAAN backup file.
+            </p>
+            <input id="restoreFile" type="file" accept=".json,application/json">
+            <div class="actions">
+                <button id="restoreBtn">Restore Data</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Save Firm Data</h3>
+            <p class="muted">
+                Save the current firm's information in this browser.
+            </p>
+            <button id="saveAllBtn">Save Current Firm</button>
+            <p id="saveStatus" class="muted">
+                Data is stored in this browser.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Delete Current Firm</h3>
+            <p class="muted">
+                Permanently remove the selected firm and its records
+                from this browser.
+            </p>
+            <button class="danger" id="deleteFirmBtn">
+                Delete Current Firm
+            </button>
+        </div>
+
+    </div>
+
+    <div class="notice">
+        Important: Browser storage is local to this device and browser.
+        Download backups regularly. Clearing browser data can remove
+        your saved records.
+    </div>
+
+</section>
+
+
+<div class="footer">
+    SMART DUKAAN PRO · YOUR SMART BUSINESS MANAGER
 </div>
 
-<div id="toast"></div>
+</div>
+
+<!-- PRINT INVOICE AREA -->
+<div id="printArea"></div>
 
 <script>
-"use strict";
 
-const STORAGE_KEY = "SMART_DUKAAN_PRO_DATA";
-const APP_LOGO = "SMART DUKAAN LOGO 12.jpeg";
+/* =========================================
+   SMART DUKAAN PRO
+   DATABASE AND FIRM MANAGEMENT
+========================================= */
 
-let database = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-  firms: [],
-  activeFirm: null,
-  records: {}
+const $ = id => document.getElementById(id);
+
+const STORAGE_KEY = "SMART_DUKAAN_PRO_DATABASE_V1";
+
+let database = {
+    activeFirmId: null,
+    firms: []
 };
 
-let currentPage = "dashboard";
-let productSearchQuery = "";
-let productCategoryFilter = "ALL";
+let cart = [];
+let lastGeneratedSale = null;
 
-function saveDatabase() {
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(database));
-}
+
+/* =========================================
+   BASIC HELPERS
+========================================= */
 
 function uid() {
-  return Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    return "ID_" + Date.now() + "_" +
+        Math.random().toString(36).slice(2,9);
 }
 
 function money(value) {
-  return "₹"+Number(value || 0).toLocaleString("en-IN",{
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  });
+    return "₹" + Number(value || 0).toFixed(2);
+}
+
+function number(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function safeText(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+    })[char]);
 }
 
 function today() {
-  return new Date().toISOString().slice(0,10);
+    const d = new Date();
+    const offset = d.getTimezoneOffset();
+    return new Date(d.getTime() - offset * 60000)
+        .toISOString().slice(0,10);
 }
 
-function notify(message) {
-  const toast=document.getElementById("toast");
-  toast.textContent=message;
-  toast.style.display="block";
-  setTimeout(()=>toast.style.display="none",2500);
+function setText(id,value) {
+    if ($(id)) $(id).textContent = value;
 }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  }[c]));
+function showMessage(id,message) {
+    if ($(id)) $(id).textContent = message;
 }
 
-function activeFirm() {
-  return database.firms.find(f=>f.id===database.activeFirm);
+
+/* =========================================
+   DATABASE STRUCTURE
+========================================= */
+
+function createFirmObject(name) {
+    return {
+        id:uid(),
+        name:name || "New Firm",
+
+        profile:{
+            name:name || "",
+            owner:"",
+            phone:"",
+            email:"",
+            gst:"",
+            state:"",
+            address:"",
+            logo:""
+        },
+
+        products:[],
+        sales:[],
+        expenses:[],
+
+        createdAt:new Date().toISOString()
+    };
 }
 
-function records(type) {
-  if(!database.activeFirm) return [];
-  const key=database.activeFirm;
-  if(!database.records[key]) database.records[key]={};
-  if(!database.records[key][type]) database.records[key][type]=[];
-  return database.records[key][type];
+function normaliseFirm(firm) {
+    firm.profile = firm.profile || {};
+
+    firm.profile.name = firm.profile.name || firm.name || "";
+    firm.profile.owner = firm.profile.owner || "";
+    firm.profile.phone = firm.profile.phone || "";
+    firm.profile.email = firm.profile.email || "";
+    firm.profile.gst = firm.profile.gst || "";
+    firm.profile.state = firm.profile.state || "";
+    firm.profile.address = firm.profile.address || "";
+    firm.profile.logo = firm.profile.logo || "";
+
+    firm.products = Array.isArray(firm.products)
+        ? firm.products : [];
+
+    firm.sales = Array.isArray(firm.sales)
+        ? firm.sales : [];
+
+    firm.expenses = Array.isArray(firm.expenses)
+        ? firm.expenses : [];
+
+    firm.products.forEach(p => {
+        p.id = p.id || uid();
+        p.name = String(p.name || "");
+        p.code = String(p.code || "");
+        p.category = String(p.category || "");
+        p.cost = number(p.cost);
+        p.price = number(p.price);
+        p.stock = number(p.stock);
+        p.low = number(p.low);
+        p.gst = number(p.gst);
+        p.unit = p.unit || "pcs";
+    });
+
+    firm.sales.forEach(s => {
+        s.id = s.id || uid();
+        s.invoiceNo = s.invoiceNo || ("INV-" + s.id.slice(-7));
+        s.customer = String(s.customer || "Walk-in Customer");
+        s.phone = String(s.phone || "");
+        s.items = Array.isArray(s.items) ? s.items : [];
+        s.total = number(s.total);
+        s.subtotal = number(s.subtotal);
+        s.discount = number(s.discount);
+        s.cgst = number(s.cgst);
+        s.sgst = number(s.sgst);
+        s.igst = number(s.igst);
+        s.cost = number(s.cost);
+    });
+
+    firm.expenses.forEach(e => {
+        e.id = e.id || uid();
+        e.name = String(e.name || "");
+        e.category = String(e.category || "Other");
+        e.amount = number(e.amount);
+    });
+
+    return firm;
 }
 
-function addRecord(type,record) {
-  record.id=uid();
-  records(type).push(record);
-  saveDatabase();
-}
 
-function deleteRecord(type,id) {
-  const data=records(type);
-  const index=data.findIndex(x=>x.id===id);
-  if(index>=0) data.splice(index,1);
-  saveDatabase();
-  render();
-  notify("Record deleted");
-}
+/* =========================================
+   LOAD DATABASE
+========================================= */
 
-function updateFirmSelect() {
-  const select=document.getElementById("firmSelect");
-  select.innerHTML=database.firms.map(f=>
-    `<option value="${f.id}" ${f.id===database.activeFirm?"selected":""}>
-      ${escapeHTML(f.name)}
-    </option>`
-  ).join("");
-}
-
-/* =====================================
-   1. FIRM MANAGEMENT FORM
-===================================== */
-
-function saveFirmForm(e) {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  
-  const processFirm = (logoData) => {
-    if (data.firmId) {
-      const firm = database.firms.find(f=>f.id===data.firmId);
-      if(firm) {
-        firm.name = data.name.trim();
-        firm.owner = data.owner;
-        firm.phone = data.phone;
-        firm.email = data.email;
-        firm.address = data.address;
-        firm.gstin = data.gstin;
-        firm.bank = data.bank;
-        firm.accountNo = data.accountNo;
-        firm.ifsc = data.ifsc;
-        if(logoData) firm.logo = logoData;
-      }
-      notify("Firm updated successfully");
-    } else {
-      const firm = {
-        id: uid(),
-        name: data.name.trim(),
-        owner: data.owner || "",
-        phone: data.phone || "",
-        email: data.email || "",
-        address: data.address || "",
-        gstin: data.gstin || "",
-        bank: data.bank || "",
-        accountNo: data.accountNo || "",
-        ifsc: data.ifsc || "",
-        logo: logoData || ""
-      };
-      database.firms.push(firm);
-      database.activeFirm = firm.id;
-      database.records[firm.id] = {};
-      notify("New firm created");
-    }
-    saveDatabase();
-    updateFirmSelect();
-    render();
-  };
-
-  const fileInput = e.target.logoFile;
-  if (fileInput && fileInput.files[0]) {
-    const reader = new FileReader();
-    reader.onload = () => processFirm(reader.result);
-    reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    processFirm(null);
-  }
-}
-
-function editFirmModal(id) {
-  const firm = database.firms.find(f=>f.id===id) || {};
-  showFirmForm(firm);
-}
-
-function showFirmForm(firm = null) {
-  const isEdit = !!firm;
-  document.getElementById("app").innerHTML = `
-  <div class="card">
-    <h2>${isEdit ? "Edit Firm Details" : "Create New Firm"}</h2>
-    <form class="form" onsubmit="saveFirmForm(event)">
-      <input type="hidden" name="firmId" value="${firm?.id || ''}">
-      
-      <div>
-        <label>Firm / Shop Name *</label>
-        <input name="name" value="${escapeHTML(firm?.name || '')}" required placeholder="e.g. Balaji General Store">
-      </div>
-
-      <div>
-        <label>Owner Name</label>
-        <input name="owner" value="${escapeHTML(firm?.owner || '')}" placeholder="e.g. Ramesh Kumar">
-      </div>
-
-      <div>
-        <label>Phone Number</label>
-        <input name="phone" value="${escapeHTML(firm?.phone || '')}" placeholder="e.g. 9876543210">
-      </div>
-
-      <div>
-        <label>Email Address</label>
-        <input name="email" type="email" value="${escapeHTML(firm?.email || '')}" placeholder="shop@example.com">
-      </div>
-
-      <div>
-        <label>GSTIN (Optional)</label>
-        <input name="gstin" value="${escapeHTML(firm?.gstin || '')}" placeholder="22AAAAA0000A1Z5">
-      </div>
-
-      <div>
-        <label>Firm Logo Image</label>
-        <input name="logoFile" type="file" accept="image/*">
-      </div>
-
-      <div class="full">
-        <label>Business Address</label>
-        <textarea name="address" rows="2" placeholder="Full shop address...">${escapeHTML(firm?.address || '')}</textarea>
-      </div>
-
-      <div>
-        <label>Bank Name</label>
-        <input name="bank" value="${escapeHTML(firm?.bank || '')}" placeholder="State Bank of India">
-      </div>
-
-      <div>
-        <label>Account Number</label>
-        <input name="accountNo" value="${escapeHTML(firm?.accountNo || '')}" placeholder="Account number">
-      </div>
-
-      <div>
-        <label>IFSC Code</label>
-        <input name="ifsc" value="${escapeHTML(firm?.ifsc || '')}" placeholder="SBIN0001234">
-      </div>
-
-      <div class="full" style="display:flex; gap:10px; margin-top:10px;">
-        <button type="submit" class="primary">Save Firm Details</button>
-        <button type="button" onclick="showPage('firms')">Cancel</button>
-      </div>
-    </form>
-  </div>`;
-}
-
-function switchFirm() {
-  database.activeFirm=document.getElementById("firmSelect").value;
-  saveDatabase();
-  render();
-}
-
-function deleteFirm(id) {
-  if(database.firms.length<=1) {
-    alert("At least one firm must remain.");
-    return;
-  }
-  if(!confirm("Delete this firm and all its records?")) return;
-
-  database.firms=database.firms.filter(f=>f.id!==id);
-  delete database.records[id];
-
-  if(database.activeFirm===id) {
-    database.activeFirm=database.firms[0].id;
-  }
-
-  saveDatabase();
-  updateFirmSelect();
-  render();
-}
-
-function showPage(page,button) {
-  currentPage=page;
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  if(button) button.classList.add("active");
-  render();
-}
-
-function makeTable(headers,rows) {
-  return `
-  <div class="table-wrap">
-  <table>
-    <thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
-    <tbody>
-      ${rows.length?rows.join(""):
-        `<tr><td colspan="${headers.length}">No records found</td></tr>`}
-    </tbody>
-  </table>
-  </div>`;
-}
-
-function dashboard() {
-  const sales=records("sales");
-  const products=records("products");
-  const expenses=records("expenses");
-  const firm = activeFirm() || {};
-  const month=today().slice(0,7);
-
-  const monthlySales=sales.filter(s=>(s.date||"").startsWith(month));
-  const todaySales=sales.filter(s=>s.date===today());
-  const monthlyExpenses=expenses.filter(e=>(e.date||"").startsWith(month));
-
-  const totalToday=todaySales.reduce((a,b)=>a+Number(b.total),0);
-  const totalMonth=monthlySales.reduce((a,b)=>a+Number(b.total),0);
-  const totalExpenses=monthlyExpenses.reduce((a,b)=>a+Number(b.amount),0);
-
-  return `
-  <div class="card">
-    <div class="firm-header-preview">
-      ${firm.logo ? `<img src="${firm.logo}" class="firm-logo-img">` : ''}
-      <div>
-        <h2 style="margin:0">${escapeHTML(firm.name || '')}</h2>
-        <small class="muted">${escapeHTML(firm.address || 'No address added')} | Phone: ${escapeHTML(firm.phone || 'N/A')}</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="card stat">
-      <small>Today's Sales</small>
-      <strong>${money(totalToday)}</strong>
-      <small>${todaySales.length} invoices</small>
-    </div>
-    <div class="card stat">
-      <small>Monthly Sales</small>
-      <strong>${money(totalMonth)}</strong>
-      <small>${monthlySales.length} invoices</small>
-    </div>
-    <div class="card stat">
-      <small>Monthly Expenses</small>
-      <strong>${money(totalExpenses)}</strong>
-      <small>Current month</small>
-    </div>
-    <div class="card stat">
-      <small>Total Products</small>
-      <strong>${products.length}</strong>
-      <small>Inventory items</small>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Business Overview</h2>
-    <p class="muted">Active firm: ${escapeHTML(firm.name||"")}</p>
-    <p>Sales minus recorded expenses:</p>
-    <div class="total">${money(totalMonth-totalExpenses)}</div>
-  </div>
-
-  <div class="card">
-    <h2>Low Stock Alerts</h2>
-    ${makeTable(["Product","Stock","Minimum Stock"],
-      products.filter(p=>Number(p.stock)<=Number(p.minStock||0))
-      .map(p=>`<tr>
-        <td>${escapeHTML(p.name)}</td>
-        <td>${p.stock}</td>
-        <td>${p.minStock||0}</td>
-      </tr>`))}
-  </div>`;
-}
-
-/* =====================================
-   2. PRODUCTS & INVENTORY WORKFLOW
-===================================== */
-
-function showProductForm(product = null) {
-  const isEdit = !!product;
-  document.getElementById("app").innerHTML = `
-  <div class="card">
-    <h2>${isEdit ? "Edit Product Details" : "Add New Product"}</h2>
-    <form class="form" onsubmit="saveProductForm(event)">
-      <input type="hidden" name="productId" value="${product?.id || ''}">
-
-      <div>
-        <label>Product Name *</label>
-        <input name="name" value="${escapeHTML(product?.name || '')}" required placeholder="e.g. Basmati Rice 5kg">
-      </div>
-
-      <div>
-        <label>Product Code / Barcode</label>
-        <input name="code" value="${escapeHTML(product?.code || '')}" placeholder="e.g. PRD-001">
-      </div>
-
-      <div>
-        <label>Category</label>
-        <input name="category" value="${escapeHTML(product?.category || 'General')}" placeholder="e.g. Groceries">
-      </div>
-
-      <div>
-        <label>GST Rate (%)</label>
-        <select name="gst">
-          <option value="0" ${Number(product?.gst)===0?'selected':''}>0%</option>
-          <option value="5" ${Number(product?.gst)===5?'selected':''}>5%</option>
-          <option value="12" ${Number(product?.gst)===12?'selected':''}>12%</option>
-          <option value="18" ${Number(product?.gst)===18?'selected':''}>18%</option>
-          <option value="28" ${Number(product?.gst)===28?'selected':''}>28%</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Purchase Cost (₹) *</label>
-        <input name="cost" type="number" step="0.01" min="0" value="${product?.cost || 0}" required>
-      </div>
-
-      <div>
-        <label>Selling Price (₹) *</label>
-        <input name="price" type="number" step="0.01" min="0" value="${product?.price || 0}" required>
-      </div>
-
-      <div>
-        <label>Opening Stock *</label>
-        <input name="stock" type="number" step="0.01" min="0" value="${product?.stock || 0}" required>
-      </div>
-
-      <div>
-        <label>Minimum Stock Alert Level</label>
-        <input name="minStock" type="number" step="0.01" min="0" value="${product?.minStock || 5}">
-      </div>
-
-      <div class="full" style="display:flex; gap:10px; margin-top:10px;">
-        <button type="submit" class="primary">Save Product</button>
-        <button type="button" onclick="showPage('products')">Cancel</button>
-      </div>
-    </form>
-  </div>`;
-}
-
-function saveProductForm(e) {
-  e.preventDefault();
-  const d = Object.fromEntries(new FormData(e.target).entries());
-  const productId = d.productId;
-
-  const productData = {
-    name: d.name.trim(),
-    code: d.code.trim() || "N/A",
-    category: d.category.trim() || "General",
-    cost: Number(d.cost),
-    price: Number(d.price),
-    stock: Number(d.stock),
-    minStock: Number(d.minStock),
-    gst: Number(d.gst)
-  };
-
-  if(productId) {
-    const existing = records("products").find(p => p.id === productId);
-    if(existing) {
-      existing.name = productData.name;
-      existing.code = productData.code;
-      existing.category = productData.category;
-      existing.cost = productData.cost;
-      existing.price = productData.price;
-      existing.stock = productData.stock;
-      existing.minStock = productData.minStock;
-      existing.gst = productData.gst;
-      saveDatabase();
-      notify("Product updated successfully");
-    }
-  } else {
-    addRecord("products", productData);
-    notify("New product added successfully");
-  }
-
-  showPage('products');
-}
-
-function editProductModal(id) {
-  const p = records("products").find(x => x.id === id);
-  if(p) showProductForm(p);
-}
-
-function productsPage() {
-  const allProducts = records("products");
-  const categories = ["ALL", ...new Set(allProducts.map(p => p.category || "General"))];
-
-  const filtered = allProducts.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || 
-                          p.code.toLowerCase().includes(productSearchQuery.toLowerCase());
-    const matchesCategory = productCategoryFilter === "ALL" || p.category === productCategoryFilter;
-    return matchesSearch && matchesCategory;
-  });
-
-  return `
-  <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:15px;">
-      <h2>Products & Stock Inventory</h2>
-      <div style="display:flex; gap:10px;">
-        <button class="primary" onclick="showProductForm()">+ Add New Product</button>
-        <button onclick="exportCSV('products')">Export CSV</button>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <input type="text" placeholder="Search by name or code..." value="${escapeHTML(productSearchQuery)}" oninput="productSearchQuery=this.value; renderProductsTable();">
-      <select onchange="productCategoryFilter=this.value; renderProductsTable();">
-        ${categories.map(c => `<option value="${escapeHTML(c)}" ${productCategoryFilter===c?'selected':''}>Category: ${escapeHTML(c)}</option>`).join("")}
-      </select>
-    </div>
-
-    <div id="productTableContainer">
-      ${renderProductTableMarkup(filtered)}
-    </div>
-  </div>`;
-}
-
-function renderProductTableMarkup(data) {
-  return makeTable(
-    ["Code", "Product Name", "Category", "Cost", "Selling Price", "GST", "Stock Status", "Actions"],
-    data.map(p => {
-      const stockNum = Number(p.stock);
-      const minStockNum = Number(p.minStock || 0);
-      
-      let badge = `<span class="badge badge-green">In Stock (${p.stock})</span>`;
-      if(stockNum <= 0) {
-        badge = `<span class="badge badge-red">Out of Stock</span>`;
-      } else if(stockNum <= minStockNum) {
-        badge = `<span class="badge badge-yellow">Low Stock (${p.stock})</span>`;
-      }
-
-      return `<tr>
-        <td>${escapeHTML(p.code)}</td>
-        <td><strong>${escapeHTML(p.name)}</strong></td>
-        <td>${escapeHTML(p.category)}</td>
-        <td>${money(p.cost)}</td>
-        <td>${money(p.price)}</td>
-        <td>${p.gst}%</td>
-        <td>${badge}</td>
-        <td class="actions">
-          <button onclick="editProductModal('${p.id}')">Edit</button>
-          <button class="danger" onclick="deleteRecord('products','${p.id}')">Delete</button>
-        </td>
-      </tr>`;
-    })
-  );
-}
-
-function renderProductsTable() {
-  const container = document.getElementById("productTableContainer");
-  if(!container) return;
-
-  const allProducts = records("products");
-  const filtered = allProducts.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(productSearchQuery.toLowerCase()) || 
-                          p.code.toLowerCase().includes(productSearchQuery.toLowerCase());
-    const matchesCategory = productCategoryFilter === "ALL" || p.category === productCategoryFilter;
-    return matchesSearch && matchesCategory;
-  });
-
-  container.innerHTML = renderProductTableMarkup(filtered);
-}
-
-/* =====================================
-   3. CUSTOMERS & SUPPLIERS STEP FORM
-===================================== */
-
-function showPartyForm(type, party = null) {
-  const isEdit = !!party;
-  const titleName = type === "customers" ? "Customer" : "Supplier";
-  
-  document.getElementById("app").innerHTML = `
-  <div class="card">
-    <h2>${isEdit ? `Edit ${titleName}` : `Add New ${titleName}`}</h2>
-    <form class="form" onsubmit="savePartyForm(event, '${type}')">
-      <input type="hidden" name="partyId" value="${party?.id || ''}">
-
-      <div>
-        <label>${titleName} Name *</label>
-        <input name="name" value="${escapeHTML(party?.name || '')}" required placeholder="Full name">
-      </div>
-
-      <div>
-        <label>Phone Number</label>
-        <input name="phone" value="${escapeHTML(party?.phone || '')}" placeholder="10-digit mobile number">
-      </div>
-
-      <div>
-        <label>GSTIN (Optional)</label>
-        <input name="gstin" value="${escapeHTML(party?.gstin || '')}" placeholder="GSTIN number">
-      </div>
-
-      <div class="full">
-        <label>Address</label>
-        <textarea name="address" rows="2" placeholder="Street, City, Pincode">${escapeHTML(party?.address || '')}</textarea>
-      </div>
-
-      <div class="full" style="display:flex; gap:10px; margin-top:10px;">
-        <button type="submit" class="primary">Save ${titleName}</button>
-        <button type="button" onclick="showPage('${type}')">Cancel</button>
-      </div>
-    </form>
-  </div>`;
-}
-
-function savePartyForm(e, type) {
-  e.preventDefault();
-  const d = Object.fromEntries(new FormData(e.target).entries());
-  const partyId = d.partyId;
-
-  const partyData = {
-    name: d.name.trim(),
-    phone: d.phone.trim() || "",
-    gstin: d.gstin.trim() || "",
-    address: d.address.trim() || ""
-  };
-
-  if(partyId) {
-    const existing = records(type).find(x => x.id === partyId);
-    if(existing) {
-      existing.name = partyData.name;
-      existing.phone = partyData.phone;
-      existing.gstin = partyData.gstin;
-      existing.address = partyData.address;
-      saveDatabase();
-      notify("Contact updated successfully");
-    }
-  } else {
-    addRecord(type, partyData);
-    notify("New contact saved successfully");
-  }
-
-  showPage(type);
-}
-
-function editPartyModal(type, id) {
-  const party = records(type).find(x => x.id === id);
-  if(party) showPartyForm(type, party);
-}
-
-function partyPage(type) {
-  const data = records(type);
-  const titleName = type === "customers" ? "Customers" : "Suppliers";
-
-  return `
-  <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-      <h2>${titleName} Management</h2>
-      <button class="primary" onclick="showPartyForm('${type}')">+ Add New ${type === 'customers' ? 'Customer' : 'Supplier'}</button>
-    </div>
-    ${makeTable(["Name", "Phone", "GSTIN", "Address", "Actions"],
-      data.map(x => `<tr>
-        <td><strong>${escapeHTML(x.name)}</strong></td>
-        <td>${escapeHTML(x.phone)}</td>
-        <td>${escapeHTML(x.gstin)}</td>
-        <td>${escapeHTML(x.address)}</td>
-        <td class="actions">
-          <button onclick="editPartyModal('${type}', '${x.id}')">Edit</button>
-          <button class="danger" onclick="deleteRecord('${type}', '${x.id}')">Delete</button>
-        </td>
-      </tr>`))}
-  </div>`;
-}
-
-/* =====================================
-   4. SALES & BILLING
-===================================== */
-
-function salesPage() {
-  const products=records("products");
-
-  return `
-  <div class="card">
-    <h2>Create New Tax Invoice</h2>
-
-    <form id="saleForm" class="form">
-      <div>
-        <label>Invoice Date</label>
-        <input name="date" type="date" value="${today()}" required>
-      </div>
-
-      <div>
-        <label>Customer Name</label>
-        <input name="customer" placeholder="Customer name">
-      </div>
-
-      <div>
-        <label>Phone Number</label>
-        <input name="phone" placeholder="Phone number">
-      </div>
-
-      <div>
-        <label>Payment Mode</label>
-        <select name="payment">
-          <option>Cash</option>
-          <option>Google Pay</option>
-          <option>PhonePe</option>
-          <option>Paytm</option>
-          <option>Card</option>
-          <option>Bank Transfer</option>
-          <option>Credit / Udhaar</option>
-        </select>
-      </div>
-
-      <div>
-        <label>GST Type</label>
-        <select name="gstType">
-          <option>Local - CGST + SGST</option>
-          <option>Interstate - IGST</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Product</label>
-        <select name="productId" required>
-          ${products.map(p=>`
-            <option value="${p.id}">
-              ${escapeHTML(p.name)} - ${money(p.price)} (Stock ${p.stock})
-            </option>`).join("")}
-        </select>
-      </div>
-
-      <div>
-        <label>Quantity</label>
-        <input name="qty" type="number" min="0.01" step="0.01" value="1" required>
-      </div>
-
-      <div>
-        <label>Discount ₹</label>
-        <input name="discount" type="number" min="0" value="0">
-      </div>
-
-      <div>
-        <label>Price Entry</label>
-        <select name="priceMode">
-          <option value="exclusive">Price Exclusive of GST</option>
-          <option value="inclusive">Price Inclusive of GST</option>
-        </select>
-      </div>
-
-      <div class="full">
-        <button class="primary">Generate & Save Bill</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="card">
-    <h2>Sales History</h2>
-    ${makeTable(["Invoice","Date","Customer","Payment","Total","Action"],
-      records("sales").map(s=>`<tr>
-        <td>${escapeHTML(s.invoice)}</td>
-        <td>${s.date}</td>
-        <td>${escapeHTML(s.customer)}</td>
-        <td>${escapeHTML(s.payment)}</td>
-        <td>${money(s.total)}</td>
-        <td><button onclick="printBill('${s.id}')">Print</button></td>
-      </tr>`))}
-  </div>`;
-}
-
-function saveSale(form) {
-  const data=Object.fromEntries(new FormData(form).entries());
-  const product=records("products").find(p=>p.id===data.productId);
-
-  if(!product) throw new Error("Please add a product first");
-
-  const qty=Number(data.qty);
-  if(qty<=0 || qty>Number(product.stock)) {
-    throw new Error("Insufficient stock");
-  }
-
-  const rate=Number(product.price);
-  const gst=Number(product.gst||0);
-  const discount=Math.max(0,Number(data.discount||0));
-
-  let taxable, tax, gross;
-
-  if(data.priceMode==="inclusive") {
-    gross=rate*qty;
-    taxable=gross/(1+gst/100);
-    tax=gross-taxable;
-  } else {
-    taxable=rate*qty;
-    tax=taxable*gst/100;
-    gross=taxable+tax;
-  }
-
-  const finalTaxable=Math.max(0,taxable-discount);
-  const finalTax=taxable>0?tax*(finalTaxable/taxable):0;
-  const total=finalTaxable+finalTax;
-  const interstate=data.gstType.startsWith("Interstate");
-
-  const invoice="SD-"+Date.now().toString().slice(-8);
-
-  const sale={
-    invoice,
-    date:data.date,
-    customer:data.customer||"Walk-in Customer",
-    phone:data.phone,
-    payment:data.payment,
-    gstType:data.gstType,
-    items:[{
-      name:product.name,
-      qty,
-      price:rate,
-      gst
-    }],
-    subtotal:taxable,
-    discount,
-    taxable:finalTaxable,
-    tax:finalTax,
-    cgst:interstate?0:finalTax/2,
-    sgst:interstate?0:finalTax/2,
-    igst:interstate?finalTax:0,
-    total,
-    firmName:activeFirm()?.name||"SMART DUKAAN"
-  };
-
-  addRecord("sales",sale);
-
-  product.stock=Number(product.stock)-qty;
-  saveDatabase();
-
-  notify("Invoice saved successfully");
-  render();
-}
-
-/* =====================================
-   5. PURCHASES
-===================================== */
-
-function purchasesPage() {
-  return `
-  <div class="card">
-    <h2>Record Purchase & Restock</h2>
-
-    <form id="purchaseForm" class="form">
-      <div>
-        <label>Date</label>
-        <input name="date" type="date" value="${today()}">
-      </div>
-
-      <div>
-        <label>Supplier</label>
-        <select name="supplier">
-          ${records("suppliers").map(s=>
-            `<option>${escapeHTML(s.name)}</option>`).join("")}
-        </select>
-      </div>
-
-      <div>
-        <label>Product</label>
-        <select name="productId">
-          ${records("products").map(p=>
-            `<option value="${p.id}">${escapeHTML(p.name)}</option>`).join("")}
-        </select>
-      </div>
-
-      <div>
-        <label>Quantity</label>
-        <input name="qty" type="number" min="0.01" step="0.01" required>
-      </div>
-
-      <div>
-        <label>Purchase Rate ₹</label>
-        <input name="rate" type="number" min="0" step="0.01" required>
-      </div>
-
-      <div class="full">
-        <button class="primary">Save Purchase & Update Stock</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="card">
-    <h2>Purchase History</h2>
-    ${makeTable(["Date","Supplier","Product","Quantity","Rate","Total"],
-      records("purchases").map(p=>`<tr>
-        <td>${p.date}</td>
-        <td>${escapeHTML(p.supplier)}</td>
-        <td>${escapeHTML(p.productName)}</td>
-        <td>${p.qty}</td>
-        <td>${money(p.rate)}</td>
-        <td>${money(p.total)}</td>
-      </tr>`))}
-  </div>`;
-}
-
-function savePurchase(form) {
-  const d=Object.fromEntries(new FormData(form).entries());
-  const product=records("products").find(p=>p.id===d.productId);
-  if(!product) throw new Error("Select a product");
-
-  const qty=Number(d.qty);
-  const rate=Number(d.rate);
-  if(qty<=0) throw new Error("Enter a valid quantity");
-
-  addRecord("purchases",{
-    date:d.date,
-    supplier:d.supplier,
-    productName:product.name,
-    productId:product.id,
-    qty,
-    rate,
-    total:qty*rate
-  });
-
-  product.stock=Number(product.stock)+qty;
-  product.cost=rate;
-
-  saveDatabase();
-  notify("Purchase saved and stock updated");
-  render();
-}
-
-/* =====================================
-   6. EXPENSE MANAGEMENT
-===================================== */
-
-function expensesPage() {
-  return `
-  <div class="card">
-    <h2>Add Business Expense</h2>
-
-    <form id="expenseForm" class="form">
-      <div>
-        <label>Date</label>
-        <input type="date" name="date" value="${today()}">
-      </div>
-
-      <div>
-        <label>Category</label>
-        <select name="category">
-          <option>Rent</option>
-          <option>Electricity</option>
-          <option>Salary</option>
-          <option>Transport</option>
-          <option>Packaging</option>
-          <option>Maintenance</option>
-          <option>Other</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Description</label>
-        <input name="description" required placeholder="Expense note">
-      </div>
-
-      <div>
-        <label>Amount ₹</label>
-        <input type="number" name="amount" min="0.01" step="0.01" required>
-      </div>
-
-      <div>
-        <label>Payment Mode</label>
-        <select name="payment">
-          <option>Cash</option>
-          <option>UPI</option>
-          <option>Bank Transfer</option>
-        </select>
-      </div>
-
-      <div class="full">
-        <button class="primary">Save Expense</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="card">
-    <h2>Expense Register</h2>
-    ${makeTable(["Date","Category","Description","Payment","Amount","Action"],
-      records("expenses").map(e=>`<tr>
-        <td>${e.date}</td>
-        <td>${escapeHTML(e.category)}</td>
-        <td>${escapeHTML(e.description)}</td>
-        <td>${escapeHTML(e.payment)}</td>
-        <td>${money(e.amount)}</td>
-        <td><button class="danger" onclick="deleteRecord('expenses','${e.id}')">Delete</button></td>
-      </tr>`))}
-  </div>`;
-}
-
-/* =====================================
-   7. INVOICE PRINTING
-===================================== */
-
-function printBill(id) {
-  const sale=records("sales").find(s=>s.id===id);
-  if(!sale) return;
-
-  const firm=activeFirm()||{};
-  const w=window.open("","_blank");
-
-  if(!w) {
-    alert("Please allow pop-ups to print invoices.");
-    return;
-  }
-
-  w.document.write(`
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>${sale.invoice}</title>
-    <style>
-      body{font-family:Arial;padding:25px;color:#111}
-      .header-container{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #333;padding-bottom:15px;margin-bottom:15px}
-      .firm-logo{max-height:70px;max-width:140px;object-fit:contain}
-      .firm-info{text-align:right}
-      h1{margin:0;font-size:22px}
-      table{width:100%;border-collapse:collapse;margin-top:20px}
-      th,td{border:1px solid #aaa;padding:9px;text-align:left}
-      .right{text-align:right}
-      .bank-details{margin-top:20px;padding:10px;border:1px solid #ddd;background:#f9f9f9;font-size:12px}
-    </style>
-  </head>
-  <body>
-    <div class="header-container">
-      <div>
-        ${firm.logo ? `<img src="${firm.logo}" class="firm-logo">` : `<img src="${APP_LOGO}" class="firm-logo">`}
-      </div>
-      <div class="firm-info">
-        <h1>${escapeHTML(firm.name||sale.firmName)}</h1>
-        <p style="margin:4px 0;font-size:13px">${escapeHTML(firm.address||"")}</p>
-        <p style="margin:2px 0;font-size:12px">Phone: ${escapeHTML(firm.phone||"")} | Email: ${escapeHTML(firm.email||"N/A")}</p>
-        <p style="margin:2px 0;font-size:12px">GSTIN: ${escapeHTML(firm.gstin||"N/A")}</p>
-      </div>
-    </div>
-
-    <h2>Tax Invoice</h2>
-    <p>Invoice: <strong>${escapeHTML(sale.invoice)}</strong></p>
-    <p>Date: ${sale.date}</p>
-    <p>Customer: ${escapeHTML(sale.customer)}</p>
-    <p>Payment: ${escapeHTML(sale.payment)}</p>
-    <table>
-      <tr><th>Product</th><th>Qty</th><th>Rate</th><th>GST</th></tr>
-      ${sale.items.map(i=>`
-        <tr>
-          <td>${escapeHTML(i.name)}</td>
-          <td>${i.qty}</td>
-          <td>${money(i.price)}</td>
-          <td>${i.gst}%</td>
-        </tr>`).join("")}
-    </table>
-    <p class="right">Taxable Value: ${money(sale.taxable)}</p>
-    <p class="right">Discount: ${money(sale.discount)}</p>
-    <p class="right">CGST: ${money(sale.cgst)}</p>
-    <p class="right">SGST: ${money(sale.sgst)}</p>
-    <p class="right">IGST: ${money(sale.igst)}</p>
-    <h2 class="right">Total: ${money(sale.total)}</h2>
-
-    ${(firm.bank || firm.accountNo) ? `
-    <div class="bank-details">
-      <strong>Bank Payment Details:</strong><br>
-      Bank: ${escapeHTML(firm.bank || 'N/A')} | Account No: ${escapeHTML(firm.accountNo || 'N/A')} | IFSC: ${escapeHTML(firm.ifsc || 'N/A')}
-    </div>` : ''}
-
-    <p style="text-align:center;margin-top:30px;font-size:12px;color:#666">Thank you for shopping with us!</p>
-    <script>window.onload=()=>window.print();<\/script>
-  </body>
-  </html>`);
-
-  w.document.close();
-}
-
-/* =====================================
-   8. REPORTS
-===================================== */
-
-function reportsPage() {
-  const sales=records("sales");
-  const expenses=records("expenses");
-  const month=today().slice(0,7);
-
-  const monthlySales=sales.filter(s=>(s.date||"").startsWith(month));
-  const monthlyExpenses=expenses.filter(e=>(e.date||"").startsWith(month));
-
-  const saleTotal=monthlySales.reduce((a,b)=>a+Number(b.total),0);
-  const taxTotal=monthlySales.reduce((a,b)=>a+Number(b.tax),0);
-  const expenseTotal=monthlyExpenses.reduce((a,b)=>a+Number(b.amount),0);
-
-  return `
-  <div class="stats">
-    <div class="card stat"><small>Monthly Sales</small><strong>${money(saleTotal)}</strong></div>
-    <div class="card stat"><small>GST Recorded</small><strong>${money(taxTotal)}</strong></div>
-    <div class="card stat"><small>Expenses</small><strong>${money(expenseTotal)}</strong></div>
-    <div class="card stat"><small>Sales - Expenses</small><strong>${money(saleTotal-expenseTotal)}</strong></div>
-  </div>
-
-  <div class="card">
-    <h2>Monthly Sales Register</h2>
-    ${makeTable(["Invoice","Date","Customer","Total"],
-      monthlySales.map(s=>`<tr>
-        <td>${escapeHTML(s.invoice)}</td>
-        <td>${s.date}</td>
-        <td>${escapeHTML(s.customer)}</td>
-        <td>${money(s.total)}</td>
-      </tr>`))}
-    <button onclick="exportCSV('sales')">Export Sales CSV</button>
-  </div>
-
-  <p class="muted">
-    These are operational summaries, not statutory GST returns or audited accounts.
-    Verify tax treatment before using figures for filing.
-  </p>`;
-}
-
-/* =====================================
-   9. BACKUP & RESTORE
-===================================== */
-
-function backupPage() {
-  return `
-  <div class="card">
-    <h2>Backup & Restore</h2>
-    <p class="muted">Save a copy of all firms and their records.</p>
-    <button class="primary" onclick="backupData()">Download Full Backup</button>
-    <br><br>
-    <label>Restore Backup JSON</label>
-    <input type="file" id="restoreFile" accept=".json">
-    <br><br>
-    <button onclick="restoreData()">Restore Data</button>
-    <hr>
-    <button class="danger" onclick="clearCurrentFirm()">Delete Current Firm Records</button>
-  </div>`;
-}
-
-function backupData() {
-  const blob=new Blob([JSON.stringify(database,null,2)],{
-    type:"application/json"
-  });
-  downloadBlob(blob,"smart-dukaan-backup.json");
-}
-
-function restoreData() {
-  const file=document.getElementById("restoreFile").files[0];
-  if(!file) {
-    alert("Choose a backup file first.");
-    return;
-  }
-
-  const reader=new FileReader();
-
-  reader.onload=()=>{
+function loadDatabase() {
     try {
-      const restored=JSON.parse(reader.result);
-      if(!Array.isArray(restored.firms) || !restored.records) {
-        throw new Error("Invalid backup format");
-      }
+        const saved = localStorage.getItem(STORAGE_KEY);
 
-      if(!confirm("Restore will replace the current browser data. Continue?")) return;
+        if (saved) {
+            const parsed = JSON.parse(saved);
 
-      database=restored;
-      saveDatabase();
-      updateFirmSelect();
-      render();
-      notify("Backup restored");
-    } catch(e) {
-      alert("Could not restore: "+e.message);
+            if (parsed && Array.isArray(parsed.firms)) {
+                database = parsed;
+                database.firms = database.firms.map(normaliseFirm);
+            }
+        }
+
+    } catch(error) {
+        alert("Saved data could not be read. Your browser storage may be damaged.");
+        console.error(error);
     }
-  };
 
-  reader.readAsText(file);
-}
-
-function clearCurrentFirm() {
-  if(!confirm("Delete all records of this firm?")) return;
-
-  database.records[database.activeFirm]={};
-  saveDatabase();
-  render();
-  notify("Firm records cleared");
-}
-
-/* =====================================
-   CSV EXPORT
-===================================== */
-
-function downloadBlob(blob,filename) {
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function exportCSV(type) {
-  const data=records(type);
-
-  if(!data.length) {
-    alert("No records to export.");
-    return;
-  }
-
-  const headers=[...new Set(data.flatMap(x=>Object.keys(x)))];
-
-  const quote=value=>'"'+String(
-    typeof value==="object"?JSON.stringify(value):value??""
-  ).replace(/"/g,'""')+'"';
-
-  const csv=[
-    headers.map(quote).join(","),
-    ...data.map(row=>headers.map(h=>quote(row[h])).join(","))
-  ].join("\n");
-
-  downloadBlob(
-    new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}),
-    type+"-export.csv"
-  );
-}
-
-/* =====================================
-   MAIN RENDER FUNCTION
-===================================== */
-
-function render() {
-  if(!database.activeFirm || !activeFirm()) {
-    document.getElementById("app").innerHTML=`
-      <div class="card">
-        <h2>Welcome to SMART DUKAAN PRO</h2>
-        <p>Create your first business firm to begin.</p>
-        <button class="primary" onclick="showFirmForm()">Create First Firm</button>
-      </div>`;
-    return;
-  }
-
-  const pages={
-    dashboard,
-    firms:()=>`
-      <div class="card">
-        <h2>Firm Management</h2>
-        <button class="primary" onclick="showFirmForm()">+ Create New Firm</button>
-        <br><br>
-        ${makeTable(["Logo", "Firm Name","Owner","Phone","GSTIN","Actions"],
-          database.firms.map(f=>`<tr>
-            <td>${f.logo ? `<img src="${f.logo}" style="width:36px;height:36px;border-radius:4px;object-fit:cover;">` : 'No logo'}</td>
-            <td>${escapeHTML(f.name)}</td>
-            <td>${escapeHTML(f.owner)}</td>
-            <td>${escapeHTML(f.phone)}</td>
-            <td>${escapeHTML(f.gstin)}</td>
-            <td class="actions">
-              <button onclick="editFirmModal('${f.id}')">Edit</button>
-              <button class="danger" onclick="deleteFirm('${f.id}')">Delete</button>
-            </td>
-          </tr>`))}
-      </div>`,
-    products:productsPage,
-    customers:()=>partyPage("customers"),
-    suppliers:()=>partyPage("suppliers"),
-    sales:salesPage,
-    purchases:purchasesPage,
-    expenses:expensesPage,
-    reports:reportsPage,
-    backup:backupPage
-  };
-
-  const titles={
-    dashboard:"Dashboard",
-    firms:"Firm Management",
-    products:"Products & Stock",
-    customers:"Customers",
-    suppliers:"Suppliers",
-    sales:"Sales & Billing",
-    purchases:"Purchases",
-    expenses:"Expenses",
-    reports:"Reports",
-    backup:"Backup & Restore"
-  };
-
-  document.getElementById("pageTitle").textContent=titles[currentPage];
-  document.getElementById("app").innerHTML=pages[currentPage]();
-}
-
-/* =====================================
-   FORM SUBMISSION
-===================================== */
-
-document.getElementById("app").addEventListener("submit",function(e) {
-  e.preventDefault();
-
-  try {
-    if(e.target.id==="saleForm") saveSale(e.target);
-    if(e.target.id==="purchaseForm") savePurchase(e.target);
-
-    if(e.target.id==="expenseForm") {
-      const d=Object.fromEntries(new FormData(e.target).entries());
-      d.amount=Number(d.amount);
-      addRecord("expenses",d);
-      notify("Expense saved");
-      render();
+    if (!Array.isArray(database.firms)) {
+        database.firms = [];
     }
-  } catch(error) {
-    alert(error.message);
-  }
+
+    if (database.firms.length === 0) {
+        const firm = createFirmObject("My Business");
+        database.firms.push(firm);
+        database.activeFirmId = firm.id;
+        saveDatabase();
+    }
+
+    let active = database.firms.find(
+        f => f.id === database.activeFirmId
+    );
+
+    if (!active) {
+        active = database.firms[0];
+        database.activeFirmId = active.id;
+        saveDatabase();
+    }
+}
+
+
+/* =========================================
+   SAVE DATABASE
+========================================= */
+
+function saveDatabase() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(database)
+        );
+
+        showMessage("saveStatus","Data saved in this browser.");
+        return true;
+
+    } catch(error) {
+        console.error(error);
+
+        alert(
+            "Unable to save data!\n\n" +
+            "Your browser storage may be full. " +
+            "Download a backup and try again."
+        );
+
+        return false;
+    }
+}
+
+
+/* =========================================
+   FIRM ACCESS
+========================================= */
+
+function getFirm() {
+    return database.firms.find(
+        f => f.id === database.activeFirmId
+    ) || null;
+}
+
+function getProducts() {
+    return getFirm()?.products || [];
+}
+
+function getSales() {
+    return getFirm()?.sales || [];
+}
+
+function getExpenses() {
+    return getFirm()?.expenses || [];
+}
+
+
+/* =========================================
+   FIRM SELECTOR
+========================================= */
+
+function renderFirmSelector() {
+    const select = $("firmSelect");
+    if (!select) return;
+
+    const current = database.activeFirmId;
+
+    select.innerHTML = "";
+
+    database.firms.forEach(firm => {
+        const option = document.createElement("option");
+        option.value = firm.id;
+        option.textContent = firm.profile.name || firm.name;
+        select.appendChild(option);
+    });
+
+    select.value = current;
+}
+
+
+/* =========================================
+   FIRM PROFILE DISPLAY
+========================================= */
+
+function renderFirm() {
+    const firm = getFirm();
+    if (!firm) return;
+
+    const p = firm.profile;
+
+    const fields = {
+        firmName:p.name,
+        ownerName:p.owner,
+        firmPhone:p.phone,
+        firmEmail:p.email,
+        firmGST:p.gst,
+        firmState:p.state,
+        firmAddress:p.address
+    };
+
+    Object.entries(fields).forEach(([id,value]) => {
+        if ($(id)) $(id).value = value || "";
+    });
+
+    setText("headerFirm",p.name || "No firm selected");
+
+    if ($("headerLogo") && $("brandMark")) {
+        if (p.logo) {
+            $("headerLogo").src = p.logo;
+            $("headerLogo").style.display = "block";
+            $("brandMark").style.display = "none";
+        } else {
+            $("headerLogo").src = "";
+            $("headerLogo").style.display = "none";
+            $("brandMark").style.display = "grid";
+        }
+    }
+
+    if ($("logoPreview")) {
+        if (p.logo) {
+            $("logoPreview").src = p.logo;
+            $("logoPreview").style.display = "block";
+        } else {
+            $("logoPreview").src = "";
+            $("logoPreview").style.display = "none";
+        }
+    }
+}
+
+
+/* =========================================
+   SAVE FIRM PROFILE
+========================================= */
+
+$("saveFirmBtn").addEventListener("click",function() {
+
+    const firm = getFirm();
+    if (!firm) return;
+
+    const name = $("firmName").value.trim();
+
+    if (!name) {
+        alert("Please enter your firm name.");
+        return;
+    }
+
+    const oldProfile = JSON.stringify(firm.profile);
+
+    firm.profile = {
+        name:name,
+        owner:$("ownerName").value.trim(),
+        phone:$("firmPhone").value.trim(),
+        email:$("firmEmail").value.trim(),
+        gst:$("firmGST").value.trim(),
+        state:$("firmState").value.trim(),
+        address:$("firmAddress").value.trim(),
+        logo:firm.profile.logo || ""
+    };
+
+    firm.name = name;
+
+    if (!saveDatabase()) {
+        firm.profile = JSON.parse(oldProfile);
+        firm.name = firm.profile.name;
+        renderFirm();
+        return;
+    }
+
+    renderFirmSelector();
+    renderFirm();
+    refreshAll();
+
+    alert("Firm details saved successfully!");
 });
 
-/* =====================================
-   INITIALIZE APPLICATION
-===================================== */
 
-if(database.firms.length===0) {
-  const firm={
-    id:uid(),
-    name:"My First Business",
-    owner:"",
-    phone:"",
-    email:"",
-    address:"",
-    gstin:"",
-    bank:"",
-    accountNo:"",
-    ifsc:"",
-    logo:""
-  };
+/* =========================================
+   UPLOAD FIRM LOGO
+========================================= */
 
-  database.firms.push(firm);
-  database.activeFirm=firm.id;
-  database.records[firm.id]={};
-  saveDatabase();
+$("firmLogoFile").addEventListener("change",function(event) {
+
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please select a valid image.");
+        event.target.value = "";
+        return;
+    }
+
+    if (file.size > 700 * 1024) {
+        alert("Please select a logo smaller than 700 KB.");
+        event.target.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function() {
+
+        const firm = getFirm();
+        if (!firm) return;
+
+        const oldLogo = firm.profile.logo;
+
+        firm.profile.logo = reader.result;
+
+        if (!saveDatabase()) {
+            firm.profile.logo = oldLogo;
+            renderFirm();
+            return;
+        }
+
+        renderFirm();
+        alert("Logo uploaded successfully!");
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+/* =========================================
+   REMOVE FIRM LOGO
+========================================= */
+
+$("removeLogoBtn").addEventListener("click",function() {
+
+    const firm = getFirm();
+    if (!firm) return;
+
+    if (!firm.profile.logo) {
+        alert("No logo uploaded.");
+        return;
+    }
+
+    if (!confirm("Remove this firm's logo?")) return;
+
+    const oldLogo = firm.profile.logo;
+    firm.profile.logo = "";
+
+    if (!saveDatabase()) {
+        firm.profile.logo = oldLogo;
+        renderFirm();
+        return;
+    }
+
+    $("firmLogoFile").value = "";
+    renderFirm();
+
+    alert("Logo removed.");
+});
+
+
+/* =========================================
+   CREATE NEW FIRM
+========================================= */
+
+$("newFirmBtn").addEventListener("click",function() {
+
+    const name = prompt("Enter the new firm name:");
+
+    if (name === null) return;
+
+    if (!name.trim()) {
+        alert("Firm name cannot be empty.");
+        return;
+    }
+
+    const firm = createFirmObject(name.trim());
+
+    const oldDatabase = JSON.stringify(database);
+
+    database.firms.push(firm);
+    database.activeFirmId = firm.id;
+
+    if (!saveDatabase()) {
+        database = JSON.parse(oldDatabase);
+        renderFirmSelector();
+        return;
+    }
+
+    cart = [];
+    renderFirmSelector();
+    refreshAll();
+
+    alert("New firm created successfully!");
+});
+
+
+/* =========================================
+   SWITCH FIRM
+========================================= */
+
+$("switchFirmBtn").addEventListener("click",function() {
+
+    const selectedId = $("firmSelect").value;
+
+    const selectedFirm = database.firms.find(
+        f => f.id === selectedId
+    );
+
+    if (!selectedFirm) {
+        alert("Please select a valid firm.");
+        return;
+    }
+
+    const oldId = database.activeFirmId;
+
+    database.activeFirmId = selectedId;
+
+    if (!saveDatabase()) {
+        database.activeFirmId = oldId;
+        renderFirmSelector();
+        return;
+    }
+
+    cart = [];
+    renderFirmSelector();
+    refreshAll();
+
+    alert(
+        "Switched to " +
+        (selectedFirm.profile.name || selectedFirm.name)
+    );
+});
+
+
+/* =========================================
+   SAVE CURRENT FIRM BUTTON
+========================================= */
+
+$("saveAllBtn").addEventListener("click",function() {
+
+    if (saveDatabase()) {
+        alert("Current firm's data saved successfully.");
+    }
+});
+
+
+/* =========================================
+   PAGE NAVIGATION
+========================================= */
+
+function showPage(pageId) {
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    document.querySelectorAll(".nav button").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.page === pageId
+        );
+    });
+
+    const target = $(pageId);
+
+    if (target) {
+        target.classList.add("active");
+    }
 }
 
-updateFirmSelect();
-render();
+document.querySelectorAll(".nav button").forEach(button => {
+
+    button.addEventListener("click",function() {
+        showPage(this.dataset.page);
+    });
+
+});
+
+
+/* =========================================
+   DATE LABELS
+========================================= */
+
+function setDateLabels() {
+
+    if ($("todayLabel")) {
+        $("todayLabel").textContent =
+            new Date().toLocaleDateString("en-IN",{
+                day:"2-digit",
+                month:"short",
+                year:"numeric"
+            });
+    }
+
+    if ($("billDate")) {
+        $("billDate").value = today();
+    }
+
+    if ($("expenseDate")) {
+        $("expenseDate").value = today();
+    }
+}
+
+
+/* =========================================
+   STARTUP
+========================================= */
+
+loadDatabase();
+renderFirmSelector();
+renderFirm();
+setDateLabels();
 
 </script>
+
+<script>
+
+/* =========================================
+   STOCK MANAGEMENT
+========================================= */
+
+function clearProductForm() {
+
+    $("editProductId").value = "";
+    $("pName").value = "";
+    $("pCode").value = "";
+    $("pCategory").value = "";
+    $("pCost").value = "";
+    $("pPrice").value = "";
+    $("pStock").value = "0";
+    $("pLow").value = "5";
+    $("pGST").value = "0";
+    $("pUnit").value = "pcs";
+
+    setText("productFormTitle","Add Product");
+    setText("saveProductBtn","Save Product");
+}
+
+
+/* =========================================
+   SAVE PRODUCT
+========================================= */
+
+$("saveProductBtn").addEventListener("click",function() {
+
+    const name = $("pName").value.trim();
+    const code = $("pCode").value.trim();
+    const category = $("pCategory").value.trim();
+
+    const cost = number($("pCost").value);
+    const price = number($("pPrice").value);
+    const stock = number($("pStock").value);
+    const low = number($("pLow").value);
+    const gst = number($("pGST").value);
+    const unit = $("pUnit").value;
+
+    if (!name) {
+        alert("Please enter product name.");
+        return;
+    }
+
+    if ($("pCost").value === "" ||
+        $("pPrice").value === "" ||
+        $("pStock").value === "") {
+        alert("Please enter cost, selling price and stock.");
+        return;
+    }
+
+    if (cost < 0 || price < 0 || stock < 0 || low < 0) {
+        alert("Values cannot be negative.");
+        return;
+    }
+
+    if (!Number.isInteger(stock) || !Number.isInteger(low)) {
+        alert("Stock and low-stock limit must be whole numbers.");
+        return;
+    }
+
+    const id = $("editProductId").value;
+
+    const databaseBeforeProduct = JSON.stringify(database);
+
+    const products = getProducts();
+
+    if (code && products.some(p =>
+        p.code.toLowerCase() === code.toLowerCase() &&
+        p.id !== id
+    )) {
+        alert("This product code already exists.");
+        return;
+    }
+
+    if (id) {
+
+        const product = products.find(p => p.id === id);
+
+        if (!product) {
+            alert("Product not found.");
+            return;
+        }
+
+        Object.assign(product,{
+            name,
+            code,
+            category,
+            cost,
+            price,
+            stock,
+            low,
+            gst,
+            unit
+        });
+
+    } else {
+
+        products.push({
+            id:uid(),
+            name,
+            code,
+            category,
+            cost,
+            price,
+            stock,
+            low,
+            gst,
+            unit,
+            createdAt:new Date().toISOString()
+        });
+
+    }
+
+    if (!saveDatabase()) {
+        database = JSON.parse(databaseBeforeProduct);
+        refreshAll();
+        return;
+    }
+
+    clearProductForm();
+    refreshAll();
+
+    alert(id
+        ? "Product updated successfully!"
+        : "Product added successfully!"
+    );
+
+});
+
+
+/* =========================================
+   EDIT PRODUCT
+========================================= */
+
+function editProduct(id) {
+
+    const product = getProducts().find(p => p.id === id);
+
+    if (!product) {
+        alert("Product not found.");
+        return;
+    }
+
+    $("editProductId").value = product.id;
+    $("pName").value = product.name || "";
+    $("pCode").value = product.code || "";
+    $("pCategory").value = product.category || "";
+    $("pCost").value = product.cost;
+    $("pPrice").value = product.price;
+    $("pStock").value = product.stock;
+    $("pLow").value = product.low;
+    $("pGST").value = String(product.gst);
+    $("pUnit").value = product.unit || "pcs";
+
+    setText("productFormTitle","Edit Product");
+    setText("saveProductBtn","Update Product");
+
+    showPage("stock");
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+/* =========================================
+   DELETE PRODUCT
+========================================= */
+
+function deleteProduct(id) {
+
+    const product = getProducts().find(p => p.id === id);
+
+    if (!product) return;
+
+    const alreadySold = getSales().some(sale =>
+        (sale.items || []).some(item => item.productId === id)
+    );
+
+    if (alreadySold) {
+        alert(
+            "This product is connected to previous sales. " +
+            "You can edit it or set its stock to zero instead of deleting it."
+        );
+        return;
+    }
+
+    if (!confirm("Delete " + product.name + "?")) return;
+
+    const databaseBeforeDelete = JSON.stringify(database);
+
+    const firm = getFirm();
+
+    firm.products = firm.products.filter(p => p.id !== id);
+
+    if (!saveDatabase()) {
+        database = JSON.parse(databaseBeforeDelete);
+        refreshAll();
+        return;
+    }
+
+    refreshAll();
+
+    alert("Product deleted successfully.");
+}
+
+
+/* =========================================
+   RENDER STOCK TABLE
+========================================= */
+
+function renderStock() {
+
+    const tbody = $("stockTable");
+    if (!tbody) return;
+
+    const search = String($("stockSearch").value || "")
+        .toLowerCase().trim();
+
+    const filter = $("stockFilter").value;
+
+    const products = getProducts().filter(product => {
+
+        const name = String(product.name || "").toLowerCase();
+        const code = String(product.code || "").toLowerCase();
+        const category = String(product.category || "").toLowerCase();
+
+        const matchesSearch =
+            name.includes(search) ||
+            code.includes(search) ||
+            category.includes(search);
+
+        const isLow = number(product.stock) <= number(product.low);
+
+        const matchesFilter =
+            filter === "all" ||
+            (filter === "low" && isLow);
+
+        return matchesSearch && matchesFilter;
+
+    });
+
+    if (!products.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="empty">
+                    No products found.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = products.map(product => {
+
+        const isLow = number(product.stock) <= number(product.low);
+
+        return `
+            <tr>
+                <td>
+                    <strong>${safeText(product.name)}</strong>
+                    <br>
+                    <span class="muted">${safeText(product.category)}</span>
+                </td>
+
+                <td>${safeText(product.code || "-")}</td>
+
+                <td>${money(product.cost)}</td>
+
+                <td>${money(product.price)}</td>
+
+                <td>${number(product.gst)}%</td>
+
+                <td>
+                    ${number(product.stock)}
+                    ${safeText(product.unit)}
+                </td>
+
+                <td>${number(product.low)}</td>
+
+                <td>
+                    <span class="badge ${isLow ? "danger" : "success"}">
+                        ${isLow ? "Low Stock" : "Available"}
+                    </span>
+                </td>
+
+                <td>
+                    <button class="small"
+                        onclick="editProduct('${product.id}')">
+                        Edit
+                    </button>
+
+                    <button class="small danger"
+                        onclick="deleteProduct('${product.id}')">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+
+    }).join("");
+
+}
+
+
+/* =========================================
+   STOCK SEARCH AND FILTER
+========================================= */
+
+$("stockSearch").addEventListener("input",renderStock);
+
+$("stockFilter").addEventListener("change",renderStock);
+
+$("cancelProductBtn").addEventListener("click",clearProductForm);
+
+
+/* =========================================
+   EXCEL EXPORT HELPER
+========================================= */
+
+function exportExcel(data,filename,sheetName) {
+
+    if (typeof XLSX === "undefined") {
+        alert(
+            "Excel library could not load. " +
+            "Please check your internet connection and reload the website."
+        );
+        return;
+    }
+
+    try {
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            sheetName || "Data"
+        );
+
+        XLSX.writeFile(workbook,filename);
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert("Excel export failed. Please try again.");
+
+    }
+
+}
+
+
+/* =========================================
+   EXPORT STOCK TO EXCEL
+========================================= */
+
+$("exportStockBtn").addEventListener("click",function() {
+
+    const firm = getFirm();
+
+    const products = getProducts();
+
+    if (!products.length) {
+        alert("No stock records available to export.");
+        return;
+    }
+
+    const data = products.map(p => ({
+        "Product Name":p.name,
+        "Product Code":p.code,
+        "Category":p.category,
+        "Purchase Cost":number(p.cost),
+        "Selling Price":number(p.price),
+        "GST Rate":number(p.gst) + "%",
+        "Stock Quantity":number(p.stock),
+        "Unit":p.unit,
+        "Low Stock Limit":number(p.low),
+        "Stock Status":
+            number(p.stock) <= number(p.low)
+                ? "Low Stock"
+                : "Available"
+    }));
+
+    const filename =
+        (firm.profile.name || "Business")
+            .replace(/[^a-z0-9]/gi,"_") +
+        "_Stock.xlsx";
+
+    exportExcel(data,filename,"Stock");
+
+});
+
+
+/* =========================================
+   PRODUCT DROPDOWN FOR BILLING
+========================================= */
+
+function renderProductDropdown() {
+
+    const select = $("saleProduct");
+
+    if (!select) return;
+
+    const previousValue = select.value;
+
+    select.innerHTML = `
+        <option value="">Select product</option>
+    `;
+
+    getProducts().forEach(product => {
+
+        const option = document.createElement("option");
+
+        option.value = product.id;
+
+        option.textContent =
+            product.name +
+            " | " +
+            money(product.price) +
+            " | Stock: " +
+            number(product.stock);
+
+        select.appendChild(option);
+
+    });
+
+    if (getProducts().some(p => p.id === previousValue)) {
+        select.value = previousValue;
+    }
+
+}
+
+
+/* =========================================
+   LOW STOCK ALERT LIST
+========================================= */
+
+function renderLowStock() {
+
+    const container = $("lowStockList");
+
+    if (!container) return;
+
+    const lowProducts = getProducts().filter(product =>
+        number(product.stock) <= number(product.low)
+    );
+
+    if (!lowProducts.length) {
+        container.innerHTML = `
+            <div class="empty">All products have sufficient stock.</div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="tablewrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Available Stock</th>
+                        <th>Alert Level</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${lowProducts.map(product => `
+                        <tr>
+                            <td>${safeText(product.name)}</td>
+                            <td>${number(product.stock)} ${safeText(product.unit)}</td>
+                            <td>${number(product.low)}</td>
+                            <td>
+                                <span class="badge danger">Reorder Needed</span>
+                            </td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+}
+
+
+/* =========================================
+   END STOCK MANAGEMENT
+========================================= */
+
+</script>
+
+<script>
+
+/* =========================================
+   SALES AND BILLING SYSTEM
+========================================= */
+
+function calculateCart() {
+
+    let subtotal = 0;
+    let cgst = 0;
+    let sgst = 0;
+    let igst = 0;
+
+    const gstType = $("gstType").value;
+
+    cart.forEach(item => {
+
+        const taxable = number(item.price) * number(item.qty);
+        const rate = number(item.gst);
+
+        subtotal += taxable;
+
+        if (gstType === "intra") {
+            cgst += taxable * rate / 200;
+            sgst += taxable * rate / 200;
+        }
+
+        if (gstType === "inter") {
+            igst += taxable * rate / 100;
+        }
+
+    });
+
+    const discount = Math.max(
+        0,
+        number($("billDiscount").value)
+    );
+
+    const tax = cgst + sgst + igst;
+
+    const total = Math.max(
+        0,
+        subtotal + tax - discount
+    );
+
+    return {
+        subtotal,
+        cgst,
+        sgst,
+        igst,
+        discount,
+        tax,
+        total
+    };
+
+}
+
+
+/* =========================================
+   RENDER CART
+========================================= */
+
+function renderCart() {
+
+    const tbody = $("cartTable");
+
+    if (!cart.length) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    No products added yet.
+                </td>
+            </tr>
+        `;
+
+        const ids = [
+            "cartSubtotal",
+            "cartCGST",
+            "cartSGST",
+            "cartIGST",
+            "cartDiscount",
+            "cartGrandTotal"
+        ];
+
+        ids.forEach(id => setText(id,money(0)));
+
+        return;
+    }
+
+    tbody.innerHTML = cart.map(item => {
+
+        const taxable = number(item.price) * number(item.qty);
+
+        const gstAmount = taxable * number(item.gst) / 100;
+
+        return `
+            <tr>
+                <td>${safeText(item.name)}</td>
+                <td>${money(item.price)}</td>
+                <td>${number(item.gst)}%</td>
+                <td>${number(item.qty)}</td>
+                <td>${money(taxable)}</td>
+                <td>${money(taxable + gstAmount)}</td>
+                <td>
+                    <button class="small danger"
+                        onclick="removeCartItem('${item.productId}')">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        `;
+
+    }).join("");
+
+    const totals = calculateCart();
+
+    setText("cartSubtotal",money(totals.subtotal));
+    setText("cartCGST",money(totals.cgst));
+    setText("cartSGST",money(totals.sgst));
+    setText("cartIGST",money(totals.igst));
+    setText("cartDiscount",money(totals.discount));
+    setText("cartGrandTotal",money(totals.total));
+
+}
+
+
+/* =========================================
+   ADD PRODUCT TO CART
+========================================= */
+
+$("addToCartBtn").addEventListener("click",function() {
+
+    const productId = $("saleProduct").value;
+
+    const qty = number($("saleQty").value);
+
+    if (!productId) {
+        alert("Please select a product.");
+        return;
+    }
+
+    if (!Number.isInteger(qty) || qty <= 0) {
+        alert("Enter a valid whole-number quantity.");
+        return;
+    }
+
+    const product = getProducts().find(
+        p => p.id === productId
+    );
+
+    if (!product) {
+        alert("Product not found.");
+        return;
+    }
+
+    const existing = cart.find(
+        item => item.productId === productId
+    );
+
+    const alreadyAdded = existing
+        ? number(existing.qty)
+        : 0;
+
+    if (alreadyAdded + qty > number(product.stock)) {
+        alert(
+            "Not enough stock available.\n\n" +
+            "Available stock: " + product.stock
+        );
+        return;
+    }
+
+    if (existing) {
+
+        existing.qty += qty;
+
+    } else {
+
+        cart.push({
+            productId:product.id,
+            name:product.name,
+            code:product.code,
+            price:number(product.price),
+            cost:number(product.cost),
+            gst:number(product.gst),
+            qty:qty,
+            unit:product.unit
+        });
+
+    }
+
+    $("saleQty").value = 1;
+
+    renderCart();
+
+});
+
+
+/* =========================================
+   REMOVE CART ITEM
+========================================= */
+
+function removeCartItem(productId) {
+
+    cart = cart.filter(
+        item => item.productId !== productId
+    );
+
+    renderCart();
+
+}
+
+
+/* =========================================
+   CLEAR CART
+========================================= */
+
+$("clearCartBtn").addEventListener("click",function() {
+
+    if (!cart.length) return;
+
+    if (!confirm("Clear all products from this bill?")) return;
+
+    cart = [];
+
+    $("billDiscount").value = 0;
+
+    renderCart();
+
+});
+
+
+/* =========================================
+   CART RECALCULATION EVENTS
+========================================= */
+
+$("billDiscount").addEventListener("input",renderCart);
+
+$("gstType").addEventListener("change",renderCart);
+
+
+/* =========================================
+   INVOICE NUMBER
+========================================= */
+
+function generateInvoiceNumber() {
+
+    const firm = getFirm();
+
+    const nextNumber = getSales().length + 1;
+
+    const firmPrefix = (
+        firm.profile.name || "SHOP"
+    ).replace(/[^A-Z0-9]/gi,"")
+     .substring(0,4)
+     .toUpperCase();
+
+    return firmPrefix + "-" +
+        String(nextNumber).padStart(5,"0");
+
+}
+
+
+/* =========================================
+   GENERATE BILL
+========================================= */
+
+$("generateBillBtn").addEventListener("click",function() {
+
+    const firm = getFirm();
+
+    if (!firm) {
+        alert("Please select a firm.");
+        return;
+    }
+
+    if (!cart.length) {
+        alert("Please add products to the bill.");
+        return;
+    }
+
+    const customer = $("customerName").value.trim() ||
+        "Walk-in Customer";
+
+    const phone = $("customerPhone").value.trim();
+
+    const date = $("billDate").value || today();
+
+    const payment = $("paymentMode").value;
+
+    const gstType = $("gstType").value;
+
+    const totals = calculateCart();
+
+    if (totals.discount > totals.subtotal + totals.tax) {
+        alert("Discount cannot exceed the bill value.");
+        return;
+    }
+
+    // Final stock validation
+    for (const item of cart) {
+
+        const product = firm.products.find(
+            p => p.id === item.productId
+        );
+
+        if (!product) {
+            alert("A product in the cart no longer exists.");
+            return;
+        }
+
+        if (number(product.stock) < number(item.qty)) {
+            alert(
+                "Insufficient stock for " + product.name
+            );
+            return;
+        }
+
+    }
+
+    const databaseBeforeSale = JSON.stringify(database);
+
+    const saleItems = cart.map(item => {
+
+        const taxable = number(item.price) * number(item.qty);
+
+        const gstRate = number(item.gst);
+
+        let itemCGST = 0;
+        let itemSGST = 0;
+        let itemIGST = 0;
+
+        if (gstType === "intra") {
+            itemCGST = taxable * gstRate / 200;
+            itemSGST = taxable * gstRate / 200;
+        }
+
+        if (gstType === "inter") {
+            itemIGST = taxable * gstRate / 100;
+        }
+
+        return {
+            productId:item.productId,
+            name:item.name,
+            code:item.code,
+            price:number(item.price),
+            cost:number(item.cost),
+            qty:number(item.qty),
+            unit:item.unit,
+            gst:gstRate,
+            taxable:taxable,
+            cgst:itemCGST,
+            sgst:itemSGST,
+            igst:itemIGST,
+            total:taxable + itemCGST + itemSGST + itemIGST
+        };
+
+    });
+
+    const sale = {
+
+        id:uid(),
+
+        invoiceNo:generateInvoiceNumber(),
+
+        date:date,
+
+        createdAt:new Date().toISOString(),
+
+        customer:customer,
+
+        phone:phone,
+
+        payment:payment,
+
+        gstType:gstType,
+
+        items:saleItems,
+
+        subtotal:totals.subtotal,
+
+        cgst:totals.cgst,
+
+        sgst:totals.sgst,
+
+        igst:totals.igst,
+
+        discount:totals.discount,
+
+        tax:totals.tax,
+
+        total:totals.total,
+
+        cost:saleItems.reduce(
+            (sum,item) => sum + item.cost * item.qty,
+            0
+        )
+
+    };
+
+    // Reduce stock
+    saleItems.forEach(item => {
+
+        const product = firm.products.find(
+            p => p.id === item.productId
+        );
+
+        product.stock -= item.qty;
+
+    });
+
+    // Save sale
+    getSales().push(sale);
+
+    if (!saveDatabase()) {
+
+        database = JSON.parse(databaseBeforeSale);
+
+        refreshAll();
+
+        return;
+
+    }
+
+    lastGeneratedSale = sale;
+
+    cart = [];
+
+    $("customerName").value = "";
+    $("customerPhone").value = "";
+    $("billDiscount").value = 0;
+    $("saleQty").value = 1;
+
+    renderCart();
+
+    refreshAll();
+
+    showMessage(
+        "billMessage",
+        "Bill generated: " + sale.invoiceNo
+    );
+
+    showInvoice(sale);
+
+});
+
+
+/* =========================================
+   INVOICE DESIGN
+========================================= */
+
+function showInvoice(sale) {
+
+    const firm = getFirm();
+
+    if (!firm) return;
+
+    const p = firm.profile;
+
+    const rows = sale.items.map((item,index) => {
+
+        const cgstRate = sale.gstType === "intra"
+            ? number(item.gst) / 2 : 0;
+
+        const sgstRate = sale.gstType === "intra"
+            ? number(item.gst) / 2 : 0;
+
+        const igstRate = sale.gstType === "inter"
+            ? number(item.gst) : 0;
+
+        return `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${safeText(item.name)}</td>
+                <td>${number(item.qty)} ${safeText(item.unit)}</td>
+                <td>${money(item.price)}</td>
+                <td>${money(item.taxable)}</td>
+                <td>${cgstRate}%<br>${money(item.cgst)}</td>
+                <td>${sgstRate}%<br>${money(item.sgst)}</td>
+                <td>${igstRate}%<br>${money(item.igst)}</td>
+                <td>${money(item.total)}</td>
+            </tr>
+        `;
+
+    }).join("");
+
+    const printArea = $("printArea");
+
+    printArea.innerHTML = `
+
+        <div style="font-family:Arial,sans-serif;max-width:950px;margin:auto">
+
+            <div style="display:flex;justify-content:space-between;
+                        align-items:center;border-bottom:2px solid #222;
+                        padding-bottom:15px">
+
+                <div>
+                    ${p.logo ? `
+                        <img src="${p.logo}"
+                             style="width:85px;height:85px;
+                             object-fit:contain;margin-bottom:8px">
+                    ` : ""}
+
+                    <h1>${safeText(p.name || "Business")}</h1>
+
+                    <p>${safeText(p.address || "")}</p>
+
+                    <p>
+                        Owner: ${safeText(p.owner || "-")}
+                    </p>
+
+                    <p>
+                        Phone: ${safeText(p.phone || "-")}
+                    </p>
+
+                    <p>
+                        Email: ${safeText(p.email || "-")}
+                    </p>
+
+                    <p>
+                        GSTIN: ${safeText(p.gst || "-")}
+                    </p>
+                </div>
+
+                <div style="text-align:right">
+                    <h2>TAX INVOICE</h2>
+                    <p><b>Invoice:</b> ${safeText(sale.invoiceNo)}</p>
+                    <p><b>Date:</b> ${safeText(sale.date)}</p>
+                    <p><b>Payment:</b> ${safeText(sale.payment)}</p>
+                </div>
+
+            </div>
+
+            <div style="margin:20px 0">
+                <h3>Bill To</h3>
+                <p><b>Name:</b> ${safeText(sale.customer)}</p>
+                <p><b>Phone:</b> ${safeText(sale.phone || "-")}</p>
+            </div>
+
+            <table style="width:100%;border-collapse:collapse;
+                          font-size:11px">
+
+                <thead>
+                    <tr style="background:#eee">
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Taxable</th>
+                        <th>CGST</th>
+                        <th>SGST</th>
+                        <th>IGST</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+            <div style="max-width:380px;margin:20px 0 0 auto">
+
+                <p>Subtotal: <b>${money(sale.subtotal)}</b></p>
+
+                <p>CGST: <b>${money(sale.cgst)}</b></p>
+
+                <p>SGST: <b>${money(sale.sgst)}</b></p>
+
+                <p>IGST: <b>${money(sale.igst)}</b></p>
+
+                <p>Discount: <b>${money(sale.discount)}</b></p>
+
+                <h2 style="border-top:2px solid #222;padding-top:10px">
+                    Grand Total: ${money(sale.total)}
+                </h2>
+
+            </div>
+
+            <div style="margin-top:50px;text-align:center;
+                        border-top:1px solid #aaa;padding-top:15px">
+                <h3>Thank You for Your Business!</h3>
+                <p>Visit Again</p>
+            </div>
+
+        </div>
+    `;
+
+    // Wait for the logo to load before opening print
+    const images = Array.from(printArea.querySelectorAll("img"));
+
+    Promise.all(images.map(img => {
+
+        if (img.complete) return Promise.resolve();
+
+        return new Promise(resolve => {
+
+            img.onload = resolve;
+            img.onerror = resolve;
+
+        });
+
+    })).then(() => {
+
+        window.print();
+
+    });
+
+}
+
+
+/* =========================================
+   SALES REGISTER EXCEL EXPORT
+========================================= */
+
+function exportSalesExcel() {
+
+    const sales = getSales();
+
+    if (!sales.length) {
+        alert("No sales available to export.");
+        return;
+    }
+
+    const data = [];
+
+    sales.forEach(sale => {
+
+        (sale.items || []).forEach(item => {
+
+            data.push({
+
+                "Invoice Number":sale.invoiceNo,
+
+                "Date":sale.date,
+
+                "Customer":sale.customer,
+
+                "Phone":sale.phone,
+
+                "Payment":sale.payment,
+
+                "Product":item.name,
+
+                "Quantity":item.qty,
+
+                "Price":item.price,
+
+                "Taxable Amount":item.taxable,
+
+                "GST Rate":item.gst + "%",
+
+                "CGST":item.cgst,
+
+                "SGST":item.sgst,
+
+                "IGST":item.igst,
+
+                "Item Total":item.total,
+
+                "Bill Total":sale.total
+
+            });
+
+        });
+
+    });
+
+    const firm = getFirm();
+
+    const filename =
+        (firm.profile.name || "Business")
+            .replace(/[^a-z0-9]/gi,"_") +
+        "_Sales.xlsx";
+
+    exportExcel(data,filename,"Sales");
+
+}
+
+
+/* =========================================
+   SALES EXCEL BUTTON
+========================================= */
+
+if ($("exportSalesBtn")) {
+
+    $("exportSalesBtn").addEventListener(
+        "click",
+        exportSalesExcel
+    );
+
+}
+
+
+/* =========================================
+   END SALES SYSTEM
+========================================= */
+
+</script>
+
+<script>
+
+/* =========================================
+   EXPENSE MANAGEMENT
+========================================= */
+
+function clearExpenseForm() {
+
+    $("editExpenseId").value = "";
+    $("expenseName").value = "";
+    $("expenseCategory").value = "Rent";
+    $("expenseAmount").value = "";
+    $("expensePayment").value = "Cash";
+    $("expenseDate").value = today();
+    $("expenseReference").value = "";
+    $("expenseDescription").value = "";
+
+    setText("expenseFormTitle","Add New Expense");
+    setText("saveExpenseBtn","Save Expense");
+
+}
+
+
+/* =========================================
+   SAVE EXPENSE
+========================================= */
+
+$("saveExpenseBtn").addEventListener("click",function() {
+
+    const name = $("expenseName").value.trim();
+    const amountText = $("expenseAmount").value;
+    const amount = number(amountText);
+
+    if (!name) {
+        alert("Please enter expense name.");
+        return;
+    }
+
+    if (amountText === "" || amount <= 0) {
+        alert("Please enter a valid expense amount.");
+        return;
+    }
+
+    const id = $("editExpenseId").value;
+
+    const databaseBeforeExpense = JSON.stringify(database);
+
+    const expenseData = {
+        name:name,
+        category:$("expenseCategory").value,
+        amount:amount,
+        payment:$("expensePayment").value,
+        date:$("expenseDate").value || today(),
+        reference:$("expenseReference").value.trim(),
+        description:$("expenseDescription").value.trim()
+    };
+
+    if (id) {
+
+        const expense = getExpenses().find(e => e.id === id);
+
+        if (!expense) {
+            alert("Expense not found.");
+            return;
+        }
+
+        Object.assign(expense,expenseData);
+
+    } else {
+
+        getExpenses().push({
+            id:uid(),
+            ...expenseData,
+            createdAt:new Date().toISOString()
+        });
+
+    }
+
+    if (!saveDatabase()) {
+        database = JSON.parse(databaseBeforeExpense);
+        refreshAll();
+        return;
+    }
+
+    clearExpenseForm();
+    refreshAll();
+
+    alert(id
+        ? "Expense updated successfully!"
+        : "Expense saved successfully!"
+    );
+
+});
+
+
+/* =========================================
+   EDIT EXPENSE
+========================================= */
+
+function editExpense(id) {
+
+    const expense = getExpenses().find(e => e.id === id);
+
+    if (!expense) {
+        alert("Expense not found.");
+        return;
+    }
+
+    $("editExpenseId").value = expense.id;
+    $("expenseName").value = expense.name || "";
+    $("expenseCategory").value = expense.category || "Other";
+    $("expenseAmount").value = expense.amount;
+    $("expensePayment").value = expense.payment || "Cash";
+    $("expenseDate").value = expense.date || today();
+    $("expenseReference").value = expense.reference || "";
+    $("expenseDescription").value = expense.description || "";
+
+    setText("expenseFormTitle","Edit Expense");
+    setText("saveExpenseBtn","Update Expense");
+
+    showPage("expenses");
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================================
+   DELETE EXPENSE
+========================================= */
+
+function deleteExpense(id) {
+
+    const expense = getExpenses().find(e => e.id === id);
+
+    if (!expense) return;
+
+    if (!confirm("Delete this expense?")) return;
+
+    const databaseBeforeDelete = JSON.stringify(database);
+
+    const firm = getFirm();
+
+    firm.expenses = firm.expenses.filter(
+        e => e.id !== id
+    );
+
+    if (!saveDatabase()) {
+        database = JSON.parse(databaseBeforeDelete);
+        refreshAll();
+        return;
+    }
+
+    refreshAll();
+
+    alert("Expense deleted successfully.");
+
+}
+
+
+/* =========================================
+   RENDER EXPENSE TABLE
+========================================= */
+
+function renderExpenses() {
+
+    const tbody = $("expenseTable");
+
+    if (!tbody) return;
+
+    const search = String($("expenseSearch").value || "")
+        .toLowerCase().trim();
+
+    const expenses = getExpenses()
+        .filter(e => {
+
+            const name = String(e.name || "").toLowerCase();
+            const category = String(e.category || "").toLowerCase();
+            const reference = String(e.reference || "").toLowerCase();
+
+            return name.includes(search) ||
+                category.includes(search) ||
+                reference.includes(search);
+
+        })
+        .sort((a,b) =>
+            String(b.date || "").localeCompare(String(a.date || ""))
+        );
+
+    if (!expenses.length) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    No expenses found.
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        tbody.innerHTML = expenses.map(expense => `
+
+            <tr>
+                <td>${safeText(expense.date || "-")}</td>
+
+                <td>
+                    <strong>${safeText(expense.name)}</strong>
+                    <br>
+                    <span class="muted">
+                        ${safeText(expense.description || "")}
+                    </span>
+                </td>
+
+                <td>${safeText(expense.category)}</td>
+
+                <td>${money(expense.amount)}</td>
+
+                <td>${safeText(expense.payment || "-")}</td>
+
+                <td>${safeText(expense.reference || "-")}</td>
+
+                <td>
+                    <button class="small"
+                        onclick="editExpense('${expense.id}')">
+                        Edit
+                    </button>
+
+                    <button class="small danger"
+                        onclick="deleteExpense('${expense.id}')">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+        `).join("");
+
+    }
+
+    const total = getExpenses().reduce(
+        (sum,e) => sum + number(e.amount),
+        0
+    );
+
+    setText("expenseTotal",money(total));
+
+}
+
+
+/* =========================================
+   EXPENSE SEARCH
+========================================= */
+
+$("expenseSearch").addEventListener(
+    "input",
+    renderExpenses
+);
+
+$("cancelExpenseBtn").addEventListener(
+    "click",
+    clearExpenseForm
+);
+
+
+/* =========================================
+   EXPENSE EXCEL EXPORT
+========================================= */
+
+$("exportExpensesBtn").addEventListener("click",function() {
+
+    const expenses = getExpenses();
+
+    if (!expenses.length) {
+        alert("No expenses available to export.");
+        return;
+    }
+
+    const data = expenses.map(e => ({
+
+        "Date":e.date,
+
+        "Expense Name":e.name,
+
+        "Category":e.category,
+
+        "Amount":number(e.amount),
+
+        "Payment Method":e.payment,
+
+        "Reference":e.reference || "",
+
+        "Description":e.description || ""
+
+    }));
+
+    const firm = getFirm();
+
+    const filename =
+        (firm.profile.name || "Business")
+            .replace(/[^a-z0-9]/gi,"_") +
+        "_Expenses.xlsx";
+
+    exportExcel(data,filename,"Expenses");
+
+});
+
+
+/* =========================================
+   REPORT CALCULATIONS
+========================================= */
+
+function calculateReports() {
+
+    const sales = getSales();
+
+    const expenses = getExpenses();
+
+    const grossSales = sales.reduce(
+        (sum,s) => sum + number(s.subtotal),
+        0
+    );
+
+    const discounts = sales.reduce(
+        (sum,s) => sum + number(s.discount),
+        0
+    );
+
+    const netSales = grossSales - discounts;
+
+    const cost = sales.reduce(
+        (sum,s) => sum + number(s.cost),
+        0
+    );
+
+    const totalExpenses = expenses.reduce(
+        (sum,e) => sum + number(e.amount),
+        0
+    );
+
+    const grossProfit = netSales - cost;
+
+    const netProfit = grossProfit - totalExpenses;
+
+    const totalTax = sales.reduce(
+        (sum,s) =>
+            sum +
+            number(s.cgst) +
+            number(s.sgst) +
+            number(s.igst),
+        0
+    );
+
+    const invoiceValue = sales.reduce(
+        (sum,s) => sum + number(s.total),
+        0
+    );
+
+    return {
+        grossSales,
+        discounts,
+        netSales,
+        cost,
+        totalExpenses,
+        grossProfit,
+        netProfit,
+        totalTax,
+        invoiceValue,
+        billCount:sales.length,
+        expenseCount:expenses.length
+    };
+
+}
+
+
+/* =========================================
+   RENDER REPORTS
+========================================= */
+
+function renderReports() {
+
+    const r = calculateReports();
+
+    setText("reportSales",money(r.netSales));
+    setText("reportCost",money(r.cost));
+    setText("reportGrossProfit",money(r.grossProfit));
+    setText("reportExpenses",money(r.totalExpenses));
+
+    const rows = [
+
+        ["Total Bills",r.billCount],
+
+        ["Gross Sales",money(r.grossSales)],
+
+        ["Discounts",money(r.discounts)],
+
+        ["Net Sales",money(r.netSales)],
+
+        ["Cost of Goods Sold",money(r.cost)],
+
+        ["Gross Profit",money(r.grossProfit)],
+
+        ["GST Collected",money(r.totalTax)],
+
+        ["Total Expenses",money(r.totalExpenses)],
+
+        ["Estimated Net Profit",money(r.netProfit)],
+
+        ["Total Invoice Value",money(r.invoiceValue)],
+
+        ["Expense Entries",r.expenseCount]
+
+    ];
+
+    $("reportTable").innerHTML = rows.map(row => `
+
+        <tr>
+            <td>${safeText(row[0])}</td>
+            <td><strong>${safeText(row[1])}</strong></td>
+        </tr>
+
+    `).join("");
+
+}
+
+
+/* =========================================
+   REPORT EXCEL EXPORT
+========================================= */
+
+$("exportReportsBtn").addEventListener("click",function() {
+
+    const r = calculateReports();
+
+    const data = [
+
+        {"Particulars":"Total Bills","Amount":r.billCount},
+
+        {"Particulars":"Gross Sales","Amount":r.grossSales},
+
+        {"Particulars":"Discounts","Amount":r.discounts},
+
+        {"Particulars":"Net Sales","Amount":r.netSales},
+
+        {"Particulars":"Cost of Goods Sold","Amount":r.cost},
+
+        {"Particulars":"Gross Profit","Amount":r.grossProfit},
+
+        {"Particulars":"GST Collected","Amount":r.totalTax},
+
+        {"Particulars":"Total Expenses","Amount":r.totalExpenses},
+
+        {"Particulars":"Estimated Net Profit","Amount":r.netProfit},
+
+        {"Particulars":"Total Invoice Value","Amount":r.invoiceValue}
+
+    ];
+
+    exportExcel(
+        data,
+        "SMART_DUKAAN_Business_Report.xlsx",
+        "Reports"
+    );
+
+});
+
+
+/* =========================================
+   BACKUP DOWNLOAD
+========================================= */
+
+$("backupBtn").addEventListener("click",function() {
+
+    try {
+
+        const backup = {
+            app:"SMART DUKAAN PRO",
+            version:1,
+            exportedAt:new Date().toISOString(),
+            database:database
+        };
+
+        const blob = new Blob(
+            [JSON.stringify(backup,null,2)],
+            {type:"application/json"}
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+
+        link.download =
+            "SMART_DUKAAN_BACKUP_" + today() + ".json";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        alert("Backup downloaded successfully.");
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert("Backup could not be created.");
+
+    }
+
+});
+
+
+/* =========================================
+   RESTORE BACKUP
+========================================= */
+
+$("restoreBtn").addEventListener("click",function() {
+
+    const file = $("restoreFile").files[0];
+
+    if (!file) {
+        alert("Please select a backup JSON file.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function() {
+
+        try {
+
+            const imported = JSON.parse(reader.result);
+
+            const restoredDatabase =
+                imported.database || imported;
+
+            if (
+                !restoredDatabase ||
+                !Array.isArray(restoredDatabase.firms)
+            ) {
+                throw new Error("Invalid backup format.");
+            }
+
+            if (!restoredDatabase.firms.length) {
+                throw new Error("Backup contains no firms.");
+            }
+
+            const oldDatabase = JSON.stringify(database);
+
+            const newDatabase = {
+                activeFirmId:restoredDatabase.activeFirmId,
+                firms:restoredDatabase.firms.map(firm => {
+                    if (!firm || typeof firm !== "object") {
+                        throw new Error("Invalid firm record.");
+                    }
+                    return normaliseFirm(firm);
+                })
+            };
+
+            if (!newDatabase.firms.some(
+                f => f.id === newDatabase.activeFirmId
+            )) {
+                newDatabase.activeFirmId =
+                    newDatabase.firms[0].id;
+            }
+
+            if (!confirm(
+                "Restoring this backup will replace all current firms " +
+                "and their records in this browser. Continue?"
+            )) {
+                return;
+            }
+
+            database = newDatabase;
+
+            if (!saveDatabase()) {
+
+                database = JSON.parse(oldDatabase);
+
+                refreshAll();
+
+                return;
+
+            }
+
+            cart = [];
+
+            clearProductForm();
+            clearExpenseForm();
+
+            renderFirmSelector();
+
+            refreshAll();
+
+            $("restoreFile").value = "";
+
+            alert("Backup restored successfully!");
+
+        } catch(error) {
+
+            console.error(error);
+
+            alert(
+                "Restore failed: " + error.message
+            );
+
+        }
+
+    };
+
+    reader.onerror = function() {
+        alert("Unable to read the selected backup file.");
+    };
+
+    reader.readAsText(file);
+
+});
+
+
+/* =========================================
+   DELETE CURRENT FIRM
+========================================= */
+
+$("deleteFirmBtn").addEventListener("click",function() {
+
+    const firm = getFirm();
+
+    if (!firm) return;
+
+    if (!confirm(
+        "Permanently delete " +
+        (firm.profile.name || firm.name) +
+        " and all its products, sales and expenses?"
+    )) {
+        return;
+    }
+
+    const oldDatabase = JSON.stringify(database);
+
+    database.firms = database.firms.filter(
+        f => f.id !== firm.id
+    );
+
+    if (database.firms.length === 0) {
+
+        const replacement = createFirmObject("My Business");
+
+        database.firms.push(replacement);
+
+        database.activeFirmId = replacement.id;
+
+    } else {
+
+        database.activeFirmId = database.firms[0].id;
+
+    }
+
+    if (!saveDatabase()) {
+
+        database = JSON.parse(oldDatabase);
+
+        renderFirmSelector();
+
+        refreshAll();
+
+        return;
+
+    }
+
+    cart = [];
+
+    clearProductForm();
+    clearExpenseForm();
+
+    renderFirmSelector();
+
+    refreshAll();
+
+    alert("Firm deleted successfully.");
+
+});
+
+
+/* =========================================
+   ADD SALES EXPORT BUTTON
+========================================= */
+
+(function addSalesExportButton() {
+
+    const salesPage = $("sales");
+
+    if (!salesPage || $("exportSalesBtn")) return;
+
+    const heading = salesPage.querySelector(".heading");
+
+    if (!heading) return;
+
+    const button = document.createElement("button");
+
+    button.id = "exportSalesBtn";
+
+    button.className = "success";
+
+    button.textContent = "Export Sales Excel";
+
+    button.addEventListener("click",exportSalesExcel);
+
+    heading.appendChild(button);
+
+})();
+
+
+/* =========================================
+   DASHBOARD
+========================================= */
+
+function renderDashboard() {
+
+    const products = getProducts();
+
+    const sales = getSales();
+
+    const expenses = getExpenses();
+
+    const totalUnits = products.reduce(
+        (sum,p) => sum + number(p.stock),
+        0
+    );
+
+    const lowProducts = products.filter(
+        p => number(p.stock) <= number(p.low)
+    );
+
+    const totalSales = sales.reduce(
+        (sum,s) => sum + number(s.total),
+        0
+    );
+
+    const totalExpenses = expenses.reduce(
+        (sum,e) => sum + number(e.amount),
+        0
+    );
+
+    const totalCost = sales.reduce(
+        (sum,s) => sum + number(s.cost),
+        0
+    );
+
+    const netSales = sales.reduce(
+        (sum,s) => sum +
+            number(s.subtotal) -
+            number(s.discount),
+        0
+    );
+
+    const profit = netSales - totalCost - totalExpenses;
+
+    setText("dashProducts",products.length);
+
+    setText("dashUnits",totalUnits);
+
+    setText("dashSales",money(totalSales));
+
+    setText("dashExpenses",money(totalExpenses));
+
+    setText("dashProfit",money(profit));
+
+    setText("dashLow",lowProducts.length);
+
+    setText("dashBills",sales.length);
+
+    setText("dashExpenseCount",expenses.length);
+
+    renderLowStock();
+
+}
+
+
+/* =========================================
+   REFRESH ALL WEBSITE DATA
+========================================= */
+
+function refreshAll() {
+
+    renderFirmSelector();
+
+    renderFirm();
+
+    renderStock();
+
+    renderProductDropdown();
+
+    renderExpenses();
+
+    renderReports();
+
+    renderDashboard();
+
+    renderCart();
+
+}
+
+
+/* =========================================
+   INITIALIZE WEBSITE
+========================================= */
+
+function initializeSmartDukaan() {
+
+    loadDatabase();
+
+    renderFirmSelector();
+
+    renderFirm();
+
+    setDateLabels();
+
+    clearProductForm();
+
+    clearExpenseForm();
+
+    cart = [];
+
+    refreshAll();
+
+    console.log("SMART DUKAAN PRO loaded successfully.");
+
+}
+
+initializeSmartDukaan();
+
+
+/* =========================================
+   END OF SMART DUKAAN PRO
+========================================= */
+
+</script>
+
 </body>
 </html>
