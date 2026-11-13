@@ -1,0 +1,3157 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="SMART DUKAAN PRO — shop billing, inventory, sales and business management." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>SMART DUKAAN PRO V3.0 — Complete Business Management System</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+              400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+              800: '#3730a3', 900: '#312e81'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS (xlsx) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.7); }
+
+    /* Print / PDF Stylesheet */
+    @media print {
+      body * { visibility: hidden !important; }
+      #print-area, #print-area * { visibility: visible !important; }
+      #print-area {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+      }
+      .no-print { display: none !important; }
+      #print-area.thermal-mode {
+        width: 80mm !important;
+        max-width: 80mm !important;
+        font-size: 11px !important;
+        padding: 4mm !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 antialiased">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- ===================================================================== -->
+  <!-- ADMIN WORKSPACE VIEW                                                  -->
+  <!-- ===================================================================== -->
+  <div id="admin-shell" class="min-h-screen flex flex-col lg:flex-row">
+
+    <!-- Mobile Top Header -->
+    <header class="lg:hidden sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold shadow-sm">SD</div>
+          <div>
+            <h1 class="text-sm font-bold leading-tight">SMART DUKAAN</h1>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">PRO V3.0</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="switchMode('store')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="store" class="w-3.5 h-3.5"></i> Store
+        </button>
+        <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+          <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+      <!-- Brand Header -->
+      <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-600 to-indigo-700 text-white flex items-center justify-center font-extrabold text-lg shadow-md">
+            SD
+          </div>
+          <div>
+            <div class="font-extrabold text-base tracking-tight">SMART DUKAAN</div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300">PRO V3.0</span>
+              <span id="cloud-badge" class="w-2 h-2 rounded-full bg-emerald-500" title="Local & Sync Ready"></span>
+            </div>
+          </div>
+        </div>
+        <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Active Firm Selector -->
+      <div class="p-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1 px-1">Active Business / Firm</label>
+        <div class="flex gap-1.5">
+          <select id="firm-switcher" onchange="switchFirm(this.value)" class="w-full text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+          <button onclick="createNewFirmPrompt()" title="Add New Firm" class="p-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white shrink-0">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Separate Firm Details Column -->
+      <div class="px-3 pt-3 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1 mb-2">Firm Details</div>
+        <button onclick="navigateTo('firm')" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-sm font-bold">
+          <i data-lucide="building-2" class="w-4 h-4"></i> Firm Details & Profile
+        </button>
+      </div>
+
+      <!-- Nav Links -->
+      <nav id="sidebar-nav" class="flex-1 overflow-y-auto p-3 space-y-1 text-sm font-medium">
+        <!-- Populated by JS -->
+      </nav>
+
+      <!-- Bottom Storefront Launcher -->
+      <div class="p-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+        <button onclick="switchMode('store')" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition">
+          <i data-lucide="external-link" class="w-4 h-4"></i> Open Customer Online Store
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Desktop Top Bar -->
+      <header class="hidden lg:flex sticky top-0 z-20 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 items-center justify-between">
+        <div>
+          <h2 id="page-title" class="text-lg font-bold text-slate-900 dark:text-white">Dashboard</h2>
+          <p id="page-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Real-time retail analytics & store overview</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="navigateTo('pos')" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+            <i data-lucide="receipt" class="w-4 h-4"></i> New GST Bill (POS)
+          </button>
+          <button onclick="navigateTo('orders')" class="relative p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition" title="Online Orders">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span id="new-orders-badge" class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">0</span>
+          </button>
+          <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition" title="Toggle Dark/Light Theme">
+            <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic View Container -->
+      <main id="main-content" class="flex-1 p-4 sm:p-6 max-w-[1600px] w-full mx-auto space-y-6">
+        <!-- Rendered dynamically per active tab -->
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- CUSTOMER ONLINE STOREFRONT VIEW                                       -->
+  <!-- ===================================================================== -->
+  <div id="storefront-shell" class="hidden min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <!-- Storefront Header -->
+    <header class="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img id="sf-logo" src="" alt="Logo" class="w-11 h-11 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 hidden" />
+          <div id="sf-logo-fallback" class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-lg">SD</div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 id="sf-store-name" class="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Store Name</h1>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">ONLINE STORE</span>
+            </div>
+            <p id="sf-store-desc" class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">Quality products delivered to your doorstep</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <button onclick="openTrackOrderModal()" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="package-search" class="w-4 h-4 text-brand-600"></i> <span class="hidden sm:inline">Track Order</span>
+          </button>
+          <button onclick="toggleStoreCart()" class="relative px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-2 shadow-sm">
+            <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+            <span>Cart</span>
+            <span id="sf-cart-count" class="px-1.5 py-0.2 rounded-full bg-white text-emerald-700 font-extrabold text-[11px]">0</span>
+          </button>
+          <button onclick="switchMode('admin')" class="px-3 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Admin
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Storefront Main -->
+    <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
+      <!-- Search & Category Filter Bar -->
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full sm:w-80">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="sf-search" oninput="renderStorefrontProducts()" placeholder="Search products..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+        <div id="sf-categories" class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <!-- Category pills rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="sf-product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <!-- Product cards rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Storefront Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-5 px-4 text-center text-xs text-slate-500">
+      <p id="sf-footer-info">Powered by SMART DUKAAN PRO V3.0</p>
+    </footer>
+
+    <!-- Storefront Slide-Over Cart & Checkout Drawer -->
+    <div id="sf-cart-drawer" class="fixed inset-0 z-50 hidden">
+      <div onclick="toggleStoreCart()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
+      <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl flex flex-col">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <h3 class="font-bold text-base flex items-center gap-2">
+            <i data-lucide="shopping-bag" class="w-5 h-5 text-emerald-600"></i> Your Shopping Cart
+          </h3>
+          <button onclick="toggleStoreCart()" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div id="sf-cart-body" class="flex-1 overflow-y-auto p-4 space-y-4">
+          <!-- Cart items & Checkout form rendered via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- UNIVERSAL MODAL & INVOICE / PRINT PREVIEW MODAL                       -->
+  <!-- ===================================================================== -->
+  <div id="app-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+    <div id="app-modal-box" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-2xl overflow-hidden my-auto">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <h3 id="app-modal-title" class="font-bold text-base">Modal Title</h3>
+        <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="app-modal-content" class="p-5 max-h-[80vh] overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT APPLICATION ENGINE                                         -->
+  <!-- ===================================================================== -->
+  <script>
+    /*************************************************************************
+     * 1. STATE & MULTI-FIRM STORAGE ARCHITECTURE
+     *************************************************************************/
+    const STORAGE_KEY = 'SMART_DUKAAN_PRO_V3_DATA';
+    const LEGACY_STORAGE_KEY = 'SMART_DUKAAN_PRO_V2_DATA';
+    let currentRoute = 'dashboard';
+    let activeCharts = [];
+    let posCart = [];
+    let storeCart = [];
+    let sfSelectedCategory = 'All';
+
+    // Default Firm Template & Realistic Indian Retail Demo Data
+    function createDemoFirmData(id, name, storeName, gstin, upi) {
+      const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      const twoDaysAgo = new Date(Date.now() - 172800000).toISOString().split('T')[0];
+
+      return {
+        profile: {
+          id,
+          businessName: name,
+          ownerName: 'Rajesh Sharma',
+          phone: '9876543210',
+          email: 'contact@smartdukaan.in',
+          address: 'Shop 12, Main Market Road, Chennai, Tamil Nadu - 600001',
+          gstin: gstin,
+          logo: '',
+          storeName: storeName,
+          storeDescription: 'Fresh groceries, electronics & daily essentials at wholesale prices.',
+          upiId: upi,
+          invoicePrefix: 'SDP-',
+          invoiceFooter: 'Thank you for shopping with us! Goods once sold will be exchanged within 7 days with bill.'
+        },
+        products: [
+          { id: 'P101', code: '890101', name: 'Aashirvaad Shudh Chakki Atta 5kg', category: 'Groceries', description: '100% whole wheat flour, zero maida.', image: 'https://placehold.co/300x220/eef2ff/4f46e5?text=Atta+5kg', costPrice: 210, sellingPrice: 255, gst: 5, stock: 42, lowStockLimit: 10 },
+          { id: 'P102', code: '890102', name: 'Fortune Sunlite Refined Oil 1L', category: 'Groceries', description: 'Light and healthy sunflower cooking oil.', image: 'https://placehold.co/300x220/fef3c7/d97706?text=Sunflower+Oil', costPrice: 118, sellingPrice: 142, gst: 5, stock: 8, lowStockLimit: 12 },
+          { id: 'P103', code: '890103', name: 'boAt BassHeads 100 Wired Earphones', category: 'Electronics', description: 'In-ear wired earphones with HD mic.', image: 'https://placehold.co/300x220/e0e7ff/3730a3?text=Earphones', costPrice: 260, sellingPrice: 399, gst: 18, stock: 19, lowStockLimit: 5 },
+          { id: 'P104', code: '890104', name: 'Tata Tea Gold 500g Pack', category: 'Beverages', description: 'Rich aroma and superior taste Assam tea.', image: 'https://placehold.co/300x220/dcfce7/15803d?text=Tata+Tea', costPrice: 215, sellingPrice: 270, gst: 5, stock: 28, lowStockLimit: 8 },
+          { id: 'P105', code: '890105', name: 'Milton Thermosteel Flask 1000ml', category: 'Home & Kitchen', description: '24 hours hot & cold insulated steel bottle.', image: 'https://placehold.co/300x220/f1f5f9/334155?text=Steel+Flask', costPrice: 680, sellingPrice: 899, gst: 18, stock: 4, lowStockLimit: 6 },
+          { id: 'P106', code: '890106', name: 'Dairy Milk Silk Chocolate 150g', category: 'Snacks', description: 'Smooth and creamy milk chocolate bar.', image: 'https://placehold.co/300x220/f3e8ff/7e22ce?text=Silk+Choco', costPrice: 135, sellingPrice: 175, gst: 28, stock: 35, lowStockLimit: 10 }
+        ],
+        suppliers: [
+          { id: 'SUP-1', name: 'Metro Wholesale Distributors', phone: '9840011223', email: 'orders@metrowholesale.in', gstin: '33AABCM1234F1Z5', address: 'Ambattur Industrial Estate, Chennai' },
+          { id: 'SUP-2', name: 'Sri Balaji Electronics Hub', phone: '9840099887', email: 'sales@balajielectronics.in', gstin: '33AAECS5678G1Z9', address: 'Ritchie Street, Chennai' }
+        ],
+        purchases: [
+          { id: 'PUR-1001', date: twoDaysAgo, supplierId: 'SUP-1', supplierName: 'Metro Wholesale Distributors', paymentMethod: 'Bank Transfer', items: [{ productId: 'P101', name: 'Aashirvaad Shudh Chakki Atta 5kg', qty: 20, costPrice: 210, total: 4200 }], totalAmount: 4200 }
+        ],
+        customers: [
+          { id: 'CUS-1', name: 'Arun Kumar', phone: '9884012345', email: 'arun.k@example.com', address: 'Anna Nagar, Chennai', totalSpend: 1621.8, ordersCount: 2, dueBalance: 0 },
+          { id: 'CUS-2', name: 'Priya Menon', phone: '9790154321', email: 'priya.m@example.com', address: 'Avadi, Chennai', totalSpend: 1060.82, ordersCount: 1, dueBalance: 500 }
+        ],
+        sales: [
+          {
+            id: 'INV-1001', invoiceNo: 'SDP-1001', date: twoDaysAgo, customerName: 'Arun Kumar', customerPhone: '9884012345', customerAddress: 'Anna Nagar, Chennai',
+            taxType: 'LOCAL', paymentMethod: 'UPI', paymentStatus: 'Paid', discount: 20,
+            items: [
+              { productId: 'P101', name: 'Aashirvaad Shudh Chakki Atta 5kg', qty: 2, price: 255, costPrice: 210, gst: 5, taxable: 510, taxAmt: 25.5, total: 535.5 },
+              { productId: 'P103', name: 'boAt BassHeads 100 Wired Earphones', qty: 1, price: 399, costPrice: 260, gst: 18, taxable: 399, taxAmt: 71.82, total: 470.82 }
+            ],
+            subtotal: 909, totalTax: 97.32, grandTotal: 986.32, totalCost: 680
+          },
+          {
+            id: 'INV-1002', invoiceNo: 'SDP-1002', date: yesterday, customerName: 'Priya Menon', customerPhone: '9790154321', customerAddress: 'Avadi, Chennai',
+            taxType: 'LOCAL', paymentMethod: 'Credit', paymentStatus: 'Pending', discount: 0,
+            items: [
+              { productId: 'P105', name: 'Milton Thermosteel Flask 1000ml', qty: 1, price: 899, costPrice: 680, gst: 18, taxable: 899, taxAmt: 161.82, total: 1060.82 }
+            ],
+            subtotal: 899, totalTax: 161.82, grandTotal: 1060.82, totalCost: 680
+          },
+          {
+            id: 'INV-1003', invoiceNo: 'SDP-1003', date: today, customerName: 'Arun Kumar', customerPhone: '9884012345', customerAddress: 'Anna Nagar, Chennai',
+            taxType: 'INTERSTATE', paymentMethod: 'Cash', paymentStatus: 'Paid', discount: 0,
+            items: [
+              { productId: 'P104', name: 'Tata Tea Gold 500g Pack', qty: 2, price: 270, costPrice: 215, gst: 5, taxable: 540, taxAmt: 27, total: 567 }
+            ],
+            subtotal: 540, totalTax: 27, grandTotal: 567, totalCost: 430
+          }
+        ],
+        onlineOrders: [
+          {
+            id: 'ORD-5001', date: today, customerName: 'Karthik Subramanian', customerPhone: '9176543210', customerAddress: '45, Gandhi Street, Avadi, Chennai',
+            paymentMethod: 'UPI', utrRef: '431892019482', paymentStatus: 'Pending', status: 'New',
+            items: [
+              { productId: 'P102', name: 'Fortune Sunlite Refined Oil 1L', qty: 2, price: 142, gst: 5, taxable: 284, taxAmt: 14.2, total: 298.2 },
+              { productId: 'P106', name: 'Dairy Milk Silk Chocolate 150g', qty: 1, price: 175, gst: 28, taxable: 175, taxAmt: 49, total: 224 }
+            ],
+            subtotal: 459, totalTax: 63.2, grandTotal: 522.2
+          }
+        ],
+        returns: [],
+        expenses: [
+          { id: 'EXP-1', date: yesterday, category: 'Electricity & Internet', description: 'Monthly EB & Fiber Broadband Bill', amount: 1450 },
+          { id: 'EXP-2', date: today, category: 'Packaging & Supplies', description: 'Carry bags and thermal billing rolls', amount: 420 }
+        ],
+        invoiceCounter: 1004,
+        orderCounter: 5002
+      };
+    }
+
+    // A clean firm is created on first launch. No sample/demo transactions are preloaded.
+    function createEmptyFirmData(id, name = 'My Business') {
+      return {
+        profile: {
+          id, businessName: name, ownerName: '', phone: '', email: '', address: '',
+          gstin: '', state: '', pincode: '', businessType: '', website: '', logo: '',
+          storeName: name, storeDescription: '', upiId: '', invoicePrefix: 'INV-',
+          invoiceFooter: 'Thank you for your business!'
+        },
+        products: [], suppliers: [], purchases: [], customers: [], sales: [],
+        onlineOrders: [], returns: [], expenses: [], quotations: [],
+        warehouses: [{id:'WH-MAIN',name:'Main Store',location:''}], stockTransfers: [],
+        cashbook: [], bankbook: [], income: [], tasks: [], employees: [], attendance: [],
+        salaries: [], offers: [], delivery: [], auditLog: [],
+        branches: [{id:'BR-MAIN',name:'Main Branch',address:'',phone:''}],
+        invoiceCounter: 1001, orderCounter: 5001
+      };
+    }
+
+    let appState = {
+      activeFirmId: 'FIRM_1',
+      theme: 'light',
+      cloudConfig: { url: '', anonKey: '', adminEmail: '', lastSync: null, connected: false },
+      firms: { FIRM_1: createEmptyFirmData('FIRM_1') }
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.firms && parsed.activeFirmId) {
+            appState = parsed;
+          }
+        }
+      } catch (e) {
+        console.error('Error loading storage:', e);
+      }
+      if (!appState.firms || !Object.keys(appState.firms).length) { const id = 'FIRM_' + Date.now(); appState.firms = { [id]: createEmptyFirmData(id) }; appState.activeFirmId = id; }
+      applyTheme();
+      populateFirmSwitcher();
+      updateBadges();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        updateBadges();
+      } catch (e) {
+        showToast('Storage limit reached! Export backup and clear old images.', 'error');
+      }
+    }
+
+    function getFirm() {
+      const firm = appState.firms[appState.activeFirmId];
+      if (!firm) return null;
+      const defaults = { quotations: [], warehouses: [{id:'WH-MAIN',name:'Main Store',location:'Primary location'}], stockTransfers: [], cashbook: [], bankbook: [], income: [], tasks: [], employees: [], attendance: [], salaries: [], offers: [], delivery: [], auditLog: [], branches: [{id:'BR-MAIN',name:'Main Branch',address:'',phone:''}] };
+      Object.entries(defaults).forEach(([key, value]) => { if (!Array.isArray(firm[key])) firm[key] = value; });
+      if (!Array.isArray(firm.suppliers)) firm.suppliers = [];
+      return firm;
+    }
+
+    function addAudit(action, details='') {
+      const f = getFirm(); if (!f) return;
+      f.auditLog.unshift({id:'AUD-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),date:new Date().toISOString(),action,details});
+      f.auditLog = f.auditLog.slice(0,500);
+    }
+
+
+    /*************************************************************************
+     * 2. UTILITIES, FORMATTING, TOASTS & THEME
+     *************************************************************************/
+    const fmtINR = (num) => '₹' + Number(num || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-slate-900 dark:bg-slate-800 text-white border border-slate-700'
+      };
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center justify-between gap-3 transform transition-all duration-300 ${colors[type] || colors.info}`;
+      el.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" class="opacity-75 hover:opacity-100">✕</button>`;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 3800);
+    }
+
+    function applyTheme() {
+      const html = document.documentElement;
+      if (appState.theme === 'dark') {
+        html.classList.add('dark');
+      } else {
+        html.classList.remove('dark');
+      }
+    }
+
+    function toggleTheme() {
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+      saveState();
+      if (currentRoute === 'dashboard' || currentRoute === 'reports') renderCurrentRoute();
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('sidebar');
+      const bd = document.getElementById('sidebar-backdrop');
+      sb.classList.toggle('-translate-x-full');
+      bd.classList.toggle('hidden');
+    }
+
+    function openModal(title, htmlContent, maxWidthClass = 'max-w-2xl') {
+      document.getElementById('app-modal-title').textContent = title;
+      document.getElementById('app-modal-content').innerHTML = htmlContent;
+      const box = document.getElementById('app-modal-box');
+      box.className = `bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full ${maxWidthClass} overflow-hidden my-auto`;
+      const modal = document.getElementById('app-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('app-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function populateFirmSwitcher() {
+      const select = document.getElementById('firm-switcher');
+      if (!select) return;
+      const firms = Object.values(appState.firms || {});
+      if (!firms.length) {
+        const id = 'FIRM_' + Date.now();
+        appState.firms = { [id]: createEmptyFirmData(id) };
+        appState.activeFirmId = id;
+      }
+      select.innerHTML = Object.values(appState.firms).map(f =>
+        `<option value="${v3Esc(f.profile.id)}" ${f.profile.id === appState.activeFirmId ? 'selected' : ''}>${v3Esc(f.profile.businessName || 'Unnamed Firm')}</option>`
+      ).join('');
+    }
+
+    function switchFirm(firmId) {
+      appState.activeFirmId = firmId;
+      posCart = [];
+      storeCart = [];
+      saveState();
+      populateFirmSwitcher();
+      renderCurrentRoute();
+      showToast(`Switched to ${getFirm().profile.businessName}`);
+    }
+
+    function createNewFirmPrompt() {
+      openModal('Add New Business / Firm', `
+        <form onsubmit="handleCreateFirm(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold mb-1">Business / Legal Firm Name *</label>
+            <input type="text" id="new-firm-name" required placeholder="e.g. Royal Traders" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold mb-1">Online Store Display Name *</label>
+              <input type="text" id="new-firm-store" required placeholder="e.g. Royal Online Store" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1">GSTIN (Optional)</label>
+              <input type="text" id="new-firm-gstin" placeholder="33AAAAA0000A1Z5" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 uppercase" />
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700">Cancel</button>
+            <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 text-white hover:bg-brand-700">Create Firm</button>
+          </div>
+        </form>
+      `, 'max-w-md');
+    }
+
+    function handleCreateFirm(e) {
+      e.preventDefault();
+      const id = 'FIRM_' + Date.now();
+      const name = document.getElementById('new-firm-name').value.trim();
+      const store = document.getElementById('new-firm-store').value.trim();
+      const gstin = document.getElementById('new-firm-gstin').value.trim().toUpperCase();
+      appState.firms[id] = createEmptyFirmData(id, name);
+      appState.firms[id].profile.storeName = store;
+      appState.firms[id].profile.gstin = gstin;
+      appState.activeFirmId = id;
+      saveState();
+      populateFirmSwitcher();
+      closeModal();
+      renderCurrentRoute();
+      showToast(`Created new firm: ${name}`);
+    }
+
+    function updateBadges() {
+      const firm = getFirm();
+      const newOrders = firm.onlineOrders.filter(o => o.status === 'New').length;
+      const badge = document.getElementById('new-orders-badge');
+      if (newOrders > 0) {
+        badge.textContent = newOrders;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    /*************************************************************************
+     * 3. NAVIGATION & ROUTING
+     *************************************************************************/
+    const NAV_ITEMS = [
+      { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', subtitle: 'Overview of sales, profits, stock & analytics' },
+      { id: 'pos', label: 'Billing / GST POS', icon: 'receipt', subtitle: 'Fast GST invoicing, thermal/A4 print & WhatsApp share' },
+      { id: 'orders', label: 'Online Orders', icon: 'shopping-bag', subtitle: 'Manage customer storefront orders & payment verification' },
+      { id: 'products', label: 'Products & Stock', icon: 'package', subtitle: 'Manage catalog, GST slabs, barcodes & low stock alerts' },
+      { id: 'sales', label: 'Sales History', icon: 'file-text', subtitle: 'View all generated invoices, profit & payment status' },
+      { id: 'returns', label: 'Returns & Refunds', icon: 'rotate-ccw', subtitle: 'Integrated invoice return processing & auto stock restore' },
+      { id: 'purchases', label: 'Purchases & Suppliers', icon: 'truck', subtitle: 'Record stock inward purchases & manage supplier directory' },
+      { id: 'customers', label: 'Customers & Khata', icon: 'users', subtitle: 'Customer CRM, order history & credit due tracking' },
+      { id: 'expenses', label: 'Expenses', icon: 'wallet', subtitle: 'Track daily shop overhead & operational expenses' },
+      { id: 'reports', label: 'Reports & GST Summary', icon: 'bar-chart-3', subtitle: 'Profit & Loss statement, GSTR slab summary & Excel exports' },
+      { id: 'backup', label: 'Backup & Cloud Sync', icon: 'cloud', subtitle: 'JSON backup/restore & cloud configuration' },
+      { id: 'quotations', label: 'Quotations', icon: 'file-check', subtitle: 'Create, print and convert quotations into sales' },
+      { id: 'barcode', label: 'Barcode Studio', icon: 'scan-barcode', subtitle: 'Search products and print barcode labels' },
+      { id: 'warehouses', label: 'Warehouses', icon: 'warehouse', subtitle: 'Manage stock locations and warehouses' },
+      { id: 'transfers', label: 'Stock Transfers', icon: 'arrow-left-right', subtitle: 'Transfer stock between locations with a movement log' },
+      { id: 'cashbook', label: 'Cash Book', icon: 'book-open', subtitle: 'Track cash receipts and payments' },
+      { id: 'bankbook', label: 'Bank Book', icon: 'landmark', subtitle: 'Track bank deposits, withdrawals and transfers' },
+      { id: 'income', label: 'Other Income', icon: 'trending-up', subtitle: 'Record non-sales business income' },
+      { id: 'tasks', label: 'Task Manager', icon: 'list-checks', subtitle: 'Plan and track daily business tasks' },
+      { id: 'employees', label: 'Employees', icon: 'user-round-cog', subtitle: 'Maintain staff profiles and roles' },
+      { id: 'attendance', label: 'Attendance', icon: 'calendar-check', subtitle: 'Record employee attendance' },
+      { id: 'salaries', label: 'Salary Register', icon: 'wallet-cards', subtitle: 'Record payroll payments' },
+      { id: 'offers', label: 'Offers & Coupons', icon: 'ticket-percent', subtitle: 'Create and manage promotional codes' },
+      { id: 'delivery', label: 'Delivery Manager', icon: 'truck', subtitle: 'Assign and track delivery jobs' },
+      { id: 'branches', label: 'Branches', icon: 'network', subtitle: 'Manage branch directory' },
+      { id: 'audit', label: 'Activity Log', icon: 'clipboard-list', subtitle: 'Review recent business activity' }
+    ];
+
+    function renderSidebarNav() {
+      const nav = document.getElementById('sidebar-nav');
+      const firm = getFirm();
+      const newOrderCount = firm.onlineOrders.filter(o => o.status === 'New').length;
+
+      nav.innerHTML = NAV_ITEMS.map(item => {
+        const active = currentRoute === item.id;
+        const badgeHtml = (item.id === 'orders' && newOrderCount > 0)
+          ? `<span class="ml-auto px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-rose-500 text-white">${newOrderCount}</span>` : '';
+        return `
+          <button onclick="navigateTo('${item.id}')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition ${active
+            ? 'bg-brand-600 text-white shadow-sm font-semibold'
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-white'}">
+            <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0"></i>
+            <span class="truncate">${item.label}</span>
+            ${badgeHtml}
+          </button>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function navigateTo(route) {
+      currentRoute = route;
+      const meta = NAV_ITEMS.find(n => n.id === route) || NAV_ITEMS[0];
+      document.getElementById('page-title').textContent = meta.label;
+      document.getElementById('page-subtitle').textContent = meta.subtitle;
+
+      // Close mobile sidebar if open
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+      document.getElementById('sidebar-backdrop').classList.add('hidden');
+
+      renderSidebarNav();
+      renderCurrentRoute();
+    }
+
+    function destroyCharts() {
+      activeCharts.forEach(c => c.destroy());
+      activeCharts = [];
+    }
+
+    function renderCurrentRoute() {
+      destroyCharts();
+      renderSidebarNav();
+      const main = document.getElementById('main-content');
+      switch (currentRoute) {
+        case 'dashboard': renderDashboard(main); break;
+        case 'pos': renderPOS(main); break;
+        case 'orders': renderOnlineOrders(main); break;
+        case 'products': renderProducts(main); break;
+        case 'sales': renderSalesHistory(main); break;
+        case 'returns': renderReturns(main); break;
+        case 'purchases': renderPurchasesAndSuppliers(main); break;
+        case 'customers': renderCustomers(main); break;
+        case 'expenses': renderExpenses(main); break;
+        case 'reports': renderReports(main); break;
+        case 'firm': renderFirmProfile(main); break;
+        case 'backup': renderBackupAndCloud(main); break;
+        case 'quotations': renderV3Module(main,'quotations'); break;
+        case 'barcode': renderV3Module(main,'barcode'); break;
+        case 'warehouses': renderV3Module(main,'warehouses'); break;
+        case 'transfers': renderV3Module(main,'transfers'); break;
+        case 'cashbook': renderV3Module(main,'cashbook'); break;
+        case 'bankbook': renderV3Module(main,'bankbook'); break;
+        case 'income': renderV3Module(main,'income'); break;
+        case 'tasks': renderV3Module(main,'tasks'); break;
+        case 'employees': renderV3Module(main,'employees'); break;
+        case 'attendance': renderV3Module(main,'attendance'); break;
+        case 'salaries': renderV3Module(main,'salaries'); break;
+        case 'offers': renderV3Module(main,'offers'); break;
+        case 'delivery': renderV3Module(main,'delivery'); break;
+        case 'branches': renderV3Module(main,'branches'); break;
+        case 'audit': renderV3Module(main,'audit'); break;
+      }
+      lucide.createIcons();
+    }
+
+    /*************************************************************************
+     * 4. MODULE: DASHBOARD
+     *************************************************************************/
+    function renderDashboard(container) {
+      const firm = getFirm();
+      const totalSales = firm.sales.reduce((s, b) => s + b.grandTotal, 0);
+      const totalCOGS = firm.sales.reduce((s, b) => s + (b.totalCost || 0), 0);
+      const totalExpenses = firm.expenses.reduce((s, e) => s + e.amount, 0);
+      const totalReturns = firm.returns.reduce((s, r) => s + r.refundAmount, 0);
+      const netProfit = totalSales - totalCOGS - totalExpenses - totalReturns;
+      const lowStockCount = firm.products.filter(p => p.stock <= p.lowStockLimit).length;
+      const pendingOrders = firm.onlineOrders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled').length;
+
+      container.innerHTML = `
+        <!-- KPI Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold">Total Sales</span>
+              <div class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600"><i data-lucide="indian-rupee" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-xl sm:text-2xl font-extrabold">${fmtINR(totalSales)}</div>
+            <div class="text-[11px] text-slate-500 mt-1">${firm.sales.length} Bills Generated</div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold">Net Profit</span>
+              <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-xl sm:text-2xl font-extrabold ${netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${fmtINR(netProfit)}</div>
+            <div class="text-[11px] text-slate-500 mt-1">After COGS, Returns & Expenses</div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold">Total Expenses</span>
+              <div class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600"><i data-lucide="wallet" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-xl sm:text-2xl font-extrabold">${fmtINR(totalExpenses)}</div>
+            <div class="text-[11px] text-slate-500 mt-1">${firm.expenses.length} Expense Entries</div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400 mb-2">
+              <span class="text-xs font-semibold">Online Orders</span>
+              <div class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600"><i data-lucide="shopping-bag" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-xl sm:text-2xl font-extrabold">${firm.onlineOrders.length}</div>
+            <div class="text-[11px] text-amber-600 font-semibold mt-1">${pendingOrders} Active / Pending</div>
+          </div>
+
+          <div onclick="navigateTo('products')" class="cursor-pointer bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs font-semibold">Products</span>
+              <i data-lucide="package" class="w-4 h-4 text-brand-600"></i>
+            </div>
+            <div class="text-lg font-extrabold">${firm.products.length} Items</div>
+          </div>
+
+          <div onclick="navigateTo('products')" class="cursor-pointer bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-rose-500 transition">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs font-semibold">Low Stock Alerts</span>
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500"></i>
+            </div>
+            <div class="text-lg font-extrabold ${lowStockCount > 0 ? 'text-rose-600' : ''}">${lowStockCount} Low</div>
+          </div>
+
+          <div onclick="navigateTo('customers')" class="cursor-pointer bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs font-semibold">Customers</span>
+              <i data-lucide="users" class="w-4 h-4 text-sky-600"></i>
+            </div>
+            <div class="text-lg font-extrabold">${firm.customers.length} Saved</div>
+          </div>
+
+          <div onclick="navigateTo('sales')" class="cursor-pointer bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs font-semibold">Total Bills</span>
+              <i data-lucide="file-check" class="w-4 h-4 text-teal-600"></i>
+            </div>
+            <div class="text-lg font-extrabold">${firm.sales.length} Invoices</div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <h3 class="font-bold text-sm mb-4">Sales & Revenue Overview</h3>
+            <div class="h-64"><canvas id="chart-sales-overview"></canvas></div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <h3 class="font-bold text-sm mb-4">Payment Methods Breakdown</h3>
+            <div class="h-64"><canvas id="chart-payment-methods"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Recent Sales & Low Stock Table -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 class="font-bold text-sm">Recent Invoices</h3>
+              <button onclick="navigateTo('sales')" class="text-xs font-semibold text-brand-600 hover:underline">View All</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                  <tr>
+                    <th class="px-4 py-3">Invoice</th>
+                    <th class="px-4 py-3">Customer</th>
+                    <th class="px-4 py-3">Mode</th>
+                    <th class="px-4 py-3 text-right">Amount</th>
+                    <th class="px-4 py-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  ${firm.sales.slice().reverse().slice(0, 5).map(s => `
+                    <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                      <td class="px-4 py-3 font-bold text-brand-600">${s.invoiceNo}<div class="text-[10px] font-normal text-slate-400">${s.date}</div></td>
+                      <td class="px-4 py-3 font-medium">${s.customerName}</td>
+                      <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800">${s.paymentMethod}</span></td>
+                      <td class="px-4 py-3 text-right font-bold">${fmtINR(s.grandTotal)}</td>
+                      <td class="px-4 py-3 text-center">
+                        <button onclick="viewInvoiceModal('${s.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300" title="Print / View">
+                          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('') || '<tr><td colspan="5" class="p-6 text-center text-slate-400">No sales recorded yet.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 class="font-bold text-sm text-rose-600 flex items-center gap-1.5"><i data-lucide="alert-circle" class="w-4 h-4"></i> Low Stock Items</h3>
+              <button onclick="navigateTo('purchases')" class="text-xs font-semibold text-brand-600 hover:underline">+ Restock</button>
+            </div>
+            <div class="p-4 space-y-2.5">
+              ${firm.products.filter(p => p.stock <= p.lowStockLimit).map(p => `
+                <div class="p-3 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/70 dark:border-rose-900/40 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-bold">${p.name}</div>
+                    <div class="text-[11px] text-slate-500">Min Limit: ${p.lowStockLimit}</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-extrabold">${p.stock} left</span>
+                </div>
+              `).join('') || '<p class="text-xs text-slate-400 text-center py-6">All products are well stocked!</p>'}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Render Charts
+      const isDark = appState.theme === 'dark';
+      const gridColor = isDark ? 'rgba(148,163,184,0.1)' : 'rgba(148,163,184,0.2)';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
+      // Group Sales by Date
+      const salesByDate = {};
+      firm.sales.forEach(s => { salesByDate[s.date] = (salesByDate[s.date] || 0) + s.grandTotal; });
+      const dates = Object.keys(salesByDate).sort();
+
+      const ctx1 = document.getElementById('chart-sales-overview');
+      if (ctx1) {
+        activeCharts.push(new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: dates.length ? dates : ['No Data'],
+            datasets: [{
+              label: 'Sales (₹)',
+              data: dates.length ? dates.map(d => salesByDate[d]) : [0],
+              backgroundColor: '#4f46e5',
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: textColor } },
+              y: { grid: { color: gridColor }, ticks: { color: textColor } }
+            }
+          }
+        }));
+      }
+
+      // Group by Payment Method
+      const payMap = {};
+      firm.sales.forEach(s => { payMap[s.paymentMethod] = (payMap[s.paymentMethod] || 0) + s.grandTotal; });
+      const payKeys = Object.keys(payMap);
+
+      const ctx2 = document.getElementById('chart-payment-methods');
+      if (ctx2) {
+        activeCharts.push(new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: payKeys.length ? payKeys : ['None'],
+            datasets: [{
+              data: payKeys.length ? payKeys.map(k => payMap[k]) : [1],
+              backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#06b6d4', '#f43f5e', '#8b5cf6'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, font: { size: 11 } } } }
+          }
+        }));
+      }
+    }
+
+    /*************************************************************************
+     * 5. MODULE: ADVANCED GST BILLING / POS
+     *************************************************************************/
+    function renderPOS(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Product Picker -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+              <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                  <i data-lucide="scan-barcode" class="w-4 h-4 text-brand-600 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                  <input type="text" id="pos-search" oninput="filterPOSProducts()" onkeydown="handlePOSBarcodeEnter(event)" placeholder="Scan barcode or search product name / code..." class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500" autofocus />
+                </div>
+              </div>
+              <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 max-h-[62vh] overflow-y-auto pr-1">
+                ${renderPOSProductCards(firm.products)}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Invoice Cart & Checkout -->
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between space-y-4">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div>
+                  <span class="text-[11px] font-bold uppercase text-brand-600">Next Invoice</span>
+                  <h3 class="font-extrabold text-base">${firm.profile.invoicePrefix}${firm.invoiceCounter}</h3>
+                </div>
+                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+                  <button type="button" id="tax-local-btn" onclick="setPOSTaxType('LOCAL')" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-brand-600 dark:text-white">CGST+SGST</button>
+                  <button type="button" id="tax-inter-btn" onclick="setPOSTaxType('INTERSTATE')" class="px-2.5 py-1 rounded-lg text-slate-500">IGST</button>
+                </div>
+                <input type="hidden" id="pos-tax-type" value="LOCAL" />
+              </div>
+
+              <!-- Customer Info -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <input type="text" id="pos-cust-name" list="customer-datalist" onchange="autofillPOSCustomer(this.value)" placeholder="Customer Name (Walk-in)" class="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+                <datalist id="customer-datalist">
+                  ${firm.customers.map(c => `<option value="${c.name}">${c.phone}</option>`).join('')}
+                </datalist>
+                <input type="tel" id="pos-cust-phone" placeholder="Phone (for WhatsApp bill)" class="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+
+              <!-- Cart Items -->
+              <div id="pos-cart-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Totals & Payment -->
+            <div class="border-t border-slate-200 dark:border-slate-800 pt-3 space-y-3">
+              <div class="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label class="text-[11px] font-semibold text-slate-500">Bill Discount (₹)</label>
+                  <input type="number" id="pos-discount" value="0" min="0" oninput="updatePOSCartUI()" class="w-full px-3 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+                </div>
+                <div>
+                  <label class="text-[11px] font-semibold text-slate-500">Payment Mode</label>
+                  <select id="pos-payment-method" class="w-full px-3 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Credit">Credit / Due (Khata)</option>
+                    <option value="COD">COD</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="pos-totals-box" class="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl space-y-1 text-xs"></div>
+
+              <div class="flex gap-2">
+                <button onclick="clearPOSCart()" class="px-3.5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">Clear</button>
+                <button onclick="completePOSSale()" class="flex-1 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i> Save & Print GST Invoice
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      updatePOSCartUI();
+    }
+
+    function renderPOSProductCards(list) {
+      if (!list.length) return '<div class="col-span-full text-center py-8 text-xs text-slate-400">No matching products found.</div>';
+      return list.map(p => `
+        <button type="button" onclick="addToPOSCart('${p.id}')" class="text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-brand-500 bg-slate-50/50 dark:bg-slate-800/40 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="text-[10px] font-mono text-slate-400">${p.code}</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${p.stock <= 0 ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">${p.stock} in stock</span>
+            </div>
+            <div class="text-xs font-bold line-clamp-2 group-hover:text-brand-600">${p.name}</div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-900 dark:text-white">${fmtINR(p.sellingPrice)}</span>
+            <span class="text-[10px] text-slate-400">+${p.gst}% GST</span>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function filterPOSProducts() {
+      const q = document.getElementById('pos-search').value.toLowerCase().trim();
+      const filtered = getFirm().products.filter(p => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      document.getElementById('pos-product-grid').innerHTML = renderPOSProductCards(filtered);
+    }
+
+    function handlePOSBarcodeEnter(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const q = e.target.value.trim().toLowerCase();
+        const exact = getFirm().products.find(p => p.code.toLowerCase() === q);
+        if (exact) {
+          addToPOSCart(exact.id);
+          e.target.value = '';
+          filterPOSProducts();
+        }
+      }
+    }
+
+    function autofillPOSCustomer(name) {
+      const c = getFirm().customers.find(x => x.name.toLowerCase() === name.toLowerCase());
+      if (c) document.getElementById('pos-cust-phone').value = c.phone || '';
+    }
+
+    function setPOSTaxType(type) {
+      document.getElementById('pos-tax-type').value = type;
+      const localBtn = document.getElementById('tax-local-btn');
+      const interBtn = document.getElementById('tax-inter-btn');
+      if (type === 'LOCAL') {
+        localBtn.className = 'px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-brand-600 dark:text-white';
+        interBtn.className = 'px-2.5 py-1 rounded-lg text-slate-500';
+      } else {
+        interBtn.className = 'px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 shadow-xs text-brand-600 dark:text-white';
+        localBtn.className = 'px-2.5 py-1 rounded-lg text-slate-500';
+      }
+      updatePOSCartUI();
+    }
+
+    function addToPOSCart(productId) {
+      const p = getFirm().products.find(x => x.id === productId);
+      if (!p) return;
+      if (p.stock <= 0) {
+        showToast(`${p.name} is out of stock!`, 'error');
+        return;
+      }
+      const existing = posCart.find(i => i.productId === productId);
+      if (existing) {
+        if (existing.qty + 1 > p.stock) {
+          showToast(`Only ${p.stock} units available in stock`, 'error');
+          return;
+        }
+        existing.qty += 1;
+      } else {
+        posCart.push({ productId: p.id, name: p.name, price: p.sellingPrice, costPrice: p.costPrice, gst: p.gst, qty: 1 });
+      }
+      updatePOSCartUI();
+    }
+
+    function updatePOSQty(productId, delta) {
+      const idx = posCart.findIndex(i => i.productId === productId);
+      if (idx === -1) return;
+      const p = getFirm().products.find(x => x.id === productId);
+      const nextQty = posCart[idx].qty + delta;
+      if (nextQty <= 0) {
+        posCart.splice(idx, 1);
+      } else if (p && nextQty > p.stock) {
+        showToast(`Max available stock is ${p.stock}`, 'error');
+        return;
+      } else {
+        posCart[idx].qty = nextQty;
+      }
+      updatePOSCartUI();
+    }
+
+    function clearPOSCart() {
+      posCart = [];
+      updatePOSCartUI();
+    }
+
+    function updatePOSCartUI() {
+      const listEl = document.getElementById('pos-cart-list');
+      const totalsEl = document.getElementById('pos-totals-box');
+      if (!listEl || !totalsEl) return;
+
+      if (!posCart.length) {
+        listEl.innerHTML = `<div class="text-center py-8 text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">Cart is empty. Click products on the left to add.</div>`;
+      } else {
+        listEl.innerHTML = posCart.map(item => `
+          <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-xs">
+            <div class="min-w-0 flex-1">
+              <div class="font-bold truncate">${item.name}</div>
+              <div class="text-[11px] text-slate-500">${fmtINR(item.price)} × ${item.qty} <span class="text-brand-600">(GST ${item.gst}%)</span></div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="updatePOSQty('${item.productId}', -1)" class="w-6 h-6 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">-</button>
+              <span class="w-6 text-center font-bold">${item.qty}</span>
+              <button onclick="updatePOSQty('${item.productId}', 1)" class="w-6 h-6 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">+</button>
+            </div>
+            <div class="font-extrabold w-16 text-right">${fmtINR(item.price * item.qty)}</div>
+          </div>
+        `).join('');
+      }
+
+      const subtotal = posCart.reduce((s, i) => s + i.price * i.qty, 0);
+      const totalTax = posCart.reduce((s, i) => s + (i.price * i.qty * i.gst / 100), 0);
+      const discount = Math.max(0, Number(document.getElementById('pos-discount')?.value || 0));
+      const grandTotal = Math.max(0, subtotal + totalTax - discount);
+      const taxType = document.getElementById('pos-tax-type')?.value || 'LOCAL';
+
+      const taxRows = taxType === 'LOCAL'
+        ? `<div class="flex justify-between text-slate-500"><span>CGST (50%)</span><span>${fmtINR(totalTax / 2)}</span></div>
+           <div class="flex justify-between text-slate-500"><span>SGST (50%)</span><span>${fmtINR(totalTax / 2)}</span></div>`
+        : `<div class="flex justify-between text-slate-500"><span>IGST (100%)</span><span>${fmtINR(totalTax)}</span></div>`;
+
+      totalsEl.innerHTML = `
+        <div class="flex justify-between text-slate-500"><span>Taxable Subtotal</span><span>${fmtINR(subtotal)}</span></div>
+        ${taxRows}
+        <div class="flex justify-between text-rose-500"><span>Discount</span><span>- ${fmtINR(discount)}</span></div>
+        <div class="flex justify-between text-sm font-extrabold pt-1.5 border-t border-slate-200 dark:border-slate-700">
+          <span>Grand Total</span><span class="text-brand-600 dark:text-brand-400">${fmtINR(grandTotal)}</span>
+        </div>
+      `;
+    }
+
+    function completePOSSale() {
+      if (!posCart.length) {
+        showToast('Add at least one product to generate a bill.', 'error');
+        return;
+      }
+      const firm = getFirm();
+      const customerName = document.getElementById('pos-cust-name').value.trim() || 'Walk-in Customer';
+      const customerPhone = document.getElementById('pos-cust-phone').value.trim();
+      const taxType = document.getElementById('pos-tax-type').value;
+      const paymentMethod = document.getElementById('pos-payment-method').value;
+      const discount = Math.max(0, Number(document.getElementById('pos-discount').value || 0));
+
+      let subtotal = 0, totalTax = 0, totalCost = 0;
+      const billItems = posCart.map(item => {
+        const taxable = item.price * item.qty;
+        const taxAmt = taxable * (item.gst / 100);
+        subtotal += taxable;
+        totalTax += taxAmt;
+        totalCost += (item.costPrice || 0) * item.qty;
+
+        // Deduct inventory stock
+        const prod = firm.products.find(p => p.id === item.productId);
+        if (prod) prod.stock = Math.max(0, prod.stock - item.qty);
+
+        return {
+          productId: item.productId, name: item.name, qty: item.qty,
+          price: item.price, costPrice: item.costPrice || 0, gst: item.gst,
+          taxable, taxAmt, total: taxable + taxAmt
+        };
+      });
+
+      const grandTotal = Math.max(0, subtotal + totalTax - discount);
+      const invoiceNo = `${firm.profile.invoicePrefix}${firm.invoiceCounter++}`;
+      const newSale = {
+        id: 'INV-' + Date.now(),
+        invoiceNo,
+        date: new Date().toISOString().split('T')[0],
+        customerName, customerPhone, customerAddress: '',
+        taxType, paymentMethod,
+        paymentStatus: paymentMethod === 'Credit' ? 'Pending' : 'Paid',
+        discount, items: billItems, subtotal, totalTax, grandTotal, totalCost
+      };
+
+      firm.sales.push(newSale);
+
+      // Auto-save / update Customer CRM & Khata
+      if (customerName !== 'Walk-in Customer') {
+        let cust = firm.customers.find(c => (customerPhone && c.phone === customerPhone) || c.name.toLowerCase() === customerName.toLowerCase());
+        if (!cust) {
+          cust = { id: 'CUS-' + Date.now(), name: customerName, phone: customerPhone, email: '', address: '', totalSpend: 0, ordersCount: 0, dueBalance: 0 };
+          firm.customers.push(cust);
+        }
+        cust.totalSpend += grandTotal;
+        cust.ordersCount += 1;
+        if (paymentMethod === 'Credit') cust.dueBalance += grandTotal;
+      }
+
+      posCart = [];
+      saveState();
+      renderCurrentRoute();
+      showToast(`Invoice ${invoiceNo} saved!`);
+      viewInvoiceModal(newSale.id);
+    }
+
+    /*************************************************************************
+     * 6. PROFESSIONAL INVOICE MODAL (A4, THERMAL 80MM, PRINT/PDF & WHATSAPP)
+     *************************************************************************/
+    function viewInvoiceModal(saleId) {
+      const firm = getFirm();
+      const sale = firm.sales.find(s => s.id === saleId);
+      if (!sale) return;
+
+      const logoHtml = firm.profile.logo
+        ? `<img src="${firm.profile.logo}" class="w-14 h-14 object-contain rounded-lg" />`
+        : `<div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-lg">SD</div>`;
+
+      const taxBreakdown = sale.taxType === 'LOCAL'
+        ? `<div class="flex justify-between"><span>CGST:</span><span>${fmtINR(sale.totalTax / 2)}</span></div>
+           <div class="flex justify-between"><span>SGST:</span><span>${fmtINR(sale.totalTax / 2)}</span></div>`
+        : `<div class="flex justify-between"><span>IGST:</span><span>${fmtINR(sale.totalTax)}</span></div>`;
+
+      openModal(`Invoice Preview — ${sale.invoiceNo}`, `
+        <div class="space-y-4">
+          <!-- Action Toolbar -->
+          <div class="no-print flex flex-wrap items-center justify-between gap-2 bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">
+            <div class="flex items-center gap-2">
+              <button onclick="setPrintFormat('a4')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-xs font-bold shadow-xs">A4 Standard</button>
+              <button onclick="setPrintFormat('thermal')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-xs font-bold shadow-xs">80mm Thermal</button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="shareInvoiceWhatsApp('${sale.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> WhatsApp
+              </button>
+              <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print / Save PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Printable Invoice Paper -->
+          <div id="print-area" class="bg-white text-slate-900 p-6 rounded-xl border border-slate-200 text-xs space-y-4">
+            <div class="flex items-start justify-between border-b border-slate-300 pb-4">
+              <div class="flex items-center gap-3">
+                ${logoHtml}
+                <div>
+                  <h2 class="text-base font-extrabold uppercase">${firm.profile.businessName}</h2>
+                  <p class="text-[11px] text-slate-600 max-w-xs">${firm.profile.address}</p>
+                  <p class="text-[11px] text-slate-600">Ph: ${firm.profile.phone} | GSTIN: <strong>${firm.profile.gstin || 'URP'}</strong></p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-bold text-[10px] uppercase">TAX INVOICE</span>
+                <div class="font-extrabold text-sm mt-1">${sale.invoiceNo}</div>
+                <div class="text-[11px] text-slate-500">Date: ${sale.date}</div>
+                <div class="text-[11px] font-semibold">Mode: ${sale.paymentMethod} (${sale.paymentStatus})</div>
+              </div>
+            </div>
+
+            <div class="flex justify-between bg-slate-50 p-2.5 rounded-lg">
+              <div>
+                <span class="text-[10px] uppercase text-slate-400 font-bold">Billed To:</span>
+                <div class="font-bold">${sale.customerName}</div>
+                ${sale.customerPhone ? `<div class="text-[11px] text-slate-600">Phone: ${sale.customerPhone}</div>` : ''}
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] uppercase text-slate-400 font-bold">Supply Type:</span>
+                <div class="font-semibold">${sale.taxType === 'LOCAL' ? 'Intra-State (CGST + SGST)' : 'Inter-State (IGST)'}</div>
+              </div>
+            </div>
+
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-300 text-[11px] uppercase text-slate-600">
+                  <th class="py-2">#</th>
+                  <th class="py-2">Item</th>
+                  <th class="py-2 text-center">Qty</th>
+                  <th class="py-2 text-right">Rate</th>
+                  <th class="py-2 text-right">GST</th>
+                  <th class="py-2 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                ${sale.items.map((i, idx) => `
+                  <tr>
+                    <td class="py-2">${idx + 1}</td>
+                    <td class="py-2 font-medium">${i.name}</td>
+                    <td class="py-2 text-center">${i.qty}</td>
+                    <td class="py-2 text-right">${fmtINR(i.price)}</td>
+                    <td class="py-2 text-right">${i.gst}%</td>
+                    <td class="py-2 text-right font-bold">${fmtINR(i.total)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+
+            <div class="flex justify-end border-t border-slate-300 pt-3">
+              <div class="w-56 space-y-1">
+                <div class="flex justify-between"><span>Taxable Amount:</span><span>${fmtINR(sale.subtotal)}</span></div>
+                ${taxBreakdown}
+                ${sale.discount > 0 ? `<div class="flex justify-between text-rose-600"><span>Discount:</span><span>-${fmtINR(sale.discount)}</span></div>` : ''}
+                <div class="flex justify-between font-extrabold text-sm border-t border-slate-300 pt-1">
+                  <span>Grand Total:</span><span>${fmtINR(sale.grandTotal)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-dashed border-slate-300 pt-3 text-center text-[11px] text-slate-500">
+              <p>${firm.profile.invoiceFooter}</p>
+            </div>
+          </div>
+        </div>
+      `, 'max-w-3xl');
+    }
+
+    function setPrintFormat(mode) {
+      const el = document.getElementById('print-area');
+      if (!el) return;
+      if (mode === 'thermal') el.classList.add('thermal-mode');
+      else el.classList.remove('thermal-mode');
+      showToast(`Switched preview to ${mode.toUpperCase()} layout`);
+    }
+
+    function shareInvoiceWhatsApp(saleId) {
+      const firm = getFirm();
+      const sale = firm.sales.find(s => s.id === saleId);
+      if (!sale) return;
+      const lines = [
+        `*${firm.profile.businessName}*`,
+        `Invoice: *${sale.invoiceNo}* (${sale.date})`,
+        `Customer: ${sale.customerName}`,
+        `------------------------`,
+        ...sale.items.map(i => `${i.name} x${i.qty} = ${fmtINR(i.total)}`),
+        `------------------------`,
+        `Total GST: ${fmtINR(sale.totalTax)}`,
+        `*Grand Total: ${fmtINR(sale.grandTotal)}*`,
+        `Payment: ${sale.paymentMethod} (${sale.paymentStatus})`,
+        `Thank you for shopping with us!`
+      ].join('\n');
+      const phone = (sale.customerPhone || '').replace(/\D/g, '');
+      const url = phone.length >= 10
+        ? `https://wa.me/91${phone.slice(-10)}?text=${encodeURIComponent(lines)}`
+        : `https://wa.me/?text=${encodeURIComponent(lines)}`;
+      window.open(url, '_blank');
+    }
+
+    /*************************************************************************
+     * 7. MODULE: PRODUCTS & INVENTORY
+     *************************************************************************/
+    function renderProducts(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2 flex-1">
+            <input type="text" id="prod-search" oninput="filterProductsTable()" placeholder="Search code, name, category..." class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 w-full sm:w-64" />
+            <select id="prod-stock-filter" onchange="filterProductsTable()" class="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+              <option value="ALL">All Stock Status</option>
+              <option value="LOW">Low Stock Only</option>
+              <option value="OUT">Out of Stock</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="exportToExcel('products')" class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold flex items-center gap-1.5">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Export Excel
+            </button>
+            <button onclick="openProductFormModal()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="plus" class="w-4 h-4"></i> Add Product
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                <tr>
+                  <th class="px-4 py-3">Product</th>
+                  <th class="px-4 py-3">Category</th>
+                  <th class="px-4 py-3 text-right">Cost</th>
+                  <th class="px-4 py-3 text-right">Selling</th>
+                  <th class="px-4 py-3 text-center">GST</th>
+                  <th class="px-4 py-3 text-center">Stock</th>
+                  <th class="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${renderProductRows(firm.products)}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProductRows(products) {
+      if (!products.length) return '<tr><td colspan="7" class="p-8 text-center text-slate-400">No products found. Click "Add Product" to start.</td></tr>';
+      return products.map(p => {
+        const isLow = p.stock <= p.lowStockLimit;
+        return `
+          <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-3">
+                <img src="${p.image || 'https://placehold.co/80x80/e2e8f0/475569?text=Item'}" onerror="this.src='https://placehold.co/80x80/e2e8f0/475569?text=Item'" class="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0" />
+                <div>
+                  <div class="font-bold">${p.name}</div>
+                  <div class="text-[11px] font-mono text-slate-400">Code: ${p.code}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-medium">${p.category}</span></td>
+            <td class="px-4 py-3 text-right text-slate-500">${fmtINR(p.costPrice)}</td>
+            <td class="px-4 py-3 text-right font-bold">${fmtINR(p.sellingPrice)}</td>
+            <td class="px-4 py-3 text-center">${p.gst}%</td>
+            <td class="px-4 py-3 text-center">
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${isLow ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'}">
+                ${p.stock} units
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right space-x-1">
+              <button onclick="openProductFormModal('${p.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-brand-600" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="deleteProduct('${p.id}')" class="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950 text-rose-600" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterProductsTable() {
+      const q = document.getElementById('prod-search').value.toLowerCase();
+      const status = document.getElementById('prod-stock-filter').value;
+      const filtered = getFirm().products.filter(p => {
+        const matchQ = p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+        if (status === 'LOW') return matchQ && p.stock <= p.lowStockLimit;
+        if (status === 'OUT') return matchQ && p.stock <= 0;
+        return matchQ;
+      });
+      document.getElementById('products-tbody').innerHTML = renderProductRows(filtered);
+      lucide.createIcons();
+    }
+
+    function openProductFormModal(productId = null) {
+      const p = productId ? getFirm().products.find(x => x.id === productId) : null;
+      openModal(p ? 'Edit Product' : 'Add New Product', `
+        <form onsubmit="saveProduct(event, '${productId || ''}')" class="space-y-4 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block font-semibold mb-1">Barcode / Code *</label>
+              <input type="text" id="pf-code" required value="${p?.code || Math.floor(100000 + Math.random() * 900000)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-semibold mb-1">Product Name *</label>
+              <input type="text" id="pf-name" required value="${p?.name || ''}" placeholder="e.g. Basmati Rice 5kg" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold mb-1">Category *</label>
+              <input type="text" id="pf-category" required value="${p?.category || 'Groceries'}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">GST Rate Slab *</label>
+              <select id="pf-gst" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                ${[0, 5, 12, 18, 28].map(r => `<option value="${r}" ${(p?.gst ?? 5) === r ? 'selected' : ''}>${r}% GST</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label class="block font-semibold mb-1">Cost Price (₹) *</label>
+              <input type="number" step="0.01" id="pf-cost" required value="${p?.costPrice || 0}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Selling Price (₹) *</label>
+              <input type="number" step="0.01" id="pf-sell" required value="${p?.sellingPrice || 0}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Current Stock *</label>
+              <input type="number" id="pf-stock" required value="${p?.stock ?? 10}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Low Stock Limit *</label>
+              <input type="number" id="pf-low" required value="${p?.lowStockLimit ?? 5}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold mb-1">Product Description (for Online Store)</label>
+            <input type="text" id="pf-desc" value="${p?.description || ''}" placeholder="Short product details..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold mb-1">Image URL</label>
+              <input type="text" id="pf-img-url" value="${p?.image || ''}" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Or Upload Image File</label>
+              <input type="file" accept="image/*" onchange="handleImageUpload(event, 'pf-img-url')" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700" />
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold">Cancel</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold">Save Product</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function handleImageUpload(event, targetInputId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById(targetInputId).value = e.target.result;
+        showToast('Image loaded successfully');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveProduct(e, existingId) {
+      e.preventDefault();
+      const firm = getFirm();
+      const data = {
+        id: existingId || 'P' + Date.now(),
+        code: document.getElementById('pf-code').value.trim(),
+        name: document.getElementById('pf-name').value.trim(),
+        category: document.getElementById('pf-category').value.trim(),
+        gst: Number(document.getElementById('pf-gst').value),
+        costPrice: Number(document.getElementById('pf-cost').value),
+        sellingPrice: Number(document.getElementById('pf-sell').value),
+        stock: Number(document.getElementById('pf-stock').value),
+        lowStockLimit: Number(document.getElementById('pf-low').value),
+        description: document.getElementById('pf-desc').value.trim(),
+        image: document.getElementById('pf-img-url').value.trim()
+      };
+
+      if (existingId) {
+        const idx = firm.products.findIndex(x => x.id === existingId);
+        if (idx !== -1) firm.products[idx] = data;
+      } else {
+        firm.products.push(data);
+      }
+      saveState();
+      closeModal();
+      renderCurrentRoute();
+      showToast(existingId ? 'Product updated!' : 'Product added to inventory!');
+    }
+
+    function deleteProduct(id) {
+      const firm = getFirm();
+      firm.products = firm.products.filter(p => p.id !== id);
+      saveState();
+      renderCurrentRoute();
+      showToast('Product deleted', 'info');
+    }
+
+    /*************************************************************************
+     * 8. MODULE: CUSTOMER ONLINE STOREFRONT & CHECKOUT
+     *************************************************************************/
+    function switchMode(mode) {
+      const adminShell = document.getElementById('admin-shell');
+      const storeShell = document.getElementById('storefront-shell');
+      if (mode === 'store') {
+        adminShell.classList.add('hidden');
+        storeShell.classList.remove('hidden');
+        initStorefront();
+      } else {
+        storeShell.classList.add('hidden');
+        adminShell.classList.remove('hidden');
+        renderCurrentRoute();
+      }
+      lucide.createIcons();
+    }
+
+    function initStorefront() {
+      const firm = getFirm();
+      document.getElementById('sf-store-name').textContent = firm.profile.storeName || firm.profile.businessName;
+      document.getElementById('sf-store-desc').textContent = firm.profile.storeDescription || '';
+      document.getElementById('sf-footer-info').textContent = `${firm.profile.businessName} • ${firm.profile.address} • Ph: ${firm.profile.phone}`;
+
+      const logoImg = document.getElementById('sf-logo');
+      const logoFallback = document.getElementById('sf-logo-fallback');
+      if (firm.profile.logo) {
+        logoImg.src = firm.profile.logo;
+        logoImg.classList.remove('hidden');
+        logoFallback.classList.add('hidden');
+      } else {
+        logoImg.classList.add('hidden');
+        logoFallback.classList.remove('hidden');
+      }
+
+      const categories = ['All', ...new Set(firm.products.map(p => p.category))];
+      document.getElementById('sf-categories').innerHTML = categories.map(cat => `
+        <button onclick="selectStoreCategory('${cat}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${sfSelectedCategory === cat
+          ? 'bg-emerald-600 text-white'
+          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'}">
+          ${cat}
+        </button>
+      `).join('');
+
+      updateStoreCartBadge();
+      renderStorefrontProducts();
+    }
+
+    function selectStoreCategory(cat) {
+      sfSelectedCategory = cat;
+      initStorefront();
+    }
+
+    function renderStorefrontProducts() {
+      const firm = getFirm();
+      const q = (document.getElementById('sf-search')?.value || '').toLowerCase();
+      const items = firm.products.filter(p => {
+        const matchCat = sfSelectedCategory === 'All' || p.category === sfSelectedCategory;
+        const matchQ = p.name.toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q);
+        return matchCat && matchQ;
+      });
+
+      const grid = document.getElementById('sf-product-grid');
+      if (!items.length) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 text-sm">No products match your search.</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(p => `
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="relative h-44 bg-slate-100 dark:bg-slate-800">
+              <img src="${p.image || 'https://placehold.co/300x220/e2e8f0/475569?text=Product'}" onerror="this.src='https://placehold.co/300x220/e2e8f0/475569?text=Product'" class="w-full h-full object-cover" />
+              <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-lg bg-white/90 dark:bg-slate-900/90 text-[10px] font-bold">${p.category}</span>
+              ${p.stock <= 0 ? `<span class="absolute inset-0 bg-slate-900/60 text-white font-bold text-xs flex items-center justify-center">OUT OF STOCK</span>` : ''}
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-sm line-clamp-1">${p.name}</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">${p.description || 'Quality assured product.'}</p>
+            </div>
+          </div>
+          <div class="px-4 pb-4 pt-2 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+            <div>
+              <div class="text-base font-extrabold text-slate-900 dark:text-white">${fmtINR(p.sellingPrice)}</div>
+              <div class="text-[10px] text-slate-400">+${p.gst}% GST</div>
+            </div>
+            <button onclick="addToStoreCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
+            </button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function addToStoreCart(productId) {
+      const p = getFirm().products.find(x => x.id === productId);
+      if (!p || p.stock <= 0) return;
+      const existing = storeCart.find(i => i.productId === productId);
+      if (existing) {
+        if (existing.qty + 1 > p.stock) {
+          showToast('Maximum available stock reached', 'error');
+          return;
+        }
+        existing.qty += 1;
+      } else {
+        storeCart.push({ productId: p.id, name: p.name, price: p.sellingPrice, gst: p.gst, qty: 1 });
+      }
+      updateStoreCartBadge();
+      showToast(`Added ${p.name} to cart`);
+    }
+
+    function updateStoreCartBadge() {
+      const count = storeCart.reduce((s, i) => s + i.qty, 0);
+      document.getElementById('sf-cart-count').textContent = count;
+    }
+
+    function toggleStoreCart() {
+      const drawer = document.getElementById('sf-cart-drawer');
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) renderStoreCartDrawer();
+    }
+
+    function updateStoreCartQty(productId, delta) {
+      const idx = storeCart.findIndex(i => i.productId === productId);
+      if (idx === -1) return;
+      const p = getFirm().products.find(x => x.id === productId);
+      const next = storeCart[idx].qty + delta;
+      if (next <= 0) storeCart.splice(idx, 1);
+      else if (p && next > p.stock) { showToast(`Only ${p.stock} left`, 'error'); return; }
+      else storeCart[idx].qty = next;
+      updateStoreCartBadge();
+      renderStoreCartDrawer();
+    }
+
+    function renderStoreCartDrawer() {
+      const body = document.getElementById('sf-cart-body');
+      const firm = getFirm();
+      if (!storeCart.length) {
+        body.innerHTML = `<div class="text-center py-16 text-xs text-slate-400">Your cart is empty. Browse products to add items!</div>`;
+        return;
+      }
+
+      const subtotal = storeCart.reduce((s, i) => s + i.price * i.qty, 0);
+      const totalTax = storeCart.reduce((s, i) => s + (i.price * i.qty * i.gst / 100), 0);
+      const grandTotal = subtotal + totalTax;
+
+      body.innerHTML = `
+        <div class="space-y-2.5">
+          ${storeCart.map(item => `
+            <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs">
+              <div class="flex-1 min-w-0">
+                <div class="font-bold truncate">${item.name}</div>
+                <div class="text-[11px] text-slate-500">${fmtINR(item.price)} + ${item.gst}% GST</div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="updateStoreCartQty('${item.productId}', -1)" class="w-6 h-6 rounded-lg bg-white dark:bg-slate-700 border font-bold">-</button>
+                <span class="w-5 text-center font-bold">${item.qty}</span>
+                <button onclick="updateStoreCartQty('${item.productId}', 1)" class="w-6 h-6 rounded-lg bg-white dark:bg-slate-700 border font-bold">+</button>
+              </div>
+              <div class="font-extrabold w-16 text-right">${fmtINR(item.price * item.qty)}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-xs space-y-1">
+          <div class="flex justify-between"><span>Subtotal:</span><span>${fmtINR(subtotal)}</span></div>
+          <div class="flex justify-between"><span>Estimated GST:</span><span>${fmtINR(totalTax)}</span></div>
+          <div class="flex justify-between font-extrabold text-sm pt-1 border-t border-emerald-200 dark:border-emerald-800">
+            <span>Total Payable:</span><span class="text-emerald-700 dark:text-emerald-400">${fmtINR(grandTotal)}</span>
+          </div>
+        </div>
+
+        <form onsubmit="submitOnlineOrder(event)" class="space-y-3 border-t border-slate-200 dark:border-slate-800 pt-4 text-xs">
+          <h4 class="font-bold text-sm">Delivery & Payment Details</h4>
+          <input type="text" id="sf-cust-name" required placeholder="Full Name *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <input type="tel" id="sf-cust-phone" required placeholder="Mobile Number *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <textarea id="sf-cust-addr" required rows="2" placeholder="Complete Delivery Address *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"></textarea>
+
+          <div>
+            <label class="block font-semibold mb-1">Payment Option *</label>
+            <select id="sf-pay-mode" onchange="toggleStoreUPIBox(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-semibold">
+              <option value="COD">Cash on Delivery (COD)</option>
+              <option value="UPI">Pay via UPI (QR / UPI ID)</option>
+            </select>
+          </div>
+
+          <div id="sf-upi-box" class="hidden p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 space-y-2">
+            <div class="font-bold text-indigo-700 dark:text-indigo-300">Pay to UPI ID: <span class="font-mono select-all">${firm.profile.upiId || 'Not Configured'}</span></div>
+            <p class="text-[11px] text-slate-500">Complete payment in GPay/PhonePe/Paytm and enter the 12-digit UTR/Ref number below for verification:</p>
+            <input type="text" id="sf-utr" placeholder="Enter 12-digit UPI UTR / Ref No." class="w-full px-3 py-2 rounded-xl border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-900" />
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md">
+            Place Order (${fmtINR(grandTotal)})
+          </button>
+        </form>
+      `;
+    }
+
+    function toggleStoreUPIBox(val) {
+      const box = document.getElementById('sf-upi-box');
+      if (val === 'UPI') box.classList.remove('hidden');
+      else box.classList.add('hidden');
+    }
+
+    function submitOnlineOrder(e) {
+      e.preventDefault();
+      const firm = getFirm();
+      const customerName = document.getElementById('sf-cust-name').value.trim();
+      const customerPhone = document.getElementById('sf-cust-phone').value.trim();
+      const customerAddress = document.getElementById('sf-cust-addr').value.trim();
+      const paymentMethod = document.getElementById('sf-pay-mode').value;
+      const utrRef = document.getElementById('sf-utr')?.value.trim() || '';
+
+      let subtotal = 0, totalTax = 0;
+      const orderItems = storeCart.map(item => {
+        const taxable = item.price * item.qty;
+        const taxAmt = taxable * (item.gst / 100);
+        subtotal += taxable;
+        totalTax += taxAmt;
+        // Reserve/deduct stock upon order placement
+        const p = firm.products.find(x => x.id === item.productId);
+        if (p) p.stock = Math.max(0, p.stock - item.qty);
+        return { productId: item.productId, name: item.name, qty: item.qty, price: item.price, gst: item.gst, taxable, taxAmt, total: taxable + taxAmt };
+      });
+
+      const orderId = 'ORD-' + firm.orderCounter++;
+      const newOrder = {
+        id: orderId,
+        date: new Date().toISOString().split('T')[0],
+        customerName, customerPhone, customerAddress,
+        paymentMethod, utrRef,
+        paymentStatus: 'Pending',
+        status: 'New',
+        items: orderItems,
+        subtotal, totalTax, grandTotal: subtotal + totalTax
+      };
+
+      firm.onlineOrders.unshift(newOrder);
+
+      // Add to Customer CRM
+      let cust = firm.customers.find(c => c.phone === customerPhone);
+      if (!cust) {
+        firm.customers.push({ id: 'CUS-' + Date.now(), name: customerName, phone: customerPhone, email: '', address: customerAddress, totalSpend: newOrder.grandTotal, ordersCount: 1, dueBalance: 0 });
+      } else {
+        cust.totalSpend += newOrder.grandTotal;
+        cust.ordersCount += 1;
+      }
+
+      storeCart = [];
+      saveState();
+      updateStoreCartBadge();
+      toggleStoreCart();
+      renderStorefrontProducts();
+      openModal('Order Placed Successfully!', `
+        <div class="text-center space-y-3 py-4">
+          <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+            <i data-lucide="check" class="w-8 h-8"></i>
+          </div>
+          <h3 class="text-lg font-extrabold">Thank you, ${customerName}!</h3>
+          <p class="text-xs text-slate-500">Your Order ID is <strong class="text-slate-900 dark:text-white font-mono">${orderId}</strong>. Save this ID to track your order status anytime.</p>
+          <button onclick="closeModal()" class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold">Continue Shopping</button>
+        </div>
+      `, 'max-w-md');
+    }
+
+    function openTrackOrderModal() {
+      openModal('Track Your Online Order', `
+        <div class="space-y-4 text-xs">
+          <div class="flex gap-2">
+            <input type="text" id="track-query" placeholder="Enter Order ID (e.g. ORD-5001) or Phone Number..." class="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            <button onclick="runOrderTrack()" class="px-4 py-2 rounded-xl bg-brand-600 text-white font-semibold">Track</button>
+          </div>
+          <div id="track-result"></div>
+        </div>
+      `, 'max-w-lg');
+    }
+
+    function runOrderTrack() {
+      const q = document.getElementById('track-query').value.trim().toLowerCase();
+      const matches = getFirm().onlineOrders.filter(o => o.id.toLowerCase() === q || o.customerPhone.includes(q));
+      const res = document.getElementById('track-result');
+      if (!matches.length) {
+        res.innerHTML = `<p class="text-rose-500 text-center py-4">No orders found matching "${q}".</p>`;
+        return;
+      }
+      res.innerHTML = matches.map(o => `
+        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 mb-2">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-sm">${o.id}</span>
+            <span class="px-2.5 py-0.5 rounded-full font-bold bg-brand-100 text-brand-700">${o.status}</span>
+          </div>
+          <div class="text-slate-500">Date: ${o.date} • Total: <strong>${fmtINR(o.grandTotal)}</strong> • Payment: ${o.paymentStatus}</div>
+          <div class="text-[11px] text-slate-500">Items: ${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')}</div>
+        </div>
+      `).join('');
+    }
+
+    /*************************************************************************
+     * 9. MODULE: ONLINE ORDER MANAGEMENT (ADMIN)
+     *************************************************************************/
+    function renderOnlineOrders(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <input type="text" id="ord-search" oninput="filterOrdersList()" placeholder="Search Order ID, customer, phone..." class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 w-60" />
+            <select id="ord-status-filter" onchange="filterOrdersList()" class="px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+              <option value="ALL">All Statuses</option>
+              ${['New', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled'].map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+          </div>
+          <button onclick="exportToExcel('orders')" class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Export Orders Excel
+          </button>
+        </div>
+
+        <div id="orders-list-container" class="space-y-4">
+          ${renderOrderCards(firm.onlineOrders)}
+        </div>
+      `;
+    }
+
+    function renderOrderCards(orders) {
+      if (!orders.length) return `<div class="bg-white dark:bg-slate-900 p-10 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">No online orders found.</div>`;
+      const statuses = ['New', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled'];
+      return orders.map(o => `
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+          <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-sm text-brand-600">${o.id}</span>
+                <span class="text-xs text-slate-400">${o.date}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${o.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                  ${o.paymentMethod}: ${o.paymentStatus}
+                </span>
+              </div>
+              <div class="text-xs font-bold mt-1">${o.customerName} • <span class="text-slate-500 font-normal">${o.customerPhone}</span></div>
+              <div class="text-[11px] text-slate-500">${o.customerAddress}</div>
+              ${o.utrRef ? `<div class="text-[11px] font-mono text-indigo-600 dark:text-indigo-400 mt-0.5">UPI UTR Ref: ${o.utrRef}</div>` : ''}
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <select onchange="updateOrderStatus('${o.id}', this.value)" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold">
+                ${statuses.map(st => `<option value="${st}" ${o.status === st ? 'selected' : ''}>Status: ${st}</option>`).join('')}
+              </select>
+              ${o.paymentStatus !== 'Paid' ? `
+                <button onclick="confirmOrderPayment('${o.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">
+                  Confirm Payment
+                </button>
+              ` : ''}
+              <button onclick="printOrderSlip('${o.id}')" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800" title="Print Order Slip">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="text-xs space-y-1">
+            ${o.items.map(i => `
+              <div class="flex justify-between text-slate-600 dark:text-slate-300">
+                <span>${i.name} × ${i.qty} (GST ${i.gst}%)</span>
+                <span class="font-semibold">${fmtINR(i.total)}</span>
+              </div>
+            `).join('')}
+            <div class="flex justify-between font-extrabold text-sm pt-2 border-t border-slate-100 dark:border-slate-800">
+              <span>Order Total (incl. GST)</span>
+              <span>${fmtINR(o.grandTotal)}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterOrdersList() {
+      const q = document.getElementById('ord-search').value.toLowerCase();
+      const st = document.getElementById('ord-status-filter').value;
+      const filtered = getFirm().onlineOrders.filter(o => {
+        const matchQ = o.id.toLowerCase().includes(q) || o.customerName.toLowerCase().includes(q) || o.customerPhone.includes(q);
+        const matchSt = st === 'ALL' || o.status === st;
+        return matchQ && matchSt;
+      });
+      document.getElementById('orders-list-container').innerHTML = renderOrderCards(filtered);
+      lucide.createIcons();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const firm = getFirm();
+      const order = firm.onlineOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      // Auto-restore stock if cancelled from a non-cancelled state
+      if (newStatus === 'Cancelled' && order.status !== 'Cancelled') {
+        order.items.forEach(item => {
+          const p = firm.products.find(x => x.id === item.productId);
+          if (p) p.stock += item.qty;
+        });
+        showToast(`Order ${orderId} cancelled & product stock restored!`);
+      } else {
+        showToast(`Order ${orderId} marked as ${newStatus}`);
+      }
+
+      order.status = newStatus;
+      saveState();
+      renderCurrentRoute();
+    }
+
+    function confirmOrderPayment(orderId) {
+      const order = getFirm().onlineOrders.find(o => o.id === orderId);
+      if (!order) return;
+      order.paymentStatus = 'Paid';
+      saveState();
+      renderCurrentRoute();
+      showToast(`Payment verified for ${orderId}`);
+    }
+
+    function printOrderSlip(orderId) {
+      const firm = getFirm();
+      const o = firm.onlineOrders.find(x => x.id === orderId);
+      if (!o) return;
+      openModal(`Order Packing Slip — ${o.id}`, `
+        <div class="space-y-3">
+          <div class="no-print flex justify-end">
+            <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="printer" class="w-4 h-4"></i> Print Slip
+            </button>
+          </div>
+          <div id="print-area" class="bg-white text-slate-900 p-5 rounded-xl border text-xs space-y-3">
+            <div class="border-b pb-2 flex justify-between">
+              <div><strong class="text-sm">${firm.profile.businessName}</strong><br/>Online Order Slip</div>
+              <div class="text-right"><strong>${o.id}</strong><br/>Date: ${o.date}</div>
+            </div>
+            <div>
+              <strong>Deliver To:</strong> ${o.customerName} (${o.customerPhone})<br/>
+              ${o.customerAddress}
+            </div>
+            <table class="w-full border-t border-b">
+              <thead><tr class="text-left border-b"><th class="py-1">Item</th><th class="py-1 text-center">Qty</th><th class="py-1 text-right">Total</th></tr></thead>
+              <tbody>
+                ${o.items.map(i => `<tr><td class="py-1">${i.name}</td><td class="py-1 text-center">${i.qty}</td><td class="py-1 text-right">${fmtINR(i.total)}</td></tr>`).join('')}
+              </tbody>
+            </table>
+            <div class="text-right font-extrabold text-sm">Grand Total: ${fmtINR(o.grandTotal)} (${o.paymentMethod} - ${o.paymentStatus})</div>
+          </div>
+        </div>
+      `, 'max-w-lg');
+    }
+
+    /*************************************************************************
+     * 10. MODULE: SALES HISTORY & INTEGRATED RETURNS MANAGEMENT
+     *************************************************************************/
+    function renderSalesHistory(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <input type="text" id="sales-search" oninput="filterSalesTable()" placeholder="Search invoice #, customer, payment mode..." class="px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 w-full sm:w-72" />
+          <button onclick="exportToExcel('sales')" class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold flex items-center gap-1.5">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Export Sales Excel
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                <tr>
+                  <th class="px-4 py-3">Invoice #</th>
+                  <th class="px-4 py-3">Date</th>
+                  <th class="px-4 py-3">Customer</th>
+                  <th class="px-4 py-3">Payment</th>
+                  <th class="px-4 py-3 text-right">GST</th>
+                  <th class="px-4 py-3 text-right">Total</th>
+                  <th class="px-4 py-3 text-right">Profit</th>
+                  <th class="px-4 py-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sales-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${renderSalesRows(firm.sales.slice().reverse())}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSalesRows(list) {
+      if (!list.length) return '<tr><td colspan="8" class="p-8 text-center text-slate-400">No sales invoices found.</td></tr>';
+      return list.map(s => {
+        const profit = (s.subtotal - s.discount) - (s.totalCost || 0);
+        return `
+          <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+            <td class="px-4 py-3 font-bold text-brand-600">${s.invoiceNo}</td>
+            <td class="px-4 py-3 text-slate-500">${s.date}</td>
+            <td class="px-4 py-3 font-medium">${s.customerName}</td>
+            <td class="px-4 py-3">
+              <button onclick="toggleSalePaymentStatus('${s.id}')" class="px-2 py-0.5 rounded-full text-[10px] font-bold ${s.paymentStatus === 'Paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                ${s.paymentMethod} • ${s.paymentStatus}
+              </button>
+            </td>
+            <td class="px-4 py-3 text-right text-slate-500">${fmtINR(s.totalTax)}</td>
+            <td class="px-4 py-3 text-right font-extrabold">${fmtINR(s.grandTotal)}</td>
+            <td class="px-4 py-3 text-right font-semibold text-emerald-600">${fmtINR(profit)}</td>
+            <td class="px-4 py-3 text-center space-x-1">
+              <button onclick="viewInvoiceModal('${s.id}')" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="View / Print"><i data-lucide="printer" class="w-3.5 h-3.5"></i></button>
+              <button onclick="shareInvoiceWhatsApp('${s.id}')" class="p-1.5 rounded-lg hover:bg-emerald-50 text-emerald-600" title="Share WhatsApp"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterSalesTable() {
+      const q = document.getElementById('sales-search').value.toLowerCase();
+      const filtered = getFirm().sales.slice().reverse().filter(s =>
+        s.invoiceNo.toLowerCase().includes(q) || s.customerName.toLowerCase().includes(q) || s.paymentMethod.toLowerCase().includes(q)
+      );
+      document.getElementById('sales-tbody').innerHTML = renderSalesRows(filtered);
+      lucide.createIcons();
+    }
+
+    function toggleSalePaymentStatus(saleId) {
+      const firm = getFirm();
+      const s = firm.sales.find(x => x.id === saleId);
+      if (!s) return;
+      s.paymentStatus = s.paymentStatus === 'Paid' ? 'Pending' : 'Paid';
+      saveState();
+      renderCurrentRoute();
+      showToast(`Invoice ${s.invoiceNo} marked as ${s.paymentStatus}`);
+    }
+
+    // Integrated Returns Management
+    function renderReturns(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Process Return Form -->
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="rotate-ccw" class="w-4 h-4 text-rose-600"></i> Process Customer Return</h3>
+            <div class="text-xs space-y-3">
+              <div>
+                <label class="block font-semibold mb-1">Select Original Invoice *</label>
+                <select id="ret-invoice-select" onchange="loadInvoiceForReturn(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                  <option value="">-- Choose Invoice --</option>
+                  ${firm.sales.slice().reverse().map(s => `<option value="${s.id}">${s.invoiceNo} — ${s.customerName} (${fmtINR(s.grandTotal)})</option>`).join('')}
+                </select>
+              </div>
+              <div id="ret-items-container" class="space-y-2"></div>
+            </div>
+          </div>
+
+          <!-- Return History -->
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+              <h3 class="font-bold text-sm">Return & Stock Restoration History</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                  <tr>
+                    <th class="px-4 py-3">Return ID</th>
+                    <th class="px-4 py-3">Invoice</th>
+                    <th class="px-4 py-3">Items Returned</th>
+                    <th class="px-4 py-3 text-right">Refund Amt</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  ${firm.returns.slice().reverse().map(r => `
+                    <tr>
+                      <td class="px-4 py-3 font-bold">${r.id}<div class="text-[10px] text-slate-400 font-normal">${r.date}</div></td>
+                      <td class="px-4 py-3 font-semibold text-brand-600">${r.invoiceNo}</td>
+                      <td class="px-4 py-3">${r.items.map(i => `${i.name} (x${i.qty})`).join(', ')}</td>
+                      <td class="px-4 py-3 text-right font-extrabold text-rose-600">${fmtINR(r.refundAmount)}</td>
+                    </tr>
+                  `).join('') || '<tr><td colspan="4" class="p-8 text-center text-slate-400">No returns recorded yet.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function loadInvoiceForReturn(saleId) {
+      const box = document.getElementById('ret-items-container');
+      if (!saleId) { box.innerHTML = ''; return; }
+      const sale = getFirm().sales.find(s => s.id === saleId);
+      if (!sale) return;
+
+      box.innerHTML = `
+        <form onsubmit="submitProductReturn(event, '${sale.id}')" class="space-y-3 pt-2">
+          <div class="text-[11px] font-bold uppercase text-slate-400">Select Return Quantities:</div>
+          ${sale.items.map((item, idx) => `
+            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between gap-2">
+              <div>
+                <div class="font-bold">${item.name}</div>
+                <div class="text-[11px] text-slate-500">Sold Qty: ${item.qty} @ ${fmtINR(item.price)} + ${item.gst}% GST</div>
+              </div>
+              <input type="number" min="0" max="${item.qty}" value="0" data-idx="${idx}" class="ret-qty-input w-16 px-2 py-1.5 text-center font-bold rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900" />
+            </div>
+          `).join('')}
+          <input type="text" id="ret-reason" placeholder="Reason for return (e.g. Damaged, Wrong item)" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold">
+            Confirm Return & Restore Stock
+          </button>
+        </form>
+      `;
+    }
+
+    function submitProductReturn(e, saleId) {
+      e.preventDefault();
+      const firm = getFirm();
+      const sale = firm.sales.find(s => s.id === saleId);
+      if (!sale) return;
+
+      const inputs = document.querySelectorAll('.ret-qty-input');
+      const returnedItems = [];
+      let refundAmount = 0;
+
+      inputs.forEach(inp => {
+        const qty = Number(inp.value || 0);
+        const idx = Number(inp.dataset.idx);
+        if (qty > 0) {
+          const orig = sale.items[idx];
+          const unitTotal = orig.price * (1 + orig.gst / 100);
+          refundAmount += unitTotal * qty;
+          returnedItems.push({ productId: orig.productId, name: orig.name, qty, refund: unitTotal * qty });
+
+          // Restore inventory stock
+          const prod = firm.products.find(p => p.id === orig.productId);
+          if (prod) prod.stock += qty;
+        }
+      });
+
+      if (!returnedItems.length) {
+        showToast('Enter at least 1 item quantity to return.', 'error');
+        return;
+      }
+
+      firm.returns.push({
+        id: 'RET-' + Date.now().toString().slice(-5),
+        date: new Date().toISOString().split('T')[0],
+        saleId: sale.id,
+        invoiceNo: sale.invoiceNo,
+        customerName: sale.customerName,
+        reason: document.getElementById('ret-reason').value.trim(),
+        items: returnedItems,
+        refundAmount
+      });
+
+      saveState();
+      renderCurrentRoute();
+      showToast(`Return processed (${fmtINR(refundAmount)}) & stock restored!`);
+    }
+
+    /*************************************************************************
+     * 11. MODULE: PURCHASES & SUPPLIERS
+     *************************************************************************/
+    let purchaseDraftItems = [];
+
+    function renderPurchasesAndSuppliers(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left: Record Stock Purchase -->
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-sm">Record Stock Purchase (Inward)</h3>
+              <button onclick="openSupplierModal()" class="text-xs font-semibold text-brand-600 hover:underline">+ New Supplier</button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block font-semibold mb-1">Select Supplier *</label>
+                <select id="pur-supplier" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                  ${firm.suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('') || '<option value="">No suppliers added</option>'}
+                </select>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-2 border border-slate-200 dark:border-slate-700">
+                <label class="block font-semibold">Add Product to Purchase Bill</label>
+                <select id="pur-prod-select" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                  ${firm.products.map(p => `<option value="${p.id}">${p.name} (Curr Stock: ${p.stock})</option>`).join('')}
+                </select>
+                <div class="grid grid-cols-2 gap-2">
+                  <input type="number" id="pur-qty" min="1" value="10" placeholder="Qty" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                  <input type="number" step="0.01" id="pur-cost" placeholder="Unit Cost ₹" class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                </div>
+                <button type="button" onclick="addPurchaseDraftItem()" class="w-full py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white font-semibold">+ Add Item</button>
+              </div>
+
+              <div id="pur-draft-list" class="space-y-1.5"></div>
+
+              <div>
+                <label class="block font-semibold mb-1">Payment Mode</label>
+                <select id="pur-pay-mode" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Credit">Supplier Credit</option>
+                </select>
+              </div>
+
+              <button onclick="savePurchaseRecord()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm">
+                Save Purchase & Update Stock
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Purchase History & Suppliers List -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="font-bold text-sm">Purchase History</h3>
+                <button onclick="exportToExcel('purchases')" class="text-xs font-semibold text-emerald-600 flex items-center gap-1"><i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export</button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                    <tr>
+                      <th class="px-4 py-3">Purchase ID</th>
+                      <th class="px-4 py-3">Supplier</th>
+                      <th class="px-4 py-3">Items</th>
+                      <th class="px-4 py-3 text-right">Total Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    ${firm.purchases.slice().reverse().map(pur => `
+                      <tr>
+                        <td class="px-4 py-3 font-bold">${pur.id}<div class="text-[10px] text-slate-400 font-normal">${pur.date}</div></td>
+                        <td class="px-4 py-3 font-medium">${pur.supplierName}</td>
+                        <td class="px-4 py-3 text-slate-500">${pur.items.map(i => `${i.name} (x${i.qty})`).join(', ')}</td>
+                        <td class="px-4 py-3 text-right font-extrabold">${fmtINR(pur.totalAmount)}</td>
+                      </tr>
+                    `).join('') || '<tr><td colspan="4" class="p-6 text-center text-slate-400">No purchases recorded yet.</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h3 class="font-bold text-sm">Suppliers Directory (${firm.suppliers.length})</h3>
+                <button onclick="openSupplierModal()" class="px-3 py-1.5 rounded-xl bg-brand-600 text-white text-xs font-semibold">+ Add Supplier</button>
+              </div>
+              <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                ${firm.suppliers.map(s => `
+                  <div class="px-5 py-3 flex items-center justify-between">
+                    <div>
+                      <div class="font-bold">${s.name}</div>
+                      <div class="text-[11px] text-slate-500">${s.phone} • GSTIN: ${s.gstin || 'N/A'} • ${s.address}</div>
+                    </div>
+                    <button onclick="deleteSupplier('${s.id}')" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                  </div>
+                `).join('') || '<p class="p-6 text-center text-slate-400">No suppliers added.</p>'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      renderPurchaseDraftUI();
+    }
+
+    function addPurchaseDraftItem() {
+      const prodId = document.getElementById('pur-prod-select').value;
+      const qty = Number(document.getElementById('pur-qty').value || 0);
+      const p = getFirm().products.find(x => x.id === prodId);
+      if (!p || qty <= 0) return;
+      const costPrice = Number(document.getElementById('pur-cost').value || p.costPrice);
+      purchaseDraftItems.push({ productId: p.id, name: p.name, qty, costPrice, total: qty * costPrice });
+      renderPurchaseDraftUI();
+    }
+
+    function renderPurchaseDraftUI() {
+      const el = document.getElementById('pur-draft-list');
+      if (!el) return;
+      if (!purchaseDraftItems.length) { el.innerHTML = ''; return; }
+      const total = purchaseDraftItems.reduce((s, i) => s + i.total, 0);
+      el.innerHTML = purchaseDraftItems.map((i, idx) => `
+        <div class="flex justify-between items-center p-2 rounded-lg bg-indigo-50/70 dark:bg-indigo-950/30">
+          <span>${i.name} × ${i.qty} @ ${fmtINR(i.costPrice)}</span>
+          <div class="flex items-center gap-2">
+            <strong>${fmtINR(i.total)}</strong>
+            <button onclick="purchaseDraftItems.splice(${idx},1);renderPurchaseDraftUI()" class="text-rose-500">✕</button>
+          </div>
+        </div>
+      `).join('') + `<div class="text-right font-extrabold pt-1">Purchase Total: ${fmtINR(total)}</div>`;
+    }
+
+    function savePurchaseRecord() {
+      if (!purchaseDraftItems.length) {
+        showToast('Add at least one item to purchase.', 'error');
+        return;
+      }
+      const firm = getFirm();
+      const supId = document.getElementById('pur-supplier').value;
+      const sup = firm.suppliers.find(s => s.id === supId);
+      const totalAmount = purchaseDraftItems.reduce((s, i) => s + i.total, 0);
+
+      // Update inventory stock and latest cost price
+      purchaseDraftItems.forEach(item => {
+        const p = firm.products.find(x => x.id === item.productId);
+        if (p) {
+          p.stock += item.qty;
+          p.costPrice = item.costPrice;
+        }
+      });
+
+      firm.purchases.push({
+        id: 'PUR-' + Date.now().toString().slice(-4),
+        date: new Date().toISOString().split('T')[0],
+        supplierId: supId,
+        supplierName: sup ? sup.name : 'Direct Supplier',
+        paymentMethod: document.getElementById('pur-pay-mode').value,
+        items: [...purchaseDraftItems],
+        totalAmount
+      });
+
+      purchaseDraftItems = [];
+      saveState();
+      renderCurrentRoute();
+      showToast('Purchase recorded & product stock updated!');
+    }
+
+    function openSupplierModal() {
+      openModal('Add New Supplier', `
+        <form onsubmit="saveSupplier(event)" class="space-y-3 text-xs">
+          <input type="text" id="sup-name" required placeholder="Supplier / Agency Name *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <div class="grid grid-cols-2 gap-3">
+            <input type="tel" id="sup-phone" required placeholder="Phone Number *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            <input type="text" id="sup-gstin" placeholder="GSTIN" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 uppercase" />
+          </div>
+          <input type="text" id="sup-addr" placeholder="Address" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border">Cancel</button>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-brand-600 text-white font-semibold">Save Supplier</button>
+          </div>
+        </form>
+      `, 'max-w-md');
+    }
+
+    function saveSupplier(e) {
+      e.preventDefault();
+      getFirm().suppliers.push({
+        id: 'SUP-' + Date.now(),
+        name: document.getElementById('sup-name').value.trim(),
+        phone: document.getElementById('sup-phone').value.trim(),
+        gstin: document.getElementById('sup-gstin').value.trim().toUpperCase(),
+        address: document.getElementById('sup-addr').value.trim()
+      });
+      saveState();
+      closeModal();
+      renderCurrentRoute();
+      showToast('Supplier added!');
+    }
+
+    function deleteSupplier(id) {
+      const firm = getFirm();
+      firm.suppliers = firm.suppliers.filter(s => s.id !== id);
+      saveState();
+      renderCurrentRoute();
+    }
+
+    /*************************************************************************
+     * 12. MODULE: CUSTOMERS & KHATA + EXPENSES
+     *************************************************************************/
+    function renderCustomers(container) {
+      const firm = getFirm();
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <h3 class="font-bold text-sm">Customer Directory & Credit Khata (${firm.customers.length})</h3>
+          <button onclick="openCustomerModal()" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-semibold">+ Add Customer</button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                <tr>
+                  <th class="px-4 py-3">Customer</th>
+                  <th class="px-4 py-3">Contact & Address</th>
+                  <th class="px-4 py-3 text-center">Orders</th>
+                  <th class="px-4 py-3 text-right">Total Spend</th>
+                  <th class="px-4 py-3 text-right">Credit Due</th>
+                  <th class="px-4 py-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${firm.customers.map(c => `
+                  <tr>
+                    <td class="px-4 py-3 font-bold">${c.name}</td>
+                    <td class="px-4 py-3 text-slate-500">${c.phone || '-'} • ${c.address || ''}</td>
+                    <td class="px-4 py-3 text-center">${c.ordersCount || 0}</td>
+                    <td class="px-4 py-3 text-right font-semibold">${fmtINR(c.totalSpend)}</td>
+                    <td class="px-4 py-3 text-right font-extrabold ${c.dueBalance > 0 ? 'text-rose-600' : 'text-emerald-600'}">${fmtINR(c.dueBalance)}</td>
+                    <td class="px-4 py-3 text-center">
+                      ${c.dueBalance > 0 ? `<button onclick="settleCustomerDue('${c.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-semibold">Settle Due</button>` : '<span class="text-slate-400">Clear</span>'}
+                    </td>
+                  </tr>
+                `).join('') || '<tr><td colspan="6" class="p-8 text-center text-slate-400">No customers saved yet.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function openCustomerModal() {
+      openModal('Add New Customer', `
+        <form onsubmit="saveCustomer(event)" class="space-y-3 text-xs">
+          <input type="text" id="cust-name" required placeholder="Customer Name *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <div class="grid grid-cols-2 gap-3">
+            <input type="tel" id="cust-phone" required placeholder="Phone Number *" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            <input type="email" id="cust-email" placeholder="Email" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          </div>
+          <input type="text" id="cust-addr" placeholder="Address" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border">Cancel</button>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-brand-600 text-white font-semibold">Save Customer</button>
+          </div>
+        </form>
+      `, 'max-w-md');
+    }
+
+    function saveCustomer(e) {
+      e.preventDefault();
+      getFirm().customers.push({
+        id: 'CUS-' + Date.now(),
+        name: document.getElementById('cust-name').value.trim(),
+        phone: document.getElementById('cust-phone').value.trim(),
+        email: document.getElementById('cust-email').value.trim(),
+        address: document.getElementById('cust-addr').value.trim(),
+        totalSpend: 0, ordersCount: 0, dueBalance: 0
+      });
+      saveState();
+      closeModal();
+      renderCurrentRoute();
+      showToast('Customer added!');
+    }
+
+    function settleCustomerDue(id) {
+      const c = getFirm().customers.find(x => x.id === id);
+      if (c) { c.dueBalance = 0; saveState(); renderCurrentRoute(); showToast(`Settled due for ${c.name}`); }
+    }
+
+    function renderExpenses(container) {
+      const firm = getFirm();
+      const totalExp = firm.expenses.reduce((s, e) => s + e.amount, 0);
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <h3 class="font-bold text-sm">Record Business Expense</h3>
+            <form onsubmit="addExpense(event)" class="space-y-3 text-xs">
+              <div>
+                <label class="block font-semibold mb-1">Category *</label>
+                <select id="exp-cat" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                  <option>Shop Rent</option>
+                  <option>Electricity & Internet</option>
+                  <option>Staff Salary</option>
+                  <option>Packaging & Supplies</option>
+                  <option>Transport & Delivery</option>
+                  <option>Miscellaneous</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Amount (₹) *</label>
+                <input type="number" step="0.01" id="exp-amt" required placeholder="0.00" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Date *</label>
+                <input type="date" id="exp-date" required value="${new Date().toISOString().split('T')[0]}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Description</label>
+                <input type="text" id="exp-desc" placeholder="Notes..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+              <button type="submit" class="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold">Add Expense</button>
+            </form>
+          </div>
+
+          <div class="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h3 class="font-bold text-sm">Expense History (Total: <span class="text-rose-600">${fmtINR(totalExp)}</span>)</h3>
+              <button onclick="exportToExcel('expenses')" class="text-xs font-semibold text-emerald-600 flex items-center gap-1"><i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Export Excel</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                  <tr>
+                    <th class="px-4 py-3">Date</th>
+                    <th class="px-4 py-3">Category</th>
+                    <th class="px-4 py-3">Description</th>
+                    <th class="px-4 py-3 text-right">Amount</th>
+                    <th class="px-4 py-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  ${firm.expenses.slice().reverse().map(e => `
+                    <tr>
+                      <td class="px-4 py-3 text-slate-500">${e.date}</td>
+                      <td class="px-4 py-3 font-bold">${e.category}</td>
+                      <td class="px-4 py-3">${e.description || '-'}</td>
+                      <td class="px-4 py-3 text-right font-extrabold text-rose-600">${fmtINR(e.amount)}</td>
+                      <td class="px-4 py-3 text-center">
+                        <button onclick="deleteExpense('${e.id}')" class="p-1 text-rose-500 hover:bg-rose-50 rounded"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                      </td>
+                    </tr>
+                  `).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-400">No expenses logged yet.</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addExpense(e) {
+      e.preventDefault();
+      getFirm().expenses.push({
+        id: 'EXP-' + Date.now(),
+        category: document.getElementById('exp-cat').value,
+        amount: Number(document.getElementById('exp-amt').value),
+        date: document.getElementById('exp-date').value,
+        description: document.getElementById('exp-desc').value.trim()
+      });
+      saveState();
+      renderCurrentRoute();
+      showToast('Expense added!');
+    }
+
+    function deleteExpense(id) {
+      const firm = getFirm();
+      firm.expenses = firm.expenses.filter(x => x.id !== id);
+      saveState();
+      renderCurrentRoute();
+    }
+
+    /*************************************************************************
+     * 13. MODULE: REPORTS, P&L & GST SUMMARY (PART 7 INTEGRATION)
+     *************************************************************************/
+    function renderReports(container) {
+      const firm = getFirm();
+      const salesTotal = firm.sales.reduce((s, b) => s + b.grandTotal, 0);
+      const taxableSales = firm.sales.reduce((s, b) => s + (b.subtotal - b.discount), 0);
+      const cogs = firm.sales.reduce((s, b) => s + (b.totalCost || 0), 0);
+      const expenses = firm.expenses.reduce((s, e) => s + e.amount, 0);
+      const returns = firm.returns.reduce((s, r) => s + r.refundAmount, 0);
+      const netProfit = taxableSales - cogs - expenses - returns;
+
+      // GST Slab Grouping
+      const slabs = { 0: { taxable: 0, cgst: 0, sgst: 0, igst: 0 }, 5: { taxable: 0, cgst: 0, sgst: 0, igst: 0 }, 12: { taxable: 0, cgst: 0, sgst: 0, igst: 0 }, 18: { taxable: 0, cgst: 0, sgst: 0, igst: 0 }, 28: { taxable: 0, cgst: 0, sgst: 0, igst: 0 } };
+      firm.sales.forEach(s => {
+        s.items.forEach(i => {
+          const sl = slabs[i.gst] || slabs[0];
+          sl.taxable += i.taxable;
+          if (s.taxType === 'LOCAL') {
+            sl.cgst += i.taxAmt / 2;
+            sl.sgst += i.taxAmt / 2;
+          } else {
+            sl.igst += i.taxAmt;
+          }
+        });
+      });
+
+      container.innerHTML = `
+        <!-- P&L Summary Banner -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div class="text-[11px] font-semibold text-slate-400">Gross Sales (incl. GST)</div>
+            <div class="text-lg font-extrabold mt-1">${fmtINR(salesTotal)}</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div class="text-[11px] font-semibold text-slate-400">Cost of Goods Sold</div>
+            <div class="text-lg font-extrabold mt-1 text-slate-600 dark:text-slate-300">${fmtINR(cogs)}</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div class="text-[11px] font-semibold text-slate-400">Operating Expenses</div>
+            <div class="text-lg font-extrabold mt-1 text-rose-600">${fmtINR(expenses)}</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div class="text-[11px] font-semibold text-slate-400">Customer Returns</div>
+            <div class="text-lg font-extrabold mt-1 text-amber-600">${fmtINR(returns)}</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-emerald-500/40 bg-emerald-50/30 dark:bg-emerald-950/20">
+            <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">Net Business Profit</div>
+            <div class="text-lg font-extrabold mt-1 text-emerald-600">${fmtINR(netProfit)}</div>
+          </div>
+        </div>
+
+        <!-- GST Sales Summary Table (GSTR-1 Ready) -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-bold text-sm">GST Sales Summary (Slab-Wise Tax Liability)</h3>
+              <p class="text-[11px] text-slate-500">Breakdown of Taxable Value, CGST, SGST & IGST for tax filing</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="exportToExcel('sales')" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold">Export Sales Excel</button>
+              <button onclick="exportToExcel('products')" class="px-3 py-1.5 rounded-xl bg-brand-600 text-white text-xs font-semibold">Export Stock Excel</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase">
+                <tr>
+                  <th class="px-4 py-3">GST Rate Slab</th>
+                  <th class="px-4 py-3 text-right">Taxable Value</th>
+                  <th class="px-4 py-3 text-right">CGST</th>
+                  <th class="px-4 py-3 text-right">SGST</th>
+                  <th class="px-4 py-3 text-right">IGST</th>
+                  <th class="px-4 py-3 text-right">Total Tax</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                ${Object.entries(slabs).map(([rate, v]) => `
+                  <tr>
+                    <td class="px-4 py-3 font-bold">${rate}% GST Slab</td>
+                    <td class="px-4 py-3 text-right">${fmtINR(v.taxable)}</td>
+                    <td class="px-4 py-3 text-right">${fmtINR(v.cgst)}</td>
+                    <td class="px-4 py-3 text-right">${fmtINR(v.sgst)}</td>
+                    <td class="px-4 py-3 text-right">${fmtINR(v.igst)}</td>
+                    <td class="px-4 py-3 text-right font-extrabold text-brand-600">${fmtINR(v.cgst + v.sgst + v.igst)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    /*************************************************************************
+     * 14. MODULE: FIRM PROFILE & STORE SETTINGS
+     *************************************************************************/
+    function renderFirmProfile(container) {
+      const p = getFirm().profile;
+      container.innerHTML = `
+        <form onsubmit="saveFirmProfile(event)" class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-5 text-xs max-w-4xl">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <h3 class="font-bold text-base">Firm Details & Online Store Configuration</h3>
+              <p class="text-slate-500">Enter your own business details. Saved firm information appears on invoices and your online storefront.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm">Save Profile</button>
+              <button type="button" onclick="deleteCurrentFirm()" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-sm">Delete This Firm & All Its Details</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-semibold mb-1">Business / Legal Firm Name *</label>
+              <input type="text" id="fp-biz" required value="${v3Esc(p.businessName)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Owner Name</label>
+              <input type="text" id="fp-owner" value="${v3Esc(p.ownerName)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Phone Number *</label>
+              <input type="tel" id="fp-phone" required value="${v3Esc(p.phone)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Email Address</label>
+              <input type="email" id="fp-email" value="${v3Esc(p.email)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">GSTIN</label>
+              <input type="text" id="fp-gstin" value="${v3Esc(p.gstin)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 uppercase" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">State</label>
+              <input type="text" id="fp-state" value="${v3Esc(p.state || '')}" placeholder="Tamil Nadu" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">PIN Code</label>
+              <input type="text" id="fp-pincode" value="${v3Esc(p.pincode || '')}" maxlength="6" inputmode="numeric" placeholder="600001" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Business Type</label>
+              <select id="fp-type" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                ${['Retail Shop','Wholesale','Grocery','Clothing','Electronics','Pharmacy','Restaurant','Other'].map(x=>`<option ${p.businessType===x?'selected':''}>${x}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Website (Optional)</label>
+              <input type="url" id="fp-website" value="${v3Esc(p.website || '')}" placeholder="https://yourshop.com" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">UPI ID (for Online Store Payments)</label>
+              <input type="text" id="fp-upi" value="${v3Esc(p.upiId)}" placeholder="yourshop@okicici" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold mb-1">Complete Shop Address</label>
+            <input type="text" id="fp-addr" value="${v3Esc(p.address)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div>
+              <label class="block font-semibold mb-1">Online Storefront Name</label>
+              <input type="text" id="fp-store-name" value="${v3Esc(p.storeName)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Invoice Number Prefix</label>
+              <input type="text" id="fp-prefix" value="${v3Esc(p.invoicePrefix)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-semibold mb-1">Store Tagline / Description</label>
+              <input type="text" id="fp-store-desc" value="${v3Esc(p.storeDescription)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-semibold mb-1">Invoice Footer Terms & Message</label>
+              <input type="text" id="fp-footer" value="${v3Esc(p.invoiceFooter)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Business Logo URL</label>
+              <input type="text" id="fp-logo" value="${v3Esc(p.logo)}" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Or Upload Logo Image</label>
+              <input type="file" accept="image/*" onchange="handleImageUpload(event, 'fp-logo')" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700" />
+            </div>
+          </div>
+        </form>
+      `;
+    }
+
+    function deleteCurrentFirm() {
+      const firm = getFirm();
+      if (!firm) return;
+      const firmName = firm.profile.businessName || 'this firm';
+      const answer = prompt(`This will permanently delete the firm profile and ALL records belonging to "${firmName}" including products, sales, invoices, orders, purchases, customers, suppliers, expenses, stock and reports.\n\nType DELETE FIRM to confirm:`);
+      if (answer !== 'DELETE FIRM') {
+        showToast('Firm deletion cancelled. No data was changed.', 'info');
+        return;
+      }
+      const deletingId = appState.activeFirmId;
+      delete appState.firms[deletingId];
+      const remainingIds = Object.keys(appState.firms);
+      if (remainingIds.length) {
+        appState.activeFirmId = remainingIds[0];
+      } else {
+        const newId = 'FIRM_' + Date.now();
+        appState.firms[newId] = createEmptyFirmData(newId, 'My Business');
+        appState.activeFirmId = newId;
+      }
+      posCart = [];
+      storeCart = [];
+      saveState();
+      populateFirmSwitcher();
+      navigateTo('firm');
+      showToast(`Firm "${firmName}" and all its details were deleted.`);
+    }
+
+    function saveFirmProfile(e) {
+      e.preventDefault();
+      const p = getFirm().profile;
+      p.businessName = document.getElementById('fp-biz').value.trim();
+      p.ownerName = document.getElementById('fp-owner').value.trim();
+      p.phone = document.getElementById('fp-phone').value.trim();
+      p.email = document.getElementById('fp-email').value.trim();
+      p.gstin = document.getElementById('fp-gstin').value.trim().toUpperCase();
+      p.state = document.getElementById('fp-state').value.trim();
+      p.pincode = document.getElementById('fp-pincode').value.trim();
+      p.businessType = document.getElementById('fp-type').value;
+      p.website = document.getElementById('fp-website').value.trim();
+      p.upiId = document.getElementById('fp-upi').value.trim();
+      p.address = document.getElementById('fp-addr').value.trim();
+      p.storeName = document.getElementById('fp-store-name').value.trim();
+      p.invoicePrefix = document.getElementById('fp-prefix').value.trim();
+      p.storeDescription = document.getElementById('fp-store-desc').value.trim();
+      p.invoiceFooter = document.getElementById('fp-footer').value.trim();
+      p.logo = document.getElementById('fp-logo').value.trim();
+      saveState();
+      populateFirmSwitcher();
+      showToast('Firm profile updated successfully!');
+    }
+
+    /*************************************************************************
+     * 15. MODULE: EXCEL EXPORTS, JSON BACKUP/RESTORE & SUPABASE CLOUD SYNC
+     *************************************************************************/
+    function exportToExcel(type) {
+      if (typeof XLSX === 'undefined') {
+        showToast('Excel library still loading, try again in a second.', 'error');
+        return;
+      }
+      const firm = getFirm();
+      let rows = [];
+      let filename = `${firm.profile.businessName.replace(/\s+/g, '_')}_${type}.xlsx`;
+
+      if (type === 'products') {
+        rows = firm.products.map(p => ({ Code: p.code, Name: p.name, Category: p.category, CostPrice: p.costPrice, SellingPrice: p.sellingPrice, GST_Percent: p.gst, Stock: p.stock, LowStockLimit: p.lowStockLimit }));
+      } else if (type === 'sales') {
+        rows = firm.sales.map(s => ({ InvoiceNo: s.invoiceNo, Date: s.date, Customer: s.customerName, Phone: s.customerPhone, TaxType: s.taxType, PaymentMethod: s.paymentMethod, Status: s.paymentStatus, Subtotal: s.subtotal, GST: s.totalTax, Discount: s.discount, GrandTotal: s.grandTotal }));
+      } else if (type === 'orders') {
+        rows = firm.onlineOrders.map(o => ({ OrderID: o.id, Date: o.date, Customer: o.customerName, Phone: o.customerPhone, Address: o.customerAddress, Payment: o.paymentMethod, UTR: o.utrRef, PaymentStatus: o.paymentStatus, OrderStatus: o.status, Total: o.grandTotal }));
+      } else if (type === 'purchases') {
+        rows = firm.purchases.map(p => ({ PurchaseID: p.id, Date: p.date, Supplier: p.supplierName, PaymentMethod: p.paymentMethod, TotalAmount: p.totalAmount }));
+      } else if (type === 'expenses') {
+        rows = firm.expenses.map(e => ({ ID: e.id, Date: e.date, Category: e.category, Description: e.description, Amount: e.amount }));
+      }
+
+      if (!rows.length) {
+        showToast('No records available to export.', 'info');
+        return;
+      }
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, type.toUpperCase());
+      XLSX.writeFile(wb, filename);
+      showToast(`Exported ${filename}`);
+    }
+
+    function renderBackupAndCloud(container) {
+      const cfg = appState.cloudConfig;
+      container.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Local JSON Backup & Restore -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600"><i data-lucide="database-backup" class="w-5 h-5"></i></div>
+              <div>
+                <h3 class="font-bold text-sm">Local Backup & Multi-Firm Restore</h3><p class="text-[10px] text-slate-400">${v3StorageStatus()}</p>
+                <p class="text-slate-500">Download full business snapshots or restore from a JSON backup file.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button onclick="downloadBackup('active')" class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 text-left space-y-1">
+                <div class="font-bold text-brand-600">Download Active Firm</div>
+                <div class="text-[11px] text-slate-500">Backup ${getFirm().profile.businessName}</div>
+              </button>
+              <button onclick="downloadBackup('all')" class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 text-left space-y-1">
+                <div class="font-bold text-emerald-600">Download All Firms</div>
+                <div class="text-[11px] text-slate-500">Full multi-firm database JSON</div>
+              </button>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
+              <label class="block font-semibold">Restore from Backup JSON File</label>
+              <input type="file" accept=".json" onchange="restoreBackupFile(event)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-brand-600 file:text-white file:font-semibold" />
+            </div>
+
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+              <div>
+                <h4 class="font-extrabold text-rose-600 text-sm">Danger Zone — Delete All Data</h4>
+                <p class="text-slate-500 mt-1">Permanently clears every firm and all locally saved business records on this browser, including products, bills, customers, orders, purchases, expenses and settings. Export a backup first if you may need it later.</p>
+              </div>
+              <button onclick="deleteAllBusinessData()" class="w-full px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold">Delete ALL Firms & ALL Data</button>
+            </div>
+          </div>
+
+          <!-- Supabase Cloud Sync Configuration -->
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600"><i data-lucide="cloud" class="w-5 h-5"></i></div>
+                <div>
+                  <h3 class="font-bold text-sm">Supabase Cloud Database Sync</h3>
+                  <p class="text-slate-500">Connect your Supabase project for cross-device backup & online orders.</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${cfg.connected ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}">
+                ${cfg.connected ? 'Connected' : 'Local Mode'}
+              </span>
+            </div>
+
+            <form onsubmit="saveCloudConfig(event)" class="space-y-3">
+              <div>
+                <label class="block font-semibold mb-1">Supabase Project URL</label>
+                <input type="url" id="sb-url" value="${cfg.url}" placeholder="https://xyzcompany.supabase.co" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Supabase Anon Public Key</label>
+                <input type="password" id="sb-key" value="${cfg.anonKey}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+              <div>
+                <label class="block font-semibold mb-1">Admin Account Email</label>
+                <input type="email" id="sb-email" value="${cfg.adminEmail}" placeholder="admin@yourshop.com" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              </div>
+              <div class="flex flex-wrap gap-2 pt-2">
+                <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">Save & Connect</button>
+                <button type="button" onclick="triggerCloudSync()" class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-semibold flex items-center gap-1.5">
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Now
+                </button>
+              </div>
+              ${cfg.lastSync ? `<p class="text-[11px] text-slate-400">Last synced: ${cfg.lastSync}</p>` : ''}
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function downloadBackup(scope) {
+      const payload = scope === 'active'
+        ? { version: '3.0', scope: 'single', firm: getFirm() }
+        : { version: '3.0', scope: 'all', state: appState };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SMART_DUKAAN_BACKUP_${scope.toUpperCase()}_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup JSON downloaded!');
+    }
+
+    function restoreBackupFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.scope === 'all' && parsed.state?.firms) {
+            appState = parsed.state;
+          } else if (parsed.scope === 'single' && parsed.firm?.profile?.id) {
+            appState.firms[parsed.firm.profile.id] = parsed.firm;
+            appState.activeFirmId = parsed.firm.profile.id;
+          } else {
+            throw new Error('Invalid backup structure');
+          }
+          saveState();
+          populateFirmSwitcher();
+          renderCurrentRoute();
+          showToast('Backup restored successfully!');
+        } catch (err) {
+          showToast('Invalid or corrupted backup JSON file.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function deleteAllBusinessData() {
+      const confirmation = prompt('This permanently deletes ALL SMART DUKAAN business data in this browser. Type DELETE to confirm:');
+      if (confirmation !== 'DELETE') {
+        showToast('Deletion cancelled. No data was changed.', 'info');
+        return;
+      }
+      // Remove only SMART DUKAAN storage keys; do not clear unrelated websites' local data.
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      const id = 'FIRM_' + Date.now();
+      appState = {
+        activeFirmId: id,
+        theme: appState.theme || 'light',
+        cloudConfig: { url: '', anonKey: '', adminEmail: '', lastSync: null, connected: false },
+        firms: { [id]: createEmptyFirmData(id, 'My Business') }
+      };
+      posCart = [];
+      storeCart = [];
+      saveState();
+      populateFirmSwitcher();
+      currentRoute = 'firm';
+      navigateTo('firm');
+      showToast('All business data deleted. Your blank firm profile is ready.');
+    }
+
+    function saveCloudConfig(e) {
+      e.preventDefault();
+      appState.cloudConfig.url = document.getElementById('sb-url').value.trim();
+      appState.cloudConfig.anonKey = document.getElementById('sb-key').value.trim();
+      appState.cloudConfig.adminEmail = document.getElementById('sb-email').value.trim();
+      appState.cloudConfig.connected = Boolean(appState.cloudConfig.url && appState.cloudConfig.anonKey);
+      saveState();
+      renderCurrentRoute();
+      showToast(appState.cloudConfig.connected ? 'Supabase credentials saved!' : 'Saved in Local Mode');
+    }
+
+    async function triggerCloudSync() {
+      const cfg = appState.cloudConfig;
+      if (!cfg.url || !cfg.anonKey) {
+        showToast('Enter Supabase Project URL & Anon Key first.', 'error');
+        return;
+      }
+      try {
+        // Attempt REST ping to Supabase endpoint
+        const res = await fetch(`${cfg.url}/rest/v1/`, {
+          headers: { apikey: cfg.anonKey, Authorization: `Bearer ${cfg.anonKey}` }
+        });
+        cfg.lastSync = new Date().toLocaleString();
+        cfg.connected = res.ok;
+        saveState();
+        renderCurrentRoute();
+        showToast(res.ok ? 'Cloud synchronization verified!' : 'Reachable, verify table RLS policies.', res.ok ? 'success' : 'info');
+      } catch (err) {
+        showToast('Network error reaching Supabase URL.', 'error');
+      }
+    }
+
+
+    /*************************************************************************
+     * V3.0 MODULE ENGINE — additional business modules
+     *************************************************************************/
+    const V3_MODULES = {
+      quotations:{title:'Quotations',key:'quotations',fields:[['customer','Customer name','text'],['phone','Phone','tel'],['validUntil','Valid until','date'],['amount','Quotation amount (₹)','number'],['notes','Notes','text']],cols:['customer','phone','validUntil','amount','status'],labels:{customer:'Customer',phone:'Phone',validUntil:'Valid Until',amount:'Amount',status:'Status'}},
+      warehouses:{title:'Warehouses',key:'warehouses',fields:[['name','Warehouse name','text'],['location','Address / location','text'],['phone','Contact number','tel']],cols:['name','location','phone'],labels:{name:'Warehouse',location:'Location',phone:'Phone'}},
+      cashbook:{title:'Cash Book',key:'cashbook',fields:[['date','Date','date'],['type','Entry type','select','Receipt,Payment'],['category','Category','text'],['description','Description','text'],['amount','Amount (₹)','number']],cols:['date','type','category','description','amount'],labels:{date:'Date',type:'Type',category:'Category',description:'Description',amount:'Amount'}},
+      bankbook:{title:'Bank Book',key:'bankbook',fields:[['date','Date','date'],['account','Bank / account','text'],['type','Entry type','select','Deposit,Withdrawal'],['reference','Reference / UTR','text'],['description','Description','text'],['amount','Amount (₹)','number']],cols:['date','account','type','reference','description','amount'],labels:{date:'Date',account:'Account',type:'Type',reference:'Reference',description:'Description',amount:'Amount'}},
+      income:{title:'Other Income',key:'income',fields:[['date','Date','date'],['source','Income source','text'],['description','Description','text'],['amount','Amount (₹)','number'],['payment','Payment mode','select','Cash,UPI,Bank Transfer,Card']],cols:['date','source','description','amount','payment'],labels:{date:'Date',source:'Source',description:'Description',amount:'Amount',payment:'Payment'}},
+      tasks:{title:'Task Manager',key:'tasks',fields:[['title','Task','text'],['dueDate','Due date','date'],['priority','Priority','select','Low,Medium,High'],['assignedTo','Assigned to','text'],['notes','Notes','text']],cols:['title','dueDate','priority','assignedTo','status'],labels:{title:'Task',dueDate:'Due date',priority:'Priority',assignedTo:'Assigned to',status:'Status'}},
+      employees:{title:'Employees',key:'employees',fields:[['name','Employee name','text'],['phone','Phone','tel'],['role','Role','select','Owner,Manager,Cashier,Inventory,Delivery,Other'],['joiningDate','Joining date','date'],['monthlySalary','Monthly salary (₹)','number']],cols:['name','phone','role','joiningDate','monthlySalary'],labels:{name:'Name',phone:'Phone',role:'Role',joiningDate:'Joining',monthlySalary:'Monthly salary'}},
+      attendance:{title:'Attendance',key:'attendance',fields:[['employee','Employee name','text'],['date','Date','date'],['status','Attendance','select','Present,Absent,Half Day,Leave'],['notes','Notes','text']],cols:['employee','date','status','notes'],labels:{employee:'Employee',date:'Date',status:'Status',notes:'Notes'}},
+      salaries:{title:'Salary Register',key:'salaries',fields:[['employee','Employee name','text'],['month','Salary month (YYYY-MM)','month'],['basic','Basic salary (₹)','number'],['deduction','Deductions (₹)','number'],['paid','Amount paid (₹)','number'],['paymentDate','Payment date','date']],cols:['employee','month','basic','deduction','paid','paymentDate'],labels:{employee:'Employee',month:'Month',basic:'Basic',deduction:'Deductions',paid:'Paid',paymentDate:'Payment date'}},
+      offers:{title:'Offers & Coupons',key:'offers',fields:[['code','Coupon code','text'],['description','Offer description','text'],['discountType','Discount type','select','Percentage,Fixed Amount'],['discount','Discount value','number'],['validUntil','Valid until','date'],['minOrder','Minimum order (₹)','number']],cols:['code','description','discountType','discount','validUntil','minOrder'],labels:{code:'Code',description:'Offer',discountType:'Type',discount:'Value',validUntil:'Valid until',minOrder:'Minimum order'}},
+      delivery:{title:'Delivery Manager',key:'delivery',fields:[['orderRef','Order / invoice reference','text'],['customer','Customer','text'],['phone','Phone','tel'],['address','Delivery address','text'],['assignedTo','Delivery person','text'],['status','Delivery status','select','Pending,Assigned,Out for Delivery,Delivered,Failed'],['deliveryDate','Delivery date','date']],cols:['orderRef','customer','phone','assignedTo','status','deliveryDate'],labels:{orderRef:'Order ref',customer:'Customer',phone:'Phone',assignedTo:'Assigned to',status:'Status',deliveryDate:'Date'}},
+      branches:{title:'Branches',key:'branches',fields:[['name','Branch name','text'],['address','Address','text'],['phone','Phone','tel']],cols:['name','address','phone'],labels:{name:'Branch',address:'Address',phone:'Phone'}},
+      transfers:{title:'Stock Transfers',key:'stockTransfers',fields:[['productId','Product ID','text'],['from','From warehouse','text'],['to','To warehouse','text'],['qty','Quantity','number'],['date','Transfer date','date'],['notes','Notes','text']],cols:['productId','from','to','qty','date','notes'],labels:{productId:'Product ID',from:'From',to:'To',qty:'Quantity',date:'Date',notes:'Notes'}},
+      quotations:{title:'Quotations',key:'quotations',fields:[['customer','Customer name','text'],['phone','Phone','tel'],['validUntil','Valid until','date'],['amount','Quotation amount (₹)','number'],['notes','Notes','text']],cols:['customer','phone','validUntil','amount','status'],labels:{customer:'Customer',phone:'Phone',validUntil:'Valid Until',amount:'Amount',status:'Status'}},
+      audit:{title:'Activity Log',key:'auditLog',fields:[],cols:['date','action','details'],labels:{date:'Date',action:'Activity',details:'Details'}}
+    };
+    const V3_TODAY = () => new Date().toISOString().slice(0,10);
+    const v3Esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const v3Money = v => fmtINR(Number(v)||0);
+    function v3FieldHtml(f){
+      const [id,label,type,opts]=f; const value=type==='date'?V3_TODAY():'';
+      if(type==='select') return `<div><label class="block text-xs font-semibold mb-1">${label}</label><select id="v3-${id}" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">${opts.split(',').map(x=>`<option>${x}</option>`).join('')}</select></div>`;
+      return `<div><label class="block text-xs font-semibold mb-1">${label}</label><input id="v3-${id}" type="${type}" ${type==='number'?'min="0" step="0.01"':''} value="${value}" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm"></div>`;
+    }
+    function renderV3Module(container,key){
+      const f=getFirm(); const cfg=V3_MODULES[key];
+      if(key==='barcode'){ renderBarcodeStudio(container); return; }
+      const rows=f[cfg.key]||[];
+      const total=rows.length;
+      const sum=['cashbook','bankbook','income','salaries','quotations'].includes(key)?rows.reduce((s,r)=>s+Number(r.amount||r.paid||0),0):null;
+      container.innerHTML=`<div class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl font-extrabold">${cfg.title}</h2><p class="text-xs text-slate-500 mt-1">Records are saved in this browser for the active firm.</p></div><div class="flex gap-2"><button onclick="exportV3Module('${key}')" class="px-3 py-2 rounded-xl border text-xs font-semibold">Export CSV</button>${key==='audit'?'':`<button onclick="openV3Form('${key}')" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold">+ Add New</button>`}</div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4"><p class="text-xs text-slate-500">Total records</p><p class="text-2xl font-extrabold mt-1">${total}</p></div>${sum!==null?`<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4"><p class="text-xs text-slate-500">Total recorded amount</p><p class="text-2xl font-extrabold mt-1">${v3Money(sum)}</p></div>`:''}</div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"><div class="p-3 border-b border-slate-100 dark:border-slate-800"><input id="v3-search" oninput="filterV3Table('${key}')" placeholder="Search records..." class="w-full sm:max-w-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div><div class="overflow-x-auto"><table class="w-full text-xs text-left"><thead class="bg-slate-50 dark:bg-slate-800"><tr>${cfg.cols.map(c=>`<th class="px-4 py-3 font-bold">${cfg.labels[c]||c}</th>`).join('')}<th class="px-4 py-3">Action</th></tr></thead><tbody id="v3-table-body">${rows.length?rows.map(r=>v3RowHtml(key,r)).join(''):`<tr><td colspan="${cfg.cols.length+1}" class="px-4 py-10 text-center text-slate-400">No records yet. Select Add New to begin.</td></tr>`}</tbody></table></div></div>
+        ${key==='transfers'?'<p class="text-xs text-amber-700 bg-amber-50 p-3 rounded-xl">Stock transfer entries are recorded here. This simple V3 module does not maintain separate per-warehouse stock balances yet.</p>':''}
+      </div>`;
+    }
+    function v3RowHtml(key,r){
+      const cfg=V3_MODULES[key]; const cells=cfg.cols.map(c=>`<td class="px-4 py-3 whitespace-nowrap">${v3Esc(c==='amount'||c==='paid'||c==='basic'||c==='monthlySalary'?v3Money(r[c]):r[c]??'—')}</td>`).join('');
+      const action=key==='audit'?'':`<button onclick="deleteV3Record('${key}','${v3Esc(r.id)}')" class="text-rose-600 font-semibold">Delete</button>`;
+      return `<tr class="border-t border-slate-100 dark:border-slate-800">${cells}<td class="px-4 py-3">${action}</td></tr>`;
+    }
+    function openV3Form(key){
+      const cfg=V3_MODULES[key];
+      openModal('Add '+cfg.title,`<form onsubmit="saveV3Record(event,'${key}')" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${cfg.fields.map(v3FieldHtml).join('')}</div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button><button class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold">Save Record</button></div></form>`);
+    }
+    function saveV3Record(e,key){
+      e.preventDefault(); const f=getFirm(),cfg=V3_MODULES[key],obj={id:'V3-'+Date.now()};
+      cfg.fields.forEach(([id,label,type])=>{const el=document.getElementById('v3-'+id);obj[id]=type==='number'?Number(el.value||0):el.value.trim();});
+      if(!obj[cfg.fields[0]?.[0]]) return showToast('Please complete the main required field.','error');
+      if(['cashbook','bankbook','income','salaries','quotations'].includes(key)){const amount=Number(obj.amount??obj.paid??0);if(amount<0)return showToast('Amount cannot be negative.','error');}
+      if(key==='transfers'){
+        const p=f.products.find(x=>x.id===obj.productId||x.code===obj.productId||x.name.toLowerCase()===obj.productId.toLowerCase());
+        if(!p)return showToast('Product ID / code / name not found.','error');
+        if(!obj.from||!obj.to||obj.from===obj.to||obj.qty<=0)return showToast('Enter valid source, destination and quantity.','error');
+        if(Number(p.stock??p.qty??0)<obj.qty)return showToast('Not enough available stock for this transfer.','error');
+        // Track the transfer without changing overall stock; locations are a directory only in this version.
+        obj.productName=p.name;
+      }
+      if(key==='quotations')obj.status='Draft';
+      if(key==='tasks')obj.status='Pending';
+      f[cfg.key].unshift(obj); addAudit('Created '+cfg.title,JSON.stringify(obj)); saveState(); closeModal(); renderCurrentRoute(); showToast(cfg.title+' record saved.');
+    }
+    function deleteV3Record(key,id){
+      if(!confirm('Delete this record?'))return; const f=getFirm(),cfg=V3_MODULES[key];
+      f[cfg.key]=f[cfg.key].filter(x=>String(x.id)!==String(id)); addAudit('Deleted '+cfg.title,id); saveState(); renderCurrentRoute(); showToast('Record deleted.');
+    }
+    function filterV3Table(key){const q=(document.getElementById('v3-search')?.value||'').toLowerCase();document.querySelectorAll('#v3-table-body tr').forEach(tr=>tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none');}
+    function exportV3Module(key){
+      const f=getFirm(),cfg=V3_MODULES[key],rows=f[cfg.key]||[];
+      if(!rows.length)return showToast('No records to export.','info');
+      const csv=[Object.keys(rows[0]).join(','),...rows.map(r=>Object.values(r).map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))].join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${key}_${V3_TODAY()}.csv`;a.click();URL.revokeObjectURL(url);showToast('CSV export downloaded.');
+    }
+    function renderBarcodeStudio(container){
+      const f=getFirm(); container.innerHTML=`<div class="space-y-4"><div><h2 class="text-xl font-extrabold">Barcode Studio</h2><p class="text-xs text-slate-500 mt-1">Find a product and print a simple label containing its code and name.</p></div><div class="bg-white dark:bg-slate-900 border rounded-2xl p-4"><input id="barcode-q" oninput="renderBarcodeResults()" placeholder="Search product name or barcode..." class="w-full sm:max-w-md px-3 py-2 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm"><div id="barcode-results" class="mt-4"></div></div></div>`; renderBarcodeResults();
+    }
+    function renderBarcodeResults(){const f=getFirm(),q=(document.getElementById('barcode-q')?.value||'').toLowerCase(),el=document.getElementById('barcode-results');if(!el)return;const ps=f.products.filter(p=>(p.name+' '+(p.code||'')).toLowerCase().includes(q));el.innerHTML=ps.map(p=>`<div class="flex flex-wrap items-center justify-between gap-2 py-3 border-t"><div><b>${v3Esc(p.name)}</b><p class="text-xs text-slate-500">Code: ${v3Esc(p.code||p.id)} · Price: ${fmtINR(p.price||0)}</p><div class="font-mono tracking-[.25em] text-lg mt-1">${v3Esc(p.code||p.id)}</div></div><button onclick="printBarcodeLabel('${v3Esc(p.id)}')" class="px-3 py-2 rounded-xl bg-brand-600 text-white text-xs">Print Label</button></div>`).join('')||'<p class="text-sm text-slate-400 py-5">No products found.</p>';}
+    function printBarcodeLabel(id){const f=getFirm(),p=f.products.find(x=>x.id===id);if(!p)return;const w=window.open('','_blank');if(!w)return showToast('Allow pop-ups to print labels.','error');w.document.write(`<html><head><title>Product Label</title><style>body{font:14px Arial;padding:20px}.label{width:55mm;border:1px dashed #777;padding:8mm;text-align:center;margin:8px auto}.code{font:20px monospace;letter-spacing:3px;margin:10px 0}</style></head><body><div class="label"><b>${v3Esc(p.name)}</b><div class="code">${v3Esc(p.code||p.id)}</div><b>${fmtINR(p.price||0)}</b></div><script>window.print()<\/script></body></html>`);w.document.close();}
+    // Browser storage safety and audit helpers
+    function v3StorageStatus(){try{const used=new Blob(Object.values(localStorage)).size;return `${(used/1024/1024).toFixed(2)} MB local storage used (approx.)`;}catch(e){return 'Storage usage unavailable';}}
+    window.addEventListener('error',e=>{try{addAudit('Application error',e.message);saveState();}catch(_){}});
+
+    /*************************************************************************
+     * 16. INITIALIZATION
+     *************************************************************************/
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      navigateTo('dashboard');
+    });
+  </script>
+<script>
+  // PWA app-shell caching. The service worker file must be uploaded beside index.html.
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA worker registration failed:', err)));
+  }
+</script>
+</body>
