@@ -3150,9 +3150,15 @@
     });
   </script>
 <script>
-  // PWA app-shell caching. The service worker file must be uploaded beside index.html.
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA worker registration failed:', err)));
-  }
+  
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/Smart-dukaan/service-worker.js")
+      .then(() => console.log("SMART DUKAAN offline support activated"))
+      .catch(error => console.error("Service worker error:", error));
+  });
+}
 </script>
+
 </body>
