@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SMART DUKAAN PRO V2.0 — Complete Shop Management, GST POS & Online Store</title>
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="description" content="SMART DUKAAN PRO — shop billing, inventory, sales and business management." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>SMART DUKAAN PRO V3.0 — Complete Business Management System</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -85,7 +88,7 @@
           <div class="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold shadow-sm">SD</div>
           <div>
             <h1 class="text-sm font-bold leading-tight">SMART DUKAAN</h1>
-            <span class="text-[10px] font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">PRO V2.0</span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">PRO V3.0</span>
           </div>
         </div>
       </div>
@@ -114,7 +117,7 @@
           <div>
             <div class="font-extrabold text-base tracking-tight">SMART DUKAAN</div>
             <div class="flex items-center gap-1.5">
-              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300">PRO V2.0</span>
+              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300">PRO V3.0</span>
               <span id="cloud-badge" class="w-2 h-2 rounded-full bg-emerald-500" title="Local & Sync Ready"></span>
             </div>
           </div>
@@ -133,6 +136,14 @@
             <i data-lucide="plus" class="w-4 h-4"></i>
           </button>
         </div>
+      </div>
+
+      <!-- Separate Firm Details Column -->
+      <div class="px-3 pt-3 pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1 mb-2">Firm Details</div>
+        <button onclick="navigateTo('firm')" class="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-sm font-bold">
+          <i data-lucide="building-2" class="w-4 h-4"></i> Firm Details & Profile
+        </button>
       </div>
 
       <!-- Nav Links -->
@@ -234,7 +245,7 @@
 
     <!-- Storefront Footer -->
     <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-5 px-4 text-center text-xs text-slate-500">
-      <p id="sf-footer-info">Powered by SMART DUKAAN PRO V2.0</p>
+      <p id="sf-footer-info">Powered by SMART DUKAAN PRO V3.0</p>
     </footer>
 
     <!-- Storefront Slide-Over Cart & Checkout Drawer -->
@@ -279,7 +290,8 @@
     /*************************************************************************
      * 1. STATE & MULTI-FIRM STORAGE ARCHITECTURE
      *************************************************************************/
-    const STORAGE_KEY = 'SMART_DUKAAN_PRO_V2_DATA';
+    const STORAGE_KEY = 'SMART_DUKAAN_PRO_V3_DATA';
+    const LEGACY_STORAGE_KEY = 'SMART_DUKAAN_PRO_V2_DATA';
     let currentRoute = 'dashboard';
     let activeCharts = [];
     let posCart = [];
@@ -375,19 +387,35 @@
       };
     }
 
+    // A clean firm is created on first launch. No sample/demo transactions are preloaded.
+    function createEmptyFirmData(id, name = 'My Business') {
+      return {
+        profile: {
+          id, businessName: name, ownerName: '', phone: '', email: '', address: '',
+          gstin: '', state: '', pincode: '', businessType: '', website: '', logo: '',
+          storeName: name, storeDescription: '', upiId: '', invoicePrefix: 'INV-',
+          invoiceFooter: 'Thank you for your business!'
+        },
+        products: [], suppliers: [], purchases: [], customers: [], sales: [],
+        onlineOrders: [], returns: [], expenses: [], quotations: [],
+        warehouses: [{id:'WH-MAIN',name:'Main Store',location:''}], stockTransfers: [],
+        cashbook: [], bankbook: [], income: [], tasks: [], employees: [], attendance: [],
+        salaries: [], offers: [], delivery: [], auditLog: [],
+        branches: [{id:'BR-MAIN',name:'Main Branch',address:'',phone:''}],
+        invoiceCounter: 1001, orderCounter: 5001
+      };
+    }
+
     let appState = {
       activeFirmId: 'FIRM_1',
       theme: 'light',
       cloudConfig: { url: '', anonKey: '', adminEmail: '', lastSync: null, connected: false },
-      firms: {
-        FIRM_1: createDemoFirmData('FIRM_1', 'Sri Lakshmi SuperMart', 'Lakshmi Online Mart', '33AABCS1429B1Z5', 'lakshmi.mart@okicici'),
-        FIRM_2: createDemoFirmData('FIRM_2', 'NexGen Electronics & Mobiles', 'NexGen Digital Store', '33AAECN8821K1Z2', 'nexgen.store@okaxis')
-      }
+      firms: { FIRM_1: createEmptyFirmData('FIRM_1') }
     };
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && parsed.firms && parsed.activeFirmId) {
@@ -397,6 +425,7 @@
       } catch (e) {
         console.error('Error loading storage:', e);
       }
+      if (!appState.firms || !Object.keys(appState.firms).length) { const id = 'FIRM_' + Date.now(); appState.firms = { [id]: createEmptyFirmData(id) }; appState.activeFirmId = id; }
       applyTheme();
       populateFirmSwitcher();
       updateBadges();
@@ -412,8 +441,20 @@
     }
 
     function getFirm() {
-      return appState.firms[appState.activeFirmId];
+      const firm = appState.firms[appState.activeFirmId];
+      if (!firm) return null;
+      const defaults = { quotations: [], warehouses: [{id:'WH-MAIN',name:'Main Store',location:'Primary location'}], stockTransfers: [], cashbook: [], bankbook: [], income: [], tasks: [], employees: [], attendance: [], salaries: [], offers: [], delivery: [], auditLog: [], branches: [{id:'BR-MAIN',name:'Main Branch',address:'',phone:''}] };
+      Object.entries(defaults).forEach(([key, value]) => { if (!Array.isArray(firm[key])) firm[key] = value; });
+      if (!Array.isArray(firm.suppliers)) firm.suppliers = [];
+      return firm;
     }
+
+    function addAudit(action, details='') {
+      const f = getFirm(); if (!f) return;
+      f.auditLog.unshift({id:'AUD-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),date:new Date().toISOString(),action,details});
+      f.auditLog = f.auditLog.slice(0,500);
+    }
+
 
     /*************************************************************************
      * 2. UTILITIES, FORMATTING, TOASTS & THEME
@@ -476,8 +517,15 @@
 
     function populateFirmSwitcher() {
       const select = document.getElementById('firm-switcher');
+      if (!select) return;
+      const firms = Object.values(appState.firms || {});
+      if (!firms.length) {
+        const id = 'FIRM_' + Date.now();
+        appState.firms = { [id]: createEmptyFirmData(id) };
+        appState.activeFirmId = id;
+      }
       select.innerHTML = Object.values(appState.firms).map(f =>
-        `<option value="${f.profile.id}" ${f.profile.id === appState.activeFirmId ? 'selected' : ''}>${f.profile.businessName}</option>`
+        `<option value="${v3Esc(f.profile.id)}" ${f.profile.id === appState.activeFirmId ? 'selected' : ''}>${v3Esc(f.profile.businessName || 'Unnamed Firm')}</option>`
       ).join('');
     }
 
@@ -522,15 +570,9 @@
       const name = document.getElementById('new-firm-name').value.trim();
       const store = document.getElementById('new-firm-store').value.trim();
       const gstin = document.getElementById('new-firm-gstin').value.trim().toUpperCase();
-      appState.firms[id] = {
-        profile: {
-          id, businessName: name, ownerName: '', phone: '', email: '', address: '',
-          gstin, logo: '', storeName: store, storeDescription: 'Welcome to our online store!',
-          upiId: '', invoicePrefix: 'INV-', invoiceFooter: 'Thank you for your business!'
-        },
-        products: [], suppliers: [], purchases: [], customers: [], sales: [],
-        onlineOrders: [], returns: [], expenses: [], invoiceCounter: 1001, orderCounter: 5001
-      };
+      appState.firms[id] = createEmptyFirmData(id, name);
+      appState.firms[id].profile.storeName = store;
+      appState.firms[id].profile.gstin = gstin;
       appState.activeFirmId = id;
       saveState();
       populateFirmSwitcher();
@@ -565,8 +607,22 @@
       { id: 'customers', label: 'Customers & Khata', icon: 'users', subtitle: 'Customer CRM, order history & credit due tracking' },
       { id: 'expenses', label: 'Expenses', icon: 'wallet', subtitle: 'Track daily shop overhead & operational expenses' },
       { id: 'reports', label: 'Reports & GST Summary', icon: 'bar-chart-3', subtitle: 'Profit & Loss statement, GSTR slab summary & Excel exports' },
-      { id: 'firm', label: 'Firm Profile & Store', icon: 'building-2', subtitle: 'Business details, logo, UPI QR ID & invoice customization' },
-      { id: 'backup', label: 'Backup & Cloud Sync', icon: 'cloud', subtitle: 'JSON backup/restore & Supabase cloud synchronization' }
+      { id: 'backup', label: 'Backup & Cloud Sync', icon: 'cloud', subtitle: 'JSON backup/restore & cloud configuration' },
+      { id: 'quotations', label: 'Quotations', icon: 'file-check', subtitle: 'Create, print and convert quotations into sales' },
+      { id: 'barcode', label: 'Barcode Studio', icon: 'scan-barcode', subtitle: 'Search products and print barcode labels' },
+      { id: 'warehouses', label: 'Warehouses', icon: 'warehouse', subtitle: 'Manage stock locations and warehouses' },
+      { id: 'transfers', label: 'Stock Transfers', icon: 'arrow-left-right', subtitle: 'Transfer stock between locations with a movement log' },
+      { id: 'cashbook', label: 'Cash Book', icon: 'book-open', subtitle: 'Track cash receipts and payments' },
+      { id: 'bankbook', label: 'Bank Book', icon: 'landmark', subtitle: 'Track bank deposits, withdrawals and transfers' },
+      { id: 'income', label: 'Other Income', icon: 'trending-up', subtitle: 'Record non-sales business income' },
+      { id: 'tasks', label: 'Task Manager', icon: 'list-checks', subtitle: 'Plan and track daily business tasks' },
+      { id: 'employees', label: 'Employees', icon: 'user-round-cog', subtitle: 'Maintain staff profiles and roles' },
+      { id: 'attendance', label: 'Attendance', icon: 'calendar-check', subtitle: 'Record employee attendance' },
+      { id: 'salaries', label: 'Salary Register', icon: 'wallet-cards', subtitle: 'Record payroll payments' },
+      { id: 'offers', label: 'Offers & Coupons', icon: 'ticket-percent', subtitle: 'Create and manage promotional codes' },
+      { id: 'delivery', label: 'Delivery Manager', icon: 'truck', subtitle: 'Assign and track delivery jobs' },
+      { id: 'branches', label: 'Branches', icon: 'network', subtitle: 'Manage branch directory' },
+      { id: 'audit', label: 'Activity Log', icon: 'clipboard-list', subtitle: 'Review recent business activity' }
     ];
 
     function renderSidebarNav() {
@@ -627,6 +683,21 @@
         case 'reports': renderReports(main); break;
         case 'firm': renderFirmProfile(main); break;
         case 'backup': renderBackupAndCloud(main); break;
+        case 'quotations': renderV3Module(main,'quotations'); break;
+        case 'barcode': renderV3Module(main,'barcode'); break;
+        case 'warehouses': renderV3Module(main,'warehouses'); break;
+        case 'transfers': renderV3Module(main,'transfers'); break;
+        case 'cashbook': renderV3Module(main,'cashbook'); break;
+        case 'bankbook': renderV3Module(main,'bankbook'); break;
+        case 'income': renderV3Module(main,'income'); break;
+        case 'tasks': renderV3Module(main,'tasks'); break;
+        case 'employees': renderV3Module(main,'employees'); break;
+        case 'attendance': renderV3Module(main,'attendance'); break;
+        case 'salaries': renderV3Module(main,'salaries'); break;
+        case 'offers': renderV3Module(main,'offers'); break;
+        case 'delivery': renderV3Module(main,'delivery'); break;
+        case 'branches': renderV3Module(main,'branches'); break;
+        case 'audit': renderV3Module(main,'audit'); break;
       }
       lucide.createIcons();
     }
@@ -2629,64 +2700,85 @@
         <form onsubmit="saveFirmProfile(event)" class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-5 text-xs max-w-4xl">
           <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
             <div>
-              <h3 class="font-bold text-base">Firm & Online Store Configuration</h3>
-              <p class="text-slate-500">These details appear on printed GST invoices and your customer online storefront.</p>
+              <h3 class="font-bold text-base">Firm Details & Online Store Configuration</h3>
+              <p class="text-slate-500">Enter your own business details. Saved firm information appears on invoices and your online storefront.</p>
             </div>
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm">Save Profile</button>
+            <div class="flex flex-wrap gap-2">
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-sm">Save Profile</button>
+              <button type="button" onclick="deleteCurrentFirm()" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-sm">Delete This Firm & All Its Details</button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block font-semibold mb-1">Business / Legal Firm Name *</label>
-              <input type="text" id="fp-biz" required value="${p.businessName}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-biz" required value="${v3Esc(p.businessName)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">Owner Name</label>
-              <input type="text" id="fp-owner" value="${p.ownerName}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-owner" value="${v3Esc(p.ownerName)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">Phone Number *</label>
-              <input type="tel" id="fp-phone" required value="${p.phone}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="tel" id="fp-phone" required value="${v3Esc(p.phone)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">Email Address</label>
-              <input type="email" id="fp-email" value="${p.email}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="email" id="fp-email" value="${v3Esc(p.email)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">GSTIN</label>
-              <input type="text" id="fp-gstin" value="${p.gstin}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 uppercase" />
+              <input type="text" id="fp-gstin" value="${v3Esc(p.gstin)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 uppercase" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">State</label>
+              <input type="text" id="fp-state" value="${v3Esc(p.state || '')}" placeholder="Tamil Nadu" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">PIN Code</label>
+              <input type="text" id="fp-pincode" value="${v3Esc(p.pincode || '')}" maxlength="6" inputmode="numeric" placeholder="600001" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Business Type</label>
+              <select id="fp-type" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                ${['Retail Shop','Wholesale','Grocery','Clothing','Electronics','Pharmacy','Restaurant','Other'].map(x=>`<option ${p.businessType===x?'selected':''}>${x}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1">Website (Optional)</label>
+              <input type="url" id="fp-website" value="${v3Esc(p.website || '')}" placeholder="https://yourshop.com" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">UPI ID (for Online Store Payments)</label>
-              <input type="text" id="fp-upi" value="${p.upiId}" placeholder="yourshop@okicici" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-upi" value="${v3Esc(p.upiId)}" placeholder="yourshop@okicici" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
           </div>
 
           <div>
             <label class="block font-semibold mb-1">Complete Shop Address</label>
-            <input type="text" id="fp-addr" value="${p.address}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+            <input type="text" id="fp-addr" value="${v3Esc(p.address)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 dark:border-slate-800">
             <div>
               <label class="block font-semibold mb-1">Online Storefront Name</label>
-              <input type="text" id="fp-store-name" value="${p.storeName}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-store-name" value="${v3Esc(p.storeName)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">Invoice Number Prefix</label>
-              <input type="text" id="fp-prefix" value="${p.invoicePrefix}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-prefix" value="${v3Esc(p.invoicePrefix)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div class="sm:col-span-2">
               <label class="block font-semibold mb-1">Store Tagline / Description</label>
-              <input type="text" id="fp-store-desc" value="${p.storeDescription}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-store-desc" value="${v3Esc(p.storeDescription)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div class="sm:col-span-2">
               <label class="block font-semibold mb-1">Invoice Footer Terms & Message</label>
-              <input type="text" id="fp-footer" value="${p.invoiceFooter}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-footer" value="${v3Esc(p.invoiceFooter)}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">Business Logo URL</label>
-              <input type="text" id="fp-logo" value="${p.logo}" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+              <input type="text" id="fp-logo" value="${v3Esc(p.logo)}" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
             </div>
             <div>
               <label class="block font-semibold mb-1">Or Upload Logo Image</label>
@@ -2697,6 +2789,33 @@
       `;
     }
 
+    function deleteCurrentFirm() {
+      const firm = getFirm();
+      if (!firm) return;
+      const firmName = firm.profile.businessName || 'this firm';
+      const answer = prompt(`This will permanently delete the firm profile and ALL records belonging to "${firmName}" including products, sales, invoices, orders, purchases, customers, suppliers, expenses, stock and reports.\n\nType DELETE FIRM to confirm:`);
+      if (answer !== 'DELETE FIRM') {
+        showToast('Firm deletion cancelled. No data was changed.', 'info');
+        return;
+      }
+      const deletingId = appState.activeFirmId;
+      delete appState.firms[deletingId];
+      const remainingIds = Object.keys(appState.firms);
+      if (remainingIds.length) {
+        appState.activeFirmId = remainingIds[0];
+      } else {
+        const newId = 'FIRM_' + Date.now();
+        appState.firms[newId] = createEmptyFirmData(newId, 'My Business');
+        appState.activeFirmId = newId;
+      }
+      posCart = [];
+      storeCart = [];
+      saveState();
+      populateFirmSwitcher();
+      navigateTo('firm');
+      showToast(`Firm "${firmName}" and all its details were deleted.`);
+    }
+
     function saveFirmProfile(e) {
       e.preventDefault();
       const p = getFirm().profile;
@@ -2705,6 +2824,10 @@
       p.phone = document.getElementById('fp-phone').value.trim();
       p.email = document.getElementById('fp-email').value.trim();
       p.gstin = document.getElementById('fp-gstin').value.trim().toUpperCase();
+      p.state = document.getElementById('fp-state').value.trim();
+      p.pincode = document.getElementById('fp-pincode').value.trim();
+      p.businessType = document.getElementById('fp-type').value;
+      p.website = document.getElementById('fp-website').value.trim();
       p.upiId = document.getElementById('fp-upi').value.trim();
       p.address = document.getElementById('fp-addr').value.trim();
       p.storeName = document.getElementById('fp-store-name').value.trim();
@@ -2761,7 +2884,7 @@
             <div class="flex items-center gap-2.5">
               <div class="p-2.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600"><i data-lucide="database-backup" class="w-5 h-5"></i></div>
               <div>
-                <h3 class="font-bold text-sm">Local Backup & Multi-Firm Restore</h3>
+                <h3 class="font-bold text-sm">Local Backup & Multi-Firm Restore</h3><p class="text-[10px] text-slate-400">${v3StorageStatus()}</p>
                 <p class="text-slate-500">Download full business snapshots or restore from a JSON backup file.</p>
               </div>
             </div>
@@ -2782,9 +2905,12 @@
               <input type="file" accept=".json" onchange="restoreBackupFile(event)" class="w-full text-xs file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-brand-600 file:text-white file:font-semibold" />
             </div>
 
-            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
-              <span class="text-slate-400">Need fresh sample records?</span>
-              <button onclick="resetToDemoData()" class="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold">Reset Demo Data</button>
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+              <div>
+                <h4 class="font-extrabold text-rose-600 text-sm">Danger Zone — Delete All Data</h4>
+                <p class="text-slate-500 mt-1">Permanently clears every firm and all locally saved business records on this browser, including products, bills, customers, orders, purchases, expenses and settings. Export a backup first if you may need it later.</p>
+              </div>
+              <button onclick="deleteAllBusinessData()" class="w-full px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold">Delete ALL Firms & ALL Data</button>
             </div>
           </div>
 
@@ -2831,8 +2957,8 @@
 
     function downloadBackup(scope) {
       const payload = scope === 'active'
-        ? { version: '2.0', scope: 'single', firm: getFirm() }
-        : { version: '2.0', scope: 'all', state: appState };
+        ? { version: '3.0', scope: 'single', firm: getFirm() }
+        : { version: '3.0', scope: 'all', state: appState };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -2869,21 +2995,29 @@
       reader.readAsText(file);
     }
 
-    function resetToDemoData() {
+    function deleteAllBusinessData() {
+      const confirmation = prompt('This permanently deletes ALL SMART DUKAAN business data in this browser. Type DELETE to confirm:');
+      if (confirmation !== 'DELETE') {
+        showToast('Deletion cancelled. No data was changed.', 'info');
+        return;
+      }
+      // Remove only SMART DUKAAN storage keys; do not clear unrelated websites' local data.
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      const id = 'FIRM_' + Date.now();
       appState = {
-        activeFirmId: 'FIRM_1',
-        theme: appState.theme,
+        activeFirmId: id,
+        theme: appState.theme || 'light',
         cloudConfig: { url: '', anonKey: '', adminEmail: '', lastSync: null, connected: false },
-        firms: {
-          FIRM_1: createDemoFirmData('FIRM_1', 'Sri Lakshmi SuperMart', 'Lakshmi Online Mart', '33AABCS1429B1Z5', 'lakshmi.mart@okicici'),
-          FIRM_2: createDemoFirmData('FIRM_2', 'NexGen Electronics & Mobiles', 'NexGen Digital Store', '33AAECN8821K1Z2', 'nexgen.store@okaxis')
-        }
+        firms: { [id]: createEmptyFirmData(id, 'My Business') }
       };
+      posCart = [];
+      storeCart = [];
       saveState();
       populateFirmSwitcher();
-      renderCurrentRoute();
-      showToast('Demo data restored!');
+      currentRoute = 'firm';
+      navigateTo('firm');
+      showToast('All business data deleted. Your blank firm profile is ready.');
     }
 
     function saveCloudConfig(e) {
@@ -2918,6 +3052,94 @@
       }
     }
 
+
+    /*************************************************************************
+     * V3.0 MODULE ENGINE — additional business modules
+     *************************************************************************/
+    const V3_MODULES = {
+      quotations:{title:'Quotations',key:'quotations',fields:[['customer','Customer name','text'],['phone','Phone','tel'],['validUntil','Valid until','date'],['amount','Quotation amount (₹)','number'],['notes','Notes','text']],cols:['customer','phone','validUntil','amount','status'],labels:{customer:'Customer',phone:'Phone',validUntil:'Valid Until',amount:'Amount',status:'Status'}},
+      warehouses:{title:'Warehouses',key:'warehouses',fields:[['name','Warehouse name','text'],['location','Address / location','text'],['phone','Contact number','tel']],cols:['name','location','phone'],labels:{name:'Warehouse',location:'Location',phone:'Phone'}},
+      cashbook:{title:'Cash Book',key:'cashbook',fields:[['date','Date','date'],['type','Entry type','select','Receipt,Payment'],['category','Category','text'],['description','Description','text'],['amount','Amount (₹)','number']],cols:['date','type','category','description','amount'],labels:{date:'Date',type:'Type',category:'Category',description:'Description',amount:'Amount'}},
+      bankbook:{title:'Bank Book',key:'bankbook',fields:[['date','Date','date'],['account','Bank / account','text'],['type','Entry type','select','Deposit,Withdrawal'],['reference','Reference / UTR','text'],['description','Description','text'],['amount','Amount (₹)','number']],cols:['date','account','type','reference','description','amount'],labels:{date:'Date',account:'Account',type:'Type',reference:'Reference',description:'Description',amount:'Amount'}},
+      income:{title:'Other Income',key:'income',fields:[['date','Date','date'],['source','Income source','text'],['description','Description','text'],['amount','Amount (₹)','number'],['payment','Payment mode','select','Cash,UPI,Bank Transfer,Card']],cols:['date','source','description','amount','payment'],labels:{date:'Date',source:'Source',description:'Description',amount:'Amount',payment:'Payment'}},
+      tasks:{title:'Task Manager',key:'tasks',fields:[['title','Task','text'],['dueDate','Due date','date'],['priority','Priority','select','Low,Medium,High'],['assignedTo','Assigned to','text'],['notes','Notes','text']],cols:['title','dueDate','priority','assignedTo','status'],labels:{title:'Task',dueDate:'Due date',priority:'Priority',assignedTo:'Assigned to',status:'Status'}},
+      employees:{title:'Employees',key:'employees',fields:[['name','Employee name','text'],['phone','Phone','tel'],['role','Role','select','Owner,Manager,Cashier,Inventory,Delivery,Other'],['joiningDate','Joining date','date'],['monthlySalary','Monthly salary (₹)','number']],cols:['name','phone','role','joiningDate','monthlySalary'],labels:{name:'Name',phone:'Phone',role:'Role',joiningDate:'Joining',monthlySalary:'Monthly salary'}},
+      attendance:{title:'Attendance',key:'attendance',fields:[['employee','Employee name','text'],['date','Date','date'],['status','Attendance','select','Present,Absent,Half Day,Leave'],['notes','Notes','text']],cols:['employee','date','status','notes'],labels:{employee:'Employee',date:'Date',status:'Status',notes:'Notes'}},
+      salaries:{title:'Salary Register',key:'salaries',fields:[['employee','Employee name','text'],['month','Salary month (YYYY-MM)','month'],['basic','Basic salary (₹)','number'],['deduction','Deductions (₹)','number'],['paid','Amount paid (₹)','number'],['paymentDate','Payment date','date']],cols:['employee','month','basic','deduction','paid','paymentDate'],labels:{employee:'Employee',month:'Month',basic:'Basic',deduction:'Deductions',paid:'Paid',paymentDate:'Payment date'}},
+      offers:{title:'Offers & Coupons',key:'offers',fields:[['code','Coupon code','text'],['description','Offer description','text'],['discountType','Discount type','select','Percentage,Fixed Amount'],['discount','Discount value','number'],['validUntil','Valid until','date'],['minOrder','Minimum order (₹)','number']],cols:['code','description','discountType','discount','validUntil','minOrder'],labels:{code:'Code',description:'Offer',discountType:'Type',discount:'Value',validUntil:'Valid until',minOrder:'Minimum order'}},
+      delivery:{title:'Delivery Manager',key:'delivery',fields:[['orderRef','Order / invoice reference','text'],['customer','Customer','text'],['phone','Phone','tel'],['address','Delivery address','text'],['assignedTo','Delivery person','text'],['status','Delivery status','select','Pending,Assigned,Out for Delivery,Delivered,Failed'],['deliveryDate','Delivery date','date']],cols:['orderRef','customer','phone','assignedTo','status','deliveryDate'],labels:{orderRef:'Order ref',customer:'Customer',phone:'Phone',assignedTo:'Assigned to',status:'Status',deliveryDate:'Date'}},
+      branches:{title:'Branches',key:'branches',fields:[['name','Branch name','text'],['address','Address','text'],['phone','Phone','tel']],cols:['name','address','phone'],labels:{name:'Branch',address:'Address',phone:'Phone'}},
+      transfers:{title:'Stock Transfers',key:'stockTransfers',fields:[['productId','Product ID','text'],['from','From warehouse','text'],['to','To warehouse','text'],['qty','Quantity','number'],['date','Transfer date','date'],['notes','Notes','text']],cols:['productId','from','to','qty','date','notes'],labels:{productId:'Product ID',from:'From',to:'To',qty:'Quantity',date:'Date',notes:'Notes'}},
+      quotations:{title:'Quotations',key:'quotations',fields:[['customer','Customer name','text'],['phone','Phone','tel'],['validUntil','Valid until','date'],['amount','Quotation amount (₹)','number'],['notes','Notes','text']],cols:['customer','phone','validUntil','amount','status'],labels:{customer:'Customer',phone:'Phone',validUntil:'Valid Until',amount:'Amount',status:'Status'}},
+      audit:{title:'Activity Log',key:'auditLog',fields:[],cols:['date','action','details'],labels:{date:'Date',action:'Activity',details:'Details'}}
+    };
+    const V3_TODAY = () => new Date().toISOString().slice(0,10);
+    const v3Esc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const v3Money = v => fmtINR(Number(v)||0);
+    function v3FieldHtml(f){
+      const [id,label,type,opts]=f; const value=type==='date'?V3_TODAY():'';
+      if(type==='select') return `<div><label class="block text-xs font-semibold mb-1">${label}</label><select id="v3-${id}" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">${opts.split(',').map(x=>`<option>${x}</option>`).join('')}</select></div>`;
+      return `<div><label class="block text-xs font-semibold mb-1">${label}</label><input id="v3-${id}" type="${type}" ${type==='number'?'min="0" step="0.01"':''} value="${value}" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm"></div>`;
+    }
+    function renderV3Module(container,key){
+      const f=getFirm(); const cfg=V3_MODULES[key];
+      if(key==='barcode'){ renderBarcodeStudio(container); return; }
+      const rows=f[cfg.key]||[];
+      const total=rows.length;
+      const sum=['cashbook','bankbook','income','salaries','quotations'].includes(key)?rows.reduce((s,r)=>s+Number(r.amount||r.paid||0),0):null;
+      container.innerHTML=`<div class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl font-extrabold">${cfg.title}</h2><p class="text-xs text-slate-500 mt-1">Records are saved in this browser for the active firm.</p></div><div class="flex gap-2"><button onclick="exportV3Module('${key}')" class="px-3 py-2 rounded-xl border text-xs font-semibold">Export CSV</button>${key==='audit'?'':`<button onclick="openV3Form('${key}')" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold">+ Add New</button>`}</div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4"><p class="text-xs text-slate-500">Total records</p><p class="text-2xl font-extrabold mt-1">${total}</p></div>${sum!==null?`<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4"><p class="text-xs text-slate-500">Total recorded amount</p><p class="text-2xl font-extrabold mt-1">${v3Money(sum)}</p></div>`:''}</div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden"><div class="p-3 border-b border-slate-100 dark:border-slate-800"><input id="v3-search" oninput="filterV3Table('${key}')" placeholder="Search records..." class="w-full sm:max-w-sm px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div><div class="overflow-x-auto"><table class="w-full text-xs text-left"><thead class="bg-slate-50 dark:bg-slate-800"><tr>${cfg.cols.map(c=>`<th class="px-4 py-3 font-bold">${cfg.labels[c]||c}</th>`).join('')}<th class="px-4 py-3">Action</th></tr></thead><tbody id="v3-table-body">${rows.length?rows.map(r=>v3RowHtml(key,r)).join(''):`<tr><td colspan="${cfg.cols.length+1}" class="px-4 py-10 text-center text-slate-400">No records yet. Select Add New to begin.</td></tr>`}</tbody></table></div></div>
+        ${key==='transfers'?'<p class="text-xs text-amber-700 bg-amber-50 p-3 rounded-xl">Stock transfer entries are recorded here. This simple V3 module does not maintain separate per-warehouse stock balances yet.</p>':''}
+      </div>`;
+    }
+    function v3RowHtml(key,r){
+      const cfg=V3_MODULES[key]; const cells=cfg.cols.map(c=>`<td class="px-4 py-3 whitespace-nowrap">${v3Esc(c==='amount'||c==='paid'||c==='basic'||c==='monthlySalary'?v3Money(r[c]):r[c]??'—')}</td>`).join('');
+      const action=key==='audit'?'':`<button onclick="deleteV3Record('${key}','${v3Esc(r.id)}')" class="text-rose-600 font-semibold">Delete</button>`;
+      return `<tr class="border-t border-slate-100 dark:border-slate-800">${cells}<td class="px-4 py-3">${action}</td></tr>`;
+    }
+    function openV3Form(key){
+      const cfg=V3_MODULES[key];
+      openModal('Add '+cfg.title,`<form onsubmit="saveV3Record(event,'${key}')" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${cfg.fields.map(v3FieldHtml).join('')}</div><div class="flex justify-end gap-2"><button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border text-xs">Cancel</button><button class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold">Save Record</button></div></form>`);
+    }
+    function saveV3Record(e,key){
+      e.preventDefault(); const f=getFirm(),cfg=V3_MODULES[key],obj={id:'V3-'+Date.now()};
+      cfg.fields.forEach(([id,label,type])=>{const el=document.getElementById('v3-'+id);obj[id]=type==='number'?Number(el.value||0):el.value.trim();});
+      if(!obj[cfg.fields[0]?.[0]]) return showToast('Please complete the main required field.','error');
+      if(['cashbook','bankbook','income','salaries','quotations'].includes(key)){const amount=Number(obj.amount??obj.paid??0);if(amount<0)return showToast('Amount cannot be negative.','error');}
+      if(key==='transfers'){
+        const p=f.products.find(x=>x.id===obj.productId||x.code===obj.productId||x.name.toLowerCase()===obj.productId.toLowerCase());
+        if(!p)return showToast('Product ID / code / name not found.','error');
+        if(!obj.from||!obj.to||obj.from===obj.to||obj.qty<=0)return showToast('Enter valid source, destination and quantity.','error');
+        if(Number(p.stock??p.qty??0)<obj.qty)return showToast('Not enough available stock for this transfer.','error');
+        // Track the transfer without changing overall stock; locations are a directory only in this version.
+        obj.productName=p.name;
+      }
+      if(key==='quotations')obj.status='Draft';
+      if(key==='tasks')obj.status='Pending';
+      f[cfg.key].unshift(obj); addAudit('Created '+cfg.title,JSON.stringify(obj)); saveState(); closeModal(); renderCurrentRoute(); showToast(cfg.title+' record saved.');
+    }
+    function deleteV3Record(key,id){
+      if(!confirm('Delete this record?'))return; const f=getFirm(),cfg=V3_MODULES[key];
+      f[cfg.key]=f[cfg.key].filter(x=>String(x.id)!==String(id)); addAudit('Deleted '+cfg.title,id); saveState(); renderCurrentRoute(); showToast('Record deleted.');
+    }
+    function filterV3Table(key){const q=(document.getElementById('v3-search')?.value||'').toLowerCase();document.querySelectorAll('#v3-table-body tr').forEach(tr=>tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none');}
+    function exportV3Module(key){
+      const f=getFirm(),cfg=V3_MODULES[key],rows=f[cfg.key]||[];
+      if(!rows.length)return showToast('No records to export.','info');
+      const csv=[Object.keys(rows[0]).join(','),...rows.map(r=>Object.values(r).map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))].join('\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${key}_${V3_TODAY()}.csv`;a.click();URL.revokeObjectURL(url);showToast('CSV export downloaded.');
+    }
+    function renderBarcodeStudio(container){
+      const f=getFirm(); container.innerHTML=`<div class="space-y-4"><div><h2 class="text-xl font-extrabold">Barcode Studio</h2><p class="text-xs text-slate-500 mt-1">Find a product and print a simple label containing its code and name.</p></div><div class="bg-white dark:bg-slate-900 border rounded-2xl p-4"><input id="barcode-q" oninput="renderBarcodeResults()" placeholder="Search product name or barcode..." class="w-full sm:max-w-md px-3 py-2 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm"><div id="barcode-results" class="mt-4"></div></div></div>`; renderBarcodeResults();
+    }
+    function renderBarcodeResults(){const f=getFirm(),q=(document.getElementById('barcode-q')?.value||'').toLowerCase(),el=document.getElementById('barcode-results');if(!el)return;const ps=f.products.filter(p=>(p.name+' '+(p.code||'')).toLowerCase().includes(q));el.innerHTML=ps.map(p=>`<div class="flex flex-wrap items-center justify-between gap-2 py-3 border-t"><div><b>${v3Esc(p.name)}</b><p class="text-xs text-slate-500">Code: ${v3Esc(p.code||p.id)} · Price: ${fmtINR(p.price||0)}</p><div class="font-mono tracking-[.25em] text-lg mt-1">${v3Esc(p.code||p.id)}</div></div><button onclick="printBarcodeLabel('${v3Esc(p.id)}')" class="px-3 py-2 rounded-xl bg-brand-600 text-white text-xs">Print Label</button></div>`).join('')||'<p class="text-sm text-slate-400 py-5">No products found.</p>';}
+    function printBarcodeLabel(id){const f=getFirm(),p=f.products.find(x=>x.id===id);if(!p)return;const w=window.open('','_blank');if(!w)return showToast('Allow pop-ups to print labels.','error');w.document.write(`<html><head><title>Product Label</title><style>body{font:14px Arial;padding:20px}.label{width:55mm;border:1px dashed #777;padding:8mm;text-align:center;margin:8px auto}.code{font:20px monospace;letter-spacing:3px;margin:10px 0}</style></head><body><div class="label"><b>${v3Esc(p.name)}</b><div class="code">${v3Esc(p.code||p.id)}</div><b>${fmtINR(p.price||0)}</b></div><script>window.print()<\/script></body></html>`);w.document.close();}
+    // Browser storage safety and audit helpers
+    function v3StorageStatus(){try{const used=new Blob(Object.values(localStorage)).size;return `${(used/1024/1024).toFixed(2)} MB local storage used (approx.)`;}catch(e){return 'Storage usage unavailable';}}
+    window.addEventListener('error',e=>{try{addAudit('Application error',e.message);saveState();}catch(_){}});
+
     /*************************************************************************
      * 16. INITIALIZATION
      *************************************************************************/
@@ -2926,5 +3148,10 @@
       navigateTo('dashboard');
     });
   </script>
+<script>
+  // PWA app-shell caching. The service worker file must be uploaded beside index.html.
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA worker registration failed:', err)));
+  }
+</script>
 </body>
-</html>
