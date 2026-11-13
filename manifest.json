@@ -1,0 +1,27 @@
+
+{
+  "id": "/Smart-dukaan/",
+  "name": "SMART DUKAAN",
+  "short_name": "SMART DUKAAN",
+  "description": "Smart Shop Management, Billing and Inventory Application",
+  "start_url": "/Smart-dukaan/",
+  "scope": "/Smart-dukaan/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#172554",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
